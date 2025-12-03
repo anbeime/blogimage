@@ -2,7 +2,7 @@
 
 简单看了下，兼容OpenAI的sdk以及Claude code接入，还对Cline, RooCode, Kilo的接入做了特别优化
 
-![](blob:https://vcn9bv28ym2o.feishu.cn/f28ae1cd-c11f-4442-b9fe-2359a897c90c)
+![](assets/【API羊毛】%20快手%20憋了一波大的，搞了个%20Kat-coder,%20pro版本测评直接超过了%20GPT-5，air版本直接永久免费/file-20251203145657353.png)
 
 [https://www.streamlake.ai/product/kat-coder](https://www.streamlake.ai/product/kat-coder) （不要切换语言为中文，中文是国内站，需要实名才能用）
 
@@ -11,11 +11,11 @@
 KAT-Coder-Air V1
 KAT-Coder-Exp-72B 目前也免费
 
-![](blob:https://vcn9bv28ym2o.feishu.cn/a0b9a25f-4208-4f0f-ae09-2f31bc6de073)
+![](assets/【API羊毛】%20快手%20憋了一波大的，搞了个%20Kat-coder,%20pro版本测评直接超过了%20GPT-5，air版本直接永久免费/file-20251203145720180.png)
 
 获取步骤：
 
-![](blob:https://vcn9bv28ym2o.feishu.cn/c70491cd-c3f8-4ffe-af80-b14d752fbef3)
+![](assets/【API羊毛】%20快手%20憋了一波大的，搞了个%20Kat-coder,%20pro版本测评直接超过了%20GPT-5，air版本直接永久免费/file-20251203145731558.png)
 
 创建一个模型端点模型选air的，模型调用ID是这个ep开头的，不能用KAT-Coder-Air-V1
 
@@ -31,13 +31,8 @@ API调用URL是：[https://vanchin.streamlake.ai/api/gateway/v1/endpoints/chat/c
     
 4. **模型** : 输入您的 Wanqing 推理端点 ID（例如，ep-xxxxxxxxxxxxx）并选择使用自定义
     
-
-![](blob:https://vcn9bv28ym2o.feishu.cn/fcd5d4f0-2677-48e5-9422-62a8cc19bd49)
+![](assets/【API羊毛】%20快手%20憋了一波大的，搞了个%20Kat-coder,%20pro版本测评直接超过了%20GPT-5，air版本直接永久免费/file-20251203145743651.png)
 
 其他客户端如claude code、cline等 参考说明文档：
 
 [https://www.streamlake.ai/document/DOC/mg6k6nlp8j6qxicx4c9](https://www.streamlake.ai/document/DOC/mg6k6nlp8j6qxicx4c9)
-
-![](blob:https://vcn9bv28ym2o.feishu.cn/7de6c927-c05e-49c7-9743-67fbb57b6251)
-
-pro不便宜啊 [笑哭] 我们薅Air就行 [看]
