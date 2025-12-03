@@ -8,6 +8,7 @@
 
 **只有Air 模型永久免费**，RPM：20（每分钟最高20次调用） TPM：2000000（每分钟最高200万token交互）支持工具调用和推理，简单测试了下，效果还不错，速度也快，可能是大家都不知道吧[笑哭] 用来部署一些n8n等工作流也不错。
 
+KAT-Coder-Air V1
 KAT-Coder-Exp-72B 目前也免费
 
 ![](blob:https://vcn9bv28ym2o.feishu.cn/a0b9a25f-4208-4f0f-ae09-2f31bc6de073)
