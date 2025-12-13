@@ -9,7 +9,7 @@
 ### Supported Models 支持的模型
 
 [](https://github.com/xlang-ai/OSWorld/blob/main/mm_agents/README.md#supported-models)
-
+[[高德智能体（Agent）的提示词模板]]
 We currently support the following models as the foundational models for the agents:我们目前支持以下模型作为智能体的基础模型：
 
 - `GPT-3.5` (gpt-3.5-turbo-16k, ...) `GPT-3.5`（gpt-3.5-turbo-16k，……）

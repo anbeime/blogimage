@@ -9,7 +9,7 @@
 ![图片](https://mmbiz.qpic.cn/mmbiz_png/cCruoDSLAW09jRpnov9H1FVxibibSLlOsaThhxhG1sxT3Ccr0oPr1fTlyjDxPIlOKqYH5EsnfOY8AicQ7Eeggy8zA/640?wx_fmt=png&from=appmsg&wxfrom=13&tp=wxpic#imgIndex=0)
 
 今天给大家带来的是一个企业级AI应用的拆解，老粉们都知道我的主业是做企业级的AI智能体定制的，我在外部交流的时候总是会有人问到，你们接的几十上百万的智能体需求，到底是在做什么？
-
+[[微信支付 MCP使用指南]]
   
 
 每到这个时候我都要巴拉巴拉说一通，大意是：把客户已有的人工工作流程，加入AI把业务流做成自动/半自动化。
