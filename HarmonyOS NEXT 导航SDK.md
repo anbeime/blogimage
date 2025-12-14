@@ -1670,3 +1670,278 @@ onCalculateRouteSuccess: (routeResult: IAMapCalcRouteResult | null) => {
 ```
 
 如果路线规划失败，则会触发 IAMapNaviListener 的 onCalculateRouteFailure 回调，可以在此回调中来执行相应处理逻辑。
+# 显示模式与跟随模式最后更新时间: 2025年09月29日
+
+## 显示模式
+
+导航界面的显示模式分为：
+
+- 锁车态：地图图面一直跟着定位位置的改变而移动，又由于自车图标也在移动，两者相互抵消，视觉上会感觉自车图标被锁在屏幕的一个固定的点上；
+    
+- 全览态：地图的中心点和缩放层级都调整到合适的值来让整条路线都显示在可见区域内；
+    
+- 普通态：地图图面一直不动，只有自车图标在移动。
+    
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610351221_83b50.jpeg)          ![](https://a.amap.com/lbs/static/img/doc/doc_1758610354146_ea571.jpeg)
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610357157_18284.jpeg)
+
+通过 AMapNaviViewOptions 中接口设置锁车相关配置。
+
+```
+/**
+* 设置自动锁车逻辑开关
+*
+* @param autoLockCar true代表自动锁车，false代表不自动锁车
+* @since 2.2.3
+*/
+public setAutoLockCar(autoLockCar: boolean):  void
+
+/**
+* 设置是否自动全览模式，即在算路成功后自动进入全览模式
+* @param isAutoDisplay
+* @since 2.2.3
+*/
+public setAutoDisplayOverview(isAutoDisplay: boolean):  void
+
+/**
+* 设置锁定地图延迟毫秒数。
+*
+* @param lockMapDelayed 延迟毫秒。
+* @since 2.2.3
+*/
+public setLockMapDelayed(lockMapDelayed: number):  void 
+```
+
+## 注意：AMapNaviViewOptions.setAutoDisplayOverview()方法在新版本中不建议使用，可通过IAMapNavi.setShowMode()来动态设置模式。
+
+```
+/**
+* 设置导航页面显示模式
+*
+* @param showMode 1-锁车态 2-全览态 3-普通态
+* @since 2.2.3
+*/
+setShowMode(showMode: number): void
+```
+
+通过 IAMapNaviListener 类监听显示模式变化。
+
+```
+/**
+*导航视图展示模式变化回调
+*
+* @param showMode 展示模式
+* @since 2.2.3
+*/
+onNaviViewShowMode?: (showMode:number) => void
+```
+
+## 车头朝向
+
+导航界面的车头朝上、正北朝上 
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610417786_9679c.jpeg)          ![](https://a.amap.com/lbs/static/img/doc/doc_1758610420459_ddf9c.jpeg)
+
+通过IAMapNavi类调整车头朝向。
+
+```
+/**
+* 设置车头朝向
+* @param mode 车头朝向
+*  0-CAR_UP_MODE 车头朝上模式
+*  1-NORTH_UP_MODE 正北朝上模式
+* @since 2.2.3
+*/
+setNaviMode(mode: number): void
+```
+
+通过IAMapNaviListener监听车头朝向变化。
+
+```
+/**
+* 导航视角变化回调
+*
+* @param naviMode 导航视角，0:车头朝上状态；1:正北朝上模式。
+* @since 2.2.3
+*/
+onNaviMapMode?: (naviMode:number) => void
+```
+# 自定义标注最后更新时间: 2025年09月29日
+
+AMapNaviView可以分为两层，底层是以地图为容器的图面元素层，SDK会根据路线信息在地图上绘制自车标、起终点、交通路线、转向箭头、牵引线、红绿灯等元素。上层是以UI控件元素为主的View层，如路口大图、光柱图、全览按钮、设置按钮等。这里主要介绍一些常用标注的自定义，其他还有：交通路线的自定义，其他图面元素的自定义，UI控件的自定义。
+
+## 车标样式
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610571861_83b50.jpeg)
+
+驾车导航界面的车标是由蓝色箭头样式图标和方向罗盘图标两部分组成的，可以通过AMapNaviViewOptions类进行自定义，对应接口如下：
+
+```
+/**
+* 设置自车的图片对象
+* @param carPixelMap 车标对象
+* @since 2.2.3
+*/
+public setCarPixelMap(carPixelMap: PixelMap | null):  void
+
+/**
+* 设置罗盘位图对象
+* @param fourCornersPixelMap
+* @since 2.2.3
+*/
+public setFourCornersPixelMap(fourCornersPixelMap: PixelMap | null):  void 
+```
+
+## 起点\终点
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610595520_ea571.jpeg)         ![](https://a.amap.com/lbs/static/img/doc/doc_1758610598687_18284.jpeg)
+
+通过AMapNaviViewOptions类进行起终点图标自定义，对应接口如下：
+
+```
+/**
+* 设置起点位图，须在画路前设置
+* @param icon 起点位图
+* @since 2.2.3
+*/
+public setStartPointPixelMap(icon: PixelMap | null):  void
+
+/**
+* 设置终点位图，须在画路前设置
+* @param icon 终点位图
+* @since 2.2.3
+*/
+public setEndPointPixelMap(icon: PixelMap | null):  void
+```
+# 自定义交通路线最后更新时间: 2025年09月29日
+
+通过AMapNaviViewOptions可以进行路线相关元素的显示隐藏控制，包括自车、罗盘、交通信号灯、路线显隐、路线Marker图标的显隐控制；结合其中的RouteOverlayOption，可以控制路线相关属性的自定义，包括路线宽度、不同路况路线颜色、虚线颜色、置灰效果和颜色 。
+
+## 路线显隐
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610687210_4a47a.png)
+
+可以通过以下接口控制路线显隐，默认显示，隐藏路线时，摄像头、红绿灯、转向箭头、牵引线、起终点等也会一起隐藏。
+
+```
+/**
+ * 设置是否自动显示交通路线，默认显示
+ *
+ * @param autoDrawRoute true, 自动显示；false，隐藏
+ * @since 2.2.3
+ */
+public setAutoDrawRoute(autoDrawRoute: boolean):  void
+```
+
+## 自车、罗盘显隐
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610702220_fb5c8.png)
+
+可以通过以下接口控制自车、罗盘显隐，默认显示，设置为隐藏时，牵引线也会被隐藏。
+
+```
+/**
+ * 设置是否隐藏AMapNaviView上的CarOverlay，包括自车、罗盘
+ * @param isVisible true 显示 false 不显示 默认为显示，设置为false时，牵引线也会隐藏
+ * @since 2.2.3
+ */
+public setCarOverlayVisible(isVisible: boolean)
+```
+
+## 起终途点\步行轮渡扎点\禁行限行封路icon显隐
+
+路线上的点位标记，包括起点、终点途经点、步行轮渡扎点、禁行限行封路图标。
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610720212_10fb1.png)
+
+可以通过以下接口控制其显示和隐藏。
+
+```
+/**
+ * 是否显示 起终途点\步行轮渡扎点\禁行限行封路icon
+ * @param showStartEndVia 是否显示起终途点
+ * @param showFootFerry   是否显示步行轮渡扎点
+ * @param showForbidden   是否显示禁行限行图标
+ * @since 2.2.3
+ */
+public setRouteMarkerVisible(showStartEndVia: boolean, showFootFerry: boolean, showForbidden: boolean)
+```
+
+## 路线宽度
+
+交通路线的宽度包含实线的宽度和虚线的宽度，虚线一般出现在需要步行和轮渡的地方，如下图所示：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610736003_09dd8.png)
+
+修改路线宽度可以调用如下接口，设置为0时，可恢复默认宽度：
+
+```
+/**
+ * 设置导航线路的宽度
+ *
+ * @param lineWidth 单位：像素
+ */
+public setLineWidth(lineWidth: number):  void
+```
+
+## 路线颜色
+
+路线的颜色包括不同路况（未知／畅通／缓慢／拥堵／严重拥堵）的路线颜色、虚线颜色、路过置灰的颜色
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610752790_8266e.png)
+
+可以通过以下接口自定义不同路况下的路线颜色，虚线颜色以及路过置灰的颜色（走过的路颜色）：
+
+```
+/**
+ * 设置自定义的虚线颜色
+ * @param color
+ * @since 2.2.3
+ */
+public setDashedLineColor(color: CoreRouteDashedLineColor | undefined):  void
+/**
+ * 设置不同路况下的路线颜色
+ *
+ * @param routeStatusColor
+ * @since 2.2.3
+ */
+public setRouteStatusColor(routeStatusColor: ArrayList<CoreRouteTrafficStatusColor>| null):  void
+/**
+ * 设置自定义的走过路线的颜色
+ *
+ * @param routeGreyColor
+ * @since 2.2.3
+ */
+public setRouteGreyColor(routeGreyColor: CoreRoutePassLineColor | undefined):  void
+```
+
+## 路过置灰
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610769218_f19c9.png)
+
+路过置灰即将走过路线置成灰色效果，您只需调用如下接口进行效果的开关：
+
+```
+/**
+ * 通过路线是否自动置灰
+ * 可以使用{@link RouteOverlayOptions#setRouteGreyColor}改变颜色
+ *
+ * @param afterRouteAutoGray
+ * @since 2.2.3
+ */
+public setAfterRouteAutoGray(afterRouteAutoGray: boolean):  void
+```
+
+在开启路过置灰功能时，还可以自定义其颜色
+
+```
+/**
+ * 设置自定义的走过路线的颜色
+ * @param routeGreyColor
+ * @since 2.2.3
+ * @exclude
+ */
+public setRouteGreyColor(routeGreyColor: CoreRoutePassLineColor | undefined):  void
+```
