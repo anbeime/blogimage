@@ -1945,3 +1945,313 @@ public setAfterRouteAutoGray(afterRouteAutoGray: boolean):  void
  */
 public setRouteGreyColor(routeGreyColor: CoreRoutePassLineColor | undefined):  void
 ```
+# 自定义其他图面元素最后更新时间: 2025年09月29日
+
+通过AMapNaviViewOptions和其中的RouteOverlayOption，可以进行一些图面元素的自定义，包括转向箭头、电子眼、牵引线、红绿灯
+
+## 转向箭头
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610968900_4a47a.png)
+
+转向箭头可以控制其显隐、颜色、宽度、是否为3D效果以及3D效果下的侧面颜色，
+
+具体配置接口如下
+
+```
+/**
+ * 设置路线转向箭头隐藏和显示
+ *
+ * @param isArrow true: 显示，false: 隐藏，默认为true
+ * @since  2.2.3
+ */
+public setNaviArrowVisible(isArrow: boolean):  void
+```
+
+```
+/**
+ * 设置路线上转弯处箭头的颜色
+ *
+ * @param arrowColor 颜色值
+ */
+public setArrowColor(arrowColor: number):  void
+/**
+ * 设置路线上转弯处箭头的宽度,单位px 0代表默认宽度
+ *
+ * @param arrowColor 颜色值
+ */
+public setArrowWidth(arrowWidth: number):  void
+/**
+ * 设置是否显示3D箭头，默认显示
+ * @param turnArrowIs3  true 显示,false 不显示
+ * @since 2.2.3
+ */
+public setTurnArrowIs3D(turnArrowIs3: boolean):  void
+/**
+ * 设置3D箭头侧面颜色，只有显示 3D箭头情况加才有效
+ * @param arrowSideColor
+ * @since 2.2.3
+ */
+public setArrowSideColor(arrowSideColor: number):  void
+```
+
+## 电子眼
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758610984338_fb5c8.png)
+
+可以控制电子眼的显示和隐藏、电子眼距离的显示和隐藏
+
+```
+/**
+ * 设置路线上的摄像头气泡是否显示。
+ *
+ * @param routeCameShow true代表显示，false代表不显示，默认显示
+ * @since 2.2.3
+ */
+public setOnRouteCameShow(routeCameShow: boolean): void
+```
+
+```
+/**
+ * 设置电子眼的距离是否显示
+ * @param show true, 显示；false，隐藏。默认隐藏
+ * @since 2.2.3
+ */
+public setShowCameraDistance(show: boolean):  void
+/**
+ * 设置路线上的摄像头气泡是否显示
+ *
+ * @param cameraBubbleShow true代表显示，false代表不显示，默认显示
+ * @deprecated 请配合 {@link RouteOverlayOptions#setOnRouteCameShow(boolean)} 与 {@link AMapNaviViewOptions#setRouteOverlayOptions(RouteOverlayOptions)} 使用
+ */
+public setCameraBubbleShow(cameraBubbleShow: boolean):  void
+```
+
+## 牵引线
+
+牵引线指的是当前位置到终点的飞线，默认不显示。
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758611001124_10fb1.png)
+
+牵引线指的是当前位置到终点的飞线，可以控制其显示和隐藏、颜色
+
+```
+/**
+ * 设置是否绘制牵引线（当前位置到目的地的指引线）。默认不绘制牵引线。
+ *
+ * @param color 设置牵引线颜色，为ARGB格式。不显示牵引线时，颜色设置为-1即可。
+ */
+public setLeaderLineEnabled(color: number):  void
+```
+
+## 红绿灯
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758611014586_09dd8.png)
+
+可以通过以下接口控制红绿灯的显示和隐藏
+
+```
+/**
+ * 设置是否隐藏路线上的交通信号灯
+ * @param isVisible true 显示 false 不显示 默认为显示
+ * @since 2.2.3
+ */
+public setTrafficLightsVisible(isVisible: boolean)
+```
+# 自定义UI控件最后更新时间: 2025年09月29日
+
+## 单元素自定义
+
+可以通过AMapNaviViewOptions中如下接口进行单UI元素显示隐藏，只列出部分接口，更多功能请参考AMapNaviViewOptions类。 
+
+```
+、	/**
+   * 设置菜单按钮是否在导航界面显示。
+   *
+   * @param enabled 菜单按钮是否在导航界面显示。true代表显示，false代表不显示。
+   */
+  public setSettingMenuEnabled(enabled: boolean):  void {
+    this.isSettingMenuEnabled = enabled;
+  }
+    	/**
+   * 设置导航界面是否显示路线全览按钮。
+   *
+   * @param isShow 设置全览按钮是否在导航界面显示，默认显示。true，显示；false，隐藏。
+   */
+  public setRouteListButtonShow(isShow: boolean):  void {
+    this.isRouteListButtonShow = isShow;
+  }
+```
+
+## 整体UI自定义
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758611280726_8266e.png)
+
+如上图所示，我们可以通过AMapNaviViewOptions中如下接口，来一键控制所有 UI 控件的显示和隐藏。 
+
+```
+  /**
+   * 设置导航界面UI是否显示。
+   * 注意：<font color='red'>该接口会同时隐藏模型放大图和实景放大图，隐藏后可以通过{@link AMapModeCrossOverlay}绘制放大图</font>
+   * @param isLayoutVisible true导航界面显示，false导航界面不显示。
+   */
+  public setLayoutVisible(isLayoutVisible: boolean):  void {
+    this.isLayoutVisible = isLayoutVisible;
+  }
+```
+
+当不显示UI时，地图锚点也可以通过AMapNaviViewOptions进行自定义，可以根据自己的UI布局来调整比例尺的位置和锁车态时自车图标的默认显示位置，接口如下：
+
+```
+  /**
+   * 设置自车位置锁定在屏幕中的位置
+   *
+   * @param x 取值范围：0-1 在x轴的位置，百分比
+   * @param y 取值范围：0-1 在y轴的位置，百分比
+   * @since 2.2.3
+   */
+  public setPointToCenter(x: number, y: number):  void {
+    this.mapCenterX = x;
+    this.mapCenterY = y;
+  }
+```
+
+借助导航提供的View（DriveWay、CrossImage、CustomTrafficProgressBar、TrafficButtonView、PreviewRouteButton等），组装自己的导航界面。
+
+创建AMapNaviComponent以后设置appCustomerConfig中调用一下方法。
+
+```
+ /**
+   * 设置用户自定义的车道线
+   * @param lazyDriveWayView
+   * @since 2.2.3
+   */
+  setLazyDriveWayView?: ()=> void
+    /**
+   * 设置自定义的路口放大图
+   *
+   * @param zoomInIntersectionView
+   * @since 2.2.3
+   */
+  setLazyZoomInIntersectionView?: ()=>void
+    /**
+   * 设置自定义的路况按钮视图
+   *
+   * @param lazyTrafficButtonView
+   * @since 2.2.3
+   */
+  setLazyTrafficButtonView?:() => void
+    /**
+   * 设置用户自定义的全览按钮
+   *
+   * @param lazyOverviewButtonView
+   */
+  setLazyOverviewButtonView?:() => void
+```
+# 其他自定义能力最后更新时间: 2025年09月29日
+
+UI界面定制指的是AMapNaviComponent中的图面元素和UI控件都是支持定制化修改的，以便您做出独一无二，符合您业务需求和App风格的导航界面。 
+
+## 智能比例尺
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758611391204_f19c9.png)
+
+如上图，所谓的智能比例尺，就是锁车模式下为了在图面上提前看见下一个导航动作，根据您的自车位置自动缩放地图的一种效果。开启了智能比例尺，我们就能够以一个合适的缩放级别在图面上看见白色的转向箭头，比如当看见了左拐箭头，我们就有了预判，需要提前变道。您可以调用AMapNaviViewOptions中如下接口进行设置，支持导航中动态切换。 
+
+```
+  /**
+   * 设置是否开启动态比例尺 (锁车态下自动进行地图缩放变化)
+   *
+   * @param isAutoChangeZoom true,自动改变；false，不自动改变
+   * @since 2.2.3
+   */
+  public setAutoChangeZoom(isAutoChangeZoom: boolean):  void
+```
+
+## 日夜模式
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758611413384_9eb9c.png)
+
+上图为黑夜模式，AMapNaviComponent的日夜模式分为4种，白天模式、黑夜模式、根据日出日落时间自动切换白天黑夜、自定义地图样式(优先级最高)。您可以调用AMapNaviViewOptions中如下接口进行设置，支持导航中动态切换。 
+
+```
+  /**
+   * 设置导航界面是否显示黑夜模式。
+   * 此方法与{@link AMapNaviViewOptions#setCustomMapStylePath(String path)}方法相斥，不可同时调用.
+   *
+   * @param isNight 导航界面是否显示黑夜模式。true代表显示；false代表不显示。
+   * @deprecated 请使用 {@link #setMapStyle(MapStyle mapStyle, String customStylePath)}
+   */
+  public setNaviNight(isNight: boolean):  void
+
+    /**
+   * 设置地图自定义样式文件的路径
+   * 此方法与{@link AMapNaviViewOptions#setNaviNight(boolean isNight)}方法相斥，不可同时调用.
+   *
+   * @since 2.2.3
+   * @deprecated 请使用 {@link #setMapStyle(MapStyle mapStyle, String customStylePath)}
+   */
+  public setCustomMapStylePath(path: string| null):  void 
+    	/**
+   * 设置是否开启自动黑夜模式切换，默认为false，不自动切换
+   * @param isAutoNaviViewNightMode
+   * @since 2.2.3
+   * @deprecated 请使用 {@link #setMapStyle(MapStyle mapStyle, String customStylePath)}
+   */
+  public setAutoNaviViewNightMode(isAutoNaviViewNightMode: boolean):  void
+```
+
+这里需要注意的是，自定义地图样式与白天黑夜模式是互斥的，设置自定义样式以后，设置白天黑夜模式就不会生效了。 
+
+## 自动锁车
+
+所谓的自动锁车，就是当用户触碰了图面，让显示模式变成普通态，或者点击了全览按钮，让显示模式变成全览态，过一段时间后，显示模式是否需要再自动变成锁车态。您可以调用如下接口进行设置，支持导航中动态切换
+
+```
+  /**
+   * 设置6秒后是否自动锁车
+   *
+   * @param autoLockCar true代表自动锁车，false代表不自动锁车
+   */
+  public setAutoLockCar(autoLockCar: boolean):  void
+```
+# 算路错误码最后更新时间: 2025年11月17日
+
+进行路径规划时，如果算路失败了，会回调下面的接口，我们可以从IAMapCalcRouteResult中errorCode字段获取错误信息，下面的表格为errorCod的详细解释，此外errorDetail 和errorDescription也会包含一些额外的信息，需要排查问题的时候请务必提供这两个信息。 
+
+```
+  /**
+   * 路线规划失败回调，包括算路、导航中偏航、用户改变算路策略、行程点等触发的重算，具体算路结果可以通过{@link com.amap.api.navi.model.AMapCalcRouteResult}获取
+   * 可以通过CalcRouteResult获取算路错误码、算路类型以及路线id
+   * @param routeResult {@link com.amap.api.navi.model.AMapCalcRouteResult}
+   * @since 1.0.0
+   */
+  onCalculateRouteFailureForResult?:(routeResult: IAMapCalcRouteResult| null) => void
+```
+
+|   |   |   |
+|---|---|---|
+|响应码|问题说明|问题排查策略|
+|2|网络失败|请检查网络是否通畅，稍候再试。|
+|3|起点错误|请选择国内坐标点，确保经纬度格式正常。|
+|4|协议解析错误|请将算路的起点、终点、途经点以及算路策略，通过[工单系统](https://lbs.amap.com/dev/ticket/create/19)反馈给我们。|
+|6|终点错误|请选择国内坐标点，确保经纬度格式正常。|
+|7|服务端编码异常|请将算路的起点、终点、途经点以及算路策略，通过[工单系统](https://lbs.amap.com/dev/ticket/create/19)反馈给我们。|
+|8|数据缺乏预览数据|请将算路的起点、终点、途经点以及算路策略，通过[工单系统](https://lbs.amap.com/dev/ticket/create/19)反馈给我们。|
+|9|数据格式错误|请将算路的起点、终点、途经点以及算路策略，通过[工单系统](https://lbs.amap.com/dev/ticket/create/19)反馈给我们。|
+|10|没有找到通向起点的道路|请对起点进行调整。|
+|11|没有找到通向终点的道路|请对终点进行调整。|
+|12|没有找到通向途经点的道路|请对途径点进行调整。|
+|13|用户key非法或过期|请检查key配置|
+|17|请求超出配额|请将key、errorDetail 和errorDescription 通过[工单系统](https://lbs.amap.com/dev/ticket/create/19)反馈给我们。|
+|18|请求参数非法|请检查是否有异常信息输出，请将key、errorDetail 和errorDescription 通过[工单系统](https://lbs.amap.com/dev/ticket/create/19)反馈给我们。|
+|19|未知错误(可能是由于连接的网络无法访问外网)|请检查是否有异常信息输出，请将key、errorDetail 和errorDescription 通过[工单系统](https://lbs.amap.com/dev/ticket/create/19)反馈给我们。|
+|20|起点/终点/途经点的距离太长|起点到途经点再到终点，两两相加的直线距离太长，导致的失败。一般发生在货车算路、骑步行算路。请将算路的起点、终点、途经点以及 NSError 信息，通过[工单系统](https://lbs.amap.com/dev/ticket/create/19)反馈给我们。|
+|21|途经点错误|请选择国内坐标点，确保经纬度格式正常。|
+|22|MD5安全码未通过验证,需要开发者判定key绑定的SHA1,package是否与sdk包里的一致.|请检查签名包名与KEY绑定关系是否正确|
+|23|单位时间内访问过于频繁|请检查是否有异常信息输出，请将key、errorDetail 和errorDescription 通过[工单系统](https://lbs.amap.com/dev/ticket/create/19)反馈给我们。|
+|24|请求中使用的key与绑定平台不符，例如：开发者申请的是js api的key，却用来调web服务接口|请检查key配置是否正确|
+|25|使用路径规划服务接口时可能出现该问题，规划点（包括起点、终点、途经点）不在中国陆地范围内|请检查起终点是否正确，经纬度是否填反|
+|26|使用路径规划服务接口时可能出现该问题，路线计算失败，通常是由于道路起点和终点距离过长导致|请检查起终点是否正确，经纬度是否填反|
+|28|调用直接导航 没有算路 参数错误，缺失有效的导航路径，无法开始导航|请检查调起组件的时候是否算路成功|
+|29|路径规划与当前导航状态不匹配。如果正在导航中，无法进行与导航不匹配的普通算路|请检查当前算路类型（驾车/骑行/步行）与当前正在导航的交通类型是否一致|
+|2999|有新的独立算路任务在进行中导致本次独立算路失败|当有连续两次算路的时候，第一次算路会被取消返回算路失败错误码2999，请确保前一次算路结果返回后，再触发调用下一次算路|
