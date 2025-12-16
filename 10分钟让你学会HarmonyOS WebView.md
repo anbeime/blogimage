@@ -197,3 +197,225 @@ Web({ src: '自己本地随便启动一个项目地址', controller: this.contro
 ```
 // app端
 ```
+如何在鸿蒙系统增加webview
+
+在鸿蒙系统中增加WebView主要有以下几种方法，以下是具体步骤和示例：
+
+**方法一：使用ArkTS原生开发**
+
+1. **创建项目**  
+    使用DevEco Studio创建一个新的鸿蒙项目，选择“Empty Ability”模板。
+    
+2. **引入依赖**  
+    在代码中引入WebView相关模块：
+    
+    typescript
+    
+    ```typescript
+    import webview from '@ohos.web.webview';
+    ```
+    
+3. **创建WebView控制器**  
+    在组件中声明并初始化WebView控制器：
+    
+    typescript
+    
+    ```typescript
+    @component
+    struct WebViewPage {
+      controller: webview.webviewcontroller = new webview.webviewcontroller();
+    }
+    ```
+    
+4. **添加WebView组件**  
+    在页面布局中使用`web`组件，并指定`src`属性加载网页地址，同时关联控制器：
+    
+    typescript
+    
+    ```typescript
+    build() {
+      column() {
+        web({
+          src: 'https://www.example.com', // 替换为实际网页地址
+          controller: this.controller
+        })
+        .width('100%')
+        .height('100%')
+      }
+    }
+    ```
+    
+5. **配置权限**  
+    在`config.json`文件中添加网络权限：
+    
+    json
+    
+    ```json
+    {
+      "module": {
+        "reqPermissions": [
+          {
+            "name": "ohos.permission.INTERNET"
+          }
+        ]
+      }
+    }
+    ```
+    
+
+**方法二：使用Flutter开发**
+
+1. **添加依赖**  
+    在`pubspec.yaml`文件中添加`flutter_inappwebview`插件：
+    
+    yaml
+    
+    ```yaml
+    dependencies:
+      flutter_inappwebview: ^5.5.0
+    ```
+    
+2. **配置插件**  
+    在`src/main/module.json5`中声明平台视图工厂：
+    
+    json
+    
+    ```json
+    {
+      "abilities": [
+        {
+          "name": "entryAbility",
+          "srcEntry": "./ets/entryAbility/entryAbility.ets",
+          "exported": true,
+          "skills": []
+        }
+      ]
+    }
+    ```
+    
+3. **实现平台视图**  
+    创建`customfactory.ets`和`customview.ets`文件，实现WebView的原生集成：
+    
+    typescript
+    
+    ```typescript
+    // customfactory.ets
+    import { PlatformViewFactory } from '@ohos/flutter_ohos';
+    export class CustomFactory extends PlatformViewFactory {
+      constructor() {
+        super();
+      }
+      create(context: any, viewId: number, args: any): any {
+        return new CustomView(context, viewId, args);
+      }
+    }
+    
+    // customview.ets
+    import { WebView } from '@kit.arkweb';
+    @component
+    struct CustomView {
+      controller: WebView.WebViewController = new WebView.WebViewController();
+      build() {
+        WebView({
+          src: 'https://www.example.com',
+          controller: this.controller
+        })
+        .width('100%')
+        .height('100%');
+      }
+    }
+    ```
+    
+4. **在Flutter代码中使用**  
+    在Dart代码中通过`PlatformView`调用原生WebView：
+    
+    dart
+    
+    ```dart
+    import 'package:flutter/material.dart';
+    import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+    
+    class WebViewPage extends StatefulWidget {
+      @override
+      _WebViewPageState createState() => _WebViewPageState();
+    }
+    
+    class _WebViewPageState extends State<WebViewPage> {
+      @override
+      Widget build(BuildContext context) {
+        return Scaffold(
+          body: Container(
+            child: PlatformViewLink(
+              viewType: 'com.example.custom/WebView',
+              onCreatePlatformView: (viewId) {
+                return PlatformViewsService.initPlatformView(
+                  viewId,
+                  viewType: 'com.example.custom/WebView',
+                  layoutDirection: TextDirection.ltr,
+                  creationParams: const <String, dynamic>{},
+                  creationParamsCodec: const StandardMessageCodec(),
+                );
+              },
+            ),
+          ),
+        );
+      }
+    }
+    ```
+    
+
+**方法三：加载本地HTML文件**
+
+1. **放置文件**  
+    将本地HTML文件放在项目目录的`resources/rawfile/`文件夹中。
+    
+2. **配置DataAbility**  
+    在`config.json`中声明DataAbility：
+    
+    json
+    
+    ```json
+    {
+      "module": {
+        "abilities": [
+          {
+            "name": "com.example.dataability",
+            "type": "data",
+            "uri": "dataability://com.example.dataability"
+          }
+        ]
+      }
+    }
+    ```
+    
+3. **实现DataAbility**  
+    创建`dataability.ets`文件，实现文件访问逻辑：
+    
+    typescript
+    
+    ```typescript
+    import dataability from '@ohos.data.dataability';
+    
+    @dataability
+    export class DataAbility extends dataability.DataAbility {
+      openRawFile(uri: string, mode: string): any {
+        const path = uri.split('/').pop();
+        return this.resourceManager.getRawFileEntry(path).openRawFileDescriptor();
+      }
+    }
+    ```
+    
+4. **加载本地文件**  
+    在WebView中通过DataAbility URI加载本地文件：
+    
+    typescript
+    
+    ```typescript
+    web({
+      src: 'dataability://com.example.dataability/resources/rawfile/index.html',
+      controller: this.controller
+    })
+    ```
+    
+
+以上方法可根据项目需求选择，ArkTS原生开发适合纯鸿蒙应用，Flutter开发适合跨平台项目，加载本地文件则适用于需要嵌入静态内容的场景。
