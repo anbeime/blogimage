@@ -1,4 +1,4 @@
-# Location Kit简介
+# Location Kit简介https://gitcode.com/openharmony/docs/tree/OpenHarmony-6.0-Release/zh-cn/application-dev/reference/apis-location-kit
 
 更新时间: 2025-12-16 16:35
 
