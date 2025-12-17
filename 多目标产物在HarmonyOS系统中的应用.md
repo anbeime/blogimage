@@ -1899,3 +1899,17 @@ Test版本：工程会在首页中显示Test版的资源以及一个页面跳转
 ## 示例代码
 
 - [构建多目标产物工程](https://gitee.com/harmonyos_samples/MultiTarget)
+# 在AGC创建项目和HarmonyOS应用/元服务
+
+更新时间: 2025-12-16 15:57
+
+## 创建项目
+
+项目是您在AppGallery Connect（以下简称AGC）资源的组织实体，您可以将一个应用的不同平台版本添加到同一个项目中。当您的应用需要使用华为服务时，您需要在AGC中[创建您的项目](https://developer.huawei.com/consumer/cn/doc/app/agc-help-create-project-0000002242804048)。
+
+## 创建HarmonyOS应用/元服务
+
+如果您需要在华为应用市场发布您的HarmonyOS应用/元服务，或者使用AGC提供的各类服务，您需要先在AGC中[创建HarmonyOS应用/元服务](https://developer.huawei.com/consumer/cn/doc/app/agc-help-app-0000002235710234)。
+
+[  
+](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmonyos-clouddev-setup "搭建开发环境")
