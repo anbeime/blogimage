@@ -1910,3 +1910,177 @@ DevEco Studio还支持您将AGC云端当前项目下的代码同步至本地工�
 
 [  
 ](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmonyos-clouddev-invokeclouddatabase "在端侧访问云数据库")
+# （可选）通过CloudDev面板获取云开发资源支持
+
+更新时间: 2025-12-16 15:57
+
+DevEco Studio为您提供了CloudDev云开发管理面板。该面板集成了AGC云开发子控制台、文档和社区入口，方便您直达AGC云开发子控制台进行服务和资源管理，并且可轻松跳转至各指导文档和社区论坛来获取技术支持，为您提供开发、调试、部署、管理与技术支持的端到端体验。
+
+1. 在菜单栏选择“Tools > CloudDev”。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155730.77382259222633995919319241389460:50001231000000:2800:5B7371BE489E131C36966F213515DF92479A6FEF6A994BF8E6B4D1538ED20C37.png)
+    
+2. 在打开的云开发管理面板中，您可轻松获取各种云开发资源。
+    
+    说明
+    
+    如尚未登录，请点击“Sign in”登录您的华为开发者账号。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155730.46275369536606368555619057625160:50001231000000:2800:CD083218E10EB3A143B289AFA0693A152EC16230E16CC1F19AAFB57806D50D2A.png)
+    
+    其中，AGC云开发子控制台如下图所示，您可按需进入对应菜单进行服务或资源管理。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155730.83697012871571218713634596497874:50001231000000:2800:2AA8A577EE599F96F90720F298FD8A6B5F494EFC0BE1A1E4645E87F1248C174D.png)
+    
+
+[  
+](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmonyos-clouddev-invokecloudstorage "在端侧调用云存储")
+# 打包测试
+
+更新时间: 2025-12-16 15:57
+
+端云两侧工程代码全部开发完成后，建议您在本地进行调试，以查看和验证应用/元服务运行效果，减少发布过程中可能遇到的问题，具体请参见[应用/服务调试](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-debug-device)。
+
+注意
+
+当前自动签名仅支持“[关联注册应用进行签名](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-signing#section20943184413328)”方式。
+
+[  
+](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmonyos-clouddev-console "（可选）通过CloudDev面板获取云开发资源支持")
+# 通用云开发模板
+
+更新时间: 2025-12-16 15:57
+
+## 适用范围
+
+|   |   |
+|---|---|
+|模板名称|通用云开发模板（[CloudDev]Empty Ability）|
+|模板说明|DevEco Studio内预置的端云一体化开发模板。当前使用Cloud Foundation Kit（云开发服务，包括云函数、云数据库和云存储）搭建了基础的演示项目，不含业务属性。您可参考模板学习如何进行基础的端云工程开发，后续开发时可删除预置的页面代码。|
+|支持的应用类型|- HarmonyOS应用<br>- 元服务|
+
+## 效果图
+
+以下为通用云开发模板主要功能模块的效果图。
+
+|功能模块|效果图|功能说明|
+|:--|:--|:--|
+|云函数|![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155734.77521837135115492281241768125208:50001231000000:2800:C0F851457D90C97C6919ABD98A918917EA2A92D004369907F69A94A6E4528450.png "点击放大")|点击“Generate Global Unique ID”时，调用云函数SDK执行部署在AGC云端的云对象“id-generator”，生成UUID。|
+|云数据库|![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155734.74336699504160336281260059024337:50001231000000:2800:8CDB946B0FEB0668E30905C9AA9A225465E5DC3E069530025724906C5AE0A634.png "点击放大")|点击“New”创建数据，可在AGC云端查看到创建的数据。|
+|云存储|![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155734.33988178246856036077514986321809:50001231000000:2800:BE15EF2954184238446A38F108E054BD855A6CC5B39B3A7A3BF28B3F7CDCEF36.png "点击放大")|点击“Upload Image”上传本地图片，成功后可获取图片链接。|
+
+## 体验模板
+
+如您希望在设备上亲自体验该模板的功能和页面效果，可按如下流程操作：
+
+1. [使用模板创建端云一体化开发工程](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmonyos-clouddev-devproject)。
+2. [将云侧工程一键部署至AGC云端](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmonyos-clouddev-deploy)。
+3. 配置云存储安全策略。
+    
+    由于端云一体化开发工程的初始化代码未[配置AccessToken](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/cloudfoundation-cloudcommon#section9723191765120)，因此您还需配置云存储的安全策略为始终可读写，否则会导致云存储无法上传文件。具体操作如下：
+    
+    1. 登录[AppGallery Connect](https://developer.huawei.com/consumer/cn/service/josp/agc/index.html)，点击“开发与服务”。
+    2. 在项目列表中点击您的项目。
+        
+    3. 在左侧导航栏选择“云开发（Serverless） > 云存储”，进入云存储页面。
+    4. 选择“安全”页签，在“配置策略”页面修改默认安全策略为始终可读写后，点击“发布”。
+        
+        1. agc.cloud.storage[
+        2.     match: /{bucket}/{path=**} {
+        3.         allow read, write: if true;
+        4.     }
+        5. ]
+        
+        ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155734.25482226611821197818503654245571:50001231000000:2800:D814359149128382EB75959DE48A4BF593670AD4BFA2E3F9642F951C89F35129.png)
+        
+4. 将模板工程推包到手机上，在手机上开通应用访问数据权限，即可开始体验模板。
+    
+    注意
+    
+    当前自动签名仅支持“[关联注册应用进行签名](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-signing#section20943184413328)”方式。
+    
+    如使用模拟器体验，请参考[使用模拟器调试](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoundation-emulator)操作。
+    
+
+[  
+](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-harmonyos-clouddev-template "附录：云开发工程模板")
+# 导入Sample工程
+
+更新时间: 2025-12-16 15:57
+
+DevEco Studio支持Sample工程的导入功能，通过对接Gitee开源社区中的Sample资源，可一键导入Sample工程到DevEco Studio中。下面介绍导入Sample的方法。
+
+## 约束与限制
+
+### 支持的国家/地区
+
+该功能仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
+
+## 操作步骤
+
+1. 在DevEco Studio的欢迎页，进入**Customize** **> All Settings... > Version Control > Git**界面，单击**Test**按钮检测是否安装Git工具。
+    
+    说明
+    
+    在打开工程的情况下，可以单击**File > Settings**（macOS为**DevEco Studio > Preferences/Settings**）进入设置界面。
+    
+    - 已安装，请根据[2](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-import-sample#li1599692216194)开始导入Sample。
+        
+        ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155725.87240524158373997822811793586820:50001231000000:2800:65EAED478E1F21ADFD8BA06715AF2FF08B85984807E68C8BEEEED9B2E514DCBB.png)
+        
+    - 未安装，请单击**Download and Install**，DevEco Studio会自动下载并安装。安装完成后，请根据[2](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-import-sample#li1599692216194)开始导入Sample。
+        
+        ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155725.27060013830879554725597183775767:50001231000000:2800:10574692CF22F0013C9ED09D3CC4C923D0C14F37352EE14CA88D10AAEA0BE477.png)
+        
+    
+2. 在DevEco Studio的欢迎页，在**Projects**页签下，单击**M****ore Action >** **Import Sample**按钮，导入Sample工程。
+    
+    说明
+    
+    在打开工程的情况下，可以单击**File > New > Import > Import Sample**来进行导入。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155725.25287169962574779297194741617614:50001231000000:2800:E18ACEA0A3ADB8838A0C3FD082E417E39F456A4A55233EA4236E6A9447425F04.png)
+    
+3. 选择需要导入的Sample工程，然后单击**Next**。
+4. 设置**Project name**和**Project location**，然后单击**Finish**，等待Sample工程导入完成。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155725.68426570967571942920046891010998:50001231000000:2800:BD622869C777F59FCED79F1D1D07A5CA522F24176BE25AC123DABFF06E21EB5E.png)
+    
+5. 导入Sample后，等待工程同步完成即可。
+    
+    说明
+    
+    如果网络受限，导入时会提示“Failed to connect to gitee.com port 443: Time out”连接超时错误，请[配置Git代理信息](https://developer.huawei.com/consumer/cn/doc/harmonyos-faqs/faqs-development-environment-2)。
+    # 创建意图框架
+
+更新时间: 2025-12-16 15:57
+
+DevEco Studio支持创建意图框架，帮助应用理解用户意图，并提供相应的服务和体验。
+
+## 使用约束
+
+- 支持API 11及以上工程创建意图框架；
+- 仅支持在Stage工程的HAP模块中创建意图框架。
+
+## 使用方式
+
+1. 选中模块或模块下的文件，右键单击**New > Insight Intent**，进入意图框架配置界面。
+    
+    - **Intent domain**：意图垂域。
+    - **Source entry name**：意图框架入口代码文件名。
+    - **Intent Settings**：意图配置。以MusicDomain为例：
+        
+        - **PlayMusic：**开启/关闭PlayMusic意图能力，实现播放歌曲（指定一首）**。**默认需要关联UIAbility，可在**Ability name**中下拉框选择需要关联的Ability能力。
+        - **PlayMusicList**：开启/关闭PlayMusicList意图能力，实现播放歌单（指定一整个歌单）**。**默认需要关联UIAbility，可在**Ability name**下拉框中选择需要关联的Ability能力。
+        
+        说明
+        
+        PlayMusic和PlayMusicList不支持同时关闭，请至少开启一个意图。
+        
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155725.79513479122419922523830415984287:50001231000000:2800:E75AFD750CE3E77B9DFF6AB66523C38FB36794A304534DDADB7CE3ECBAD824FA.png)
+    
+2. 点击**Finish**，完成意图框架创建。此时将在**entry > src > main > ets > insightintents**目录下生成入口代码文件；在**entry > src > main > resource > base > profile**中，生成**i****nsight_intent.json**文件，可在该文件查看当前意图框架配置的相关信息。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155725.53799567197510835067659041663734:50001231000000:2800:00C9E4D56B053E8C96B5B7BA30B98DE4ACA4D1B42289EAE9CCDE5E3F65023368.png)
+    
