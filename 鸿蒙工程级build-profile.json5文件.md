@@ -704,3 +704,181 @@ compression字段示例：
 40.     }
 41.   }
 42. }
+# 动态生成编译构建产物Hap和App的名称
+
+更新时间: 2025-12-15 21:24
+
+## 问题现象
+
+在编译构建时，能够动态生成编译产物的名称，名称中包含：编译构建时间、版本号、编译模式（debug或者release）。
+
+## 背景知识
+
+hvigor支持在hvigorfile.ts里接收部分编译配置，以实现动态配置构建配置、并使能到构建的过程与结果中。可以自定义hvigor插件，实现编译产物名称的动态配置。
+
+可以参考如下文档：[通过hook以及插件上下文动态配置构建配置](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-config-ohos-sample)。
+
+## 解决方案
+
+- 动态生成app名称实现方案。
+    1. 在工程级根目录下的build-profile.json5中定义编译构建产物app名称。
+        
+        1. {
+        2.   "app": {
+        3.     "products": [
+        4.       {
+        5.         "name": "default",
+        6.         "output": {
+        7.           "artifactName": "testAppName" _// app__产物名称_
+        8.         }
+        9.       }
+        10.     ]
+        11.   }
+        12. }
+        
+    2. 在模块级根目录下的build-profile.json5中定义编译构建产物hap名称。
+        
+        1. {
+        2.   "targets": [
+        3.     {
+        4.       "name": "default",
+        5.       "output": {
+        6.         "artifactName": "testHapName" _// hap__产物名称_
+        7.       }
+        8.     }
+        9.   ]
+        10. }
+        
+    3. 在工程级根目录下的hvigorfile.ts中自定义hvigor插件动态生成Hap和App的名称。
+        
+        1. import { appTasks, OhosAppContext, OhosPluginId } from '@ohos/hvigor-ohos-plugin';
+        2. import { hvigor, getNode } from '@ohos/hvigor'
+        
+        3. export function customPlugin(): HvigorPlugin {
+        4.   return {
+        5.     pluginId: 'customPlugin',
+        6.     context() {
+        7.       return {
+        8.         data: 'modify output name'
+        9.       };
+        10.     },
+        11.     async apply(currentNode: HvigorNode): Promise<void> {
+        12.      _ // 获取app插件的上下文对象_
+        13.       const appContext = currentNode.getContext(OhosPluginId.OHOS_APP_PLUGIN) as OhosAppContext;
+        14.      _ // 通过上下文对象获取从根目录build-profile.json5文件中读出来的obj对象_
+        15.       const buildProfileOpt = appContext.getBuildProfileOpt();
+        16.       const appJsonOpt = appContext.getAppJsonOpt();
+        17.    _   // 修改obj对象为想要的，此处举例修改app中的signingConfigs_
+        18.       const products = buildProfileOpt.app.products;
+        19.       let date = new Date();
+        20.       let formatDate = date.getFullYear().toString() + (date.getMonth() + 1).toString().padStart(2, '0') +
+        21.       date.getDate().toString().padStart(2, '0') + '_' + date.getHours().toString().padStart(2, '0') +
+        22.       date.getMinutes().toString().padStart(2, '0') + date.getSeconds().toString().padStart(2, '0');
+        23.       for (const product of products) {
+        24.         if (product.name == 'default') {
+        25.           product.output.artifactName = formatDate + '_' + appJsonOpt.app.versionName + '_' +
+        26.           product.output.artifactName + '_' + appContext.getBuildMode();
+        27.           console.info(`output app name: ${product.output.artifactName}`);
+        28.         }
+        29.       }
+        30.     _  // 将obj对象设置回上下文对象以使能到构建的过程与结果中_
+        31.       appContext.setBuildProfileOpt(buildProfileOpt);
+        32.       hvigor.nodesEvaluated(async () => {
+        33.         currentNode.subNodes((node: HvigorNode) => {
+        34.         _  // 获取hpp插件的上下文对象_
+        35.           const hapContext = node.getContext(OhosPluginId.OHOS_HAP_PLUGIN) as OhosHapContext;
+        36.         _  // 通过上下文对象获取从根目录build-profile.json5文件中读出来的obj对象_
+        37.           const hapBuildProfileOpt = hapContext?.getBuildProfileOpt();
+        38.           if (hapBuildProfileOpt != undefined) {
+        39.             const targets = hapBuildProfileOpt['targets'];
+        40.             for (const target of targets) {
+        41.               if (target.name == 'default' && target.output?.artifactName != undefined) {
+        42.                 target.output.artifactName = formatDate + '_' + appJsonOpt.app.versionName + '_' +
+        43.                 target.output.artifactName + '_' + appContext.getBuildMode();
+        44.                 console.info(`output hap name: ${target.output?.artifactName}`);
+        45.               }
+        46.             }
+        47.             hapContext.setBuildProfileOpt(hapBuildProfileOpt);
+        48.           }
+        49.         })
+        50.       })
+        51.     }
+        52.   }
+        53. }
+        
+        54. export default {
+        55.   system: appTasks, _/* Built-in plugin of Hvigor. It cannot be modified. */_
+        56.   plugins: [customPlugin()]        _/* Custom plugin to extend the functionality of Hvigor. */_
+        57. }
+        
+- 直接修改app名称实现方案。
+    
+    首先通过afterNodeEvaluate hook获取插件向node中注册的context，然后通过这个context可以修改buildOption或者操作一些任务。
+    
+    - OhosPluginId：本组件是hvigor-ohos-plugin插件id常量类。
+    - OhosAppContext：本组件是appTasks插件对外提供的上下文扩展接口，包括工程信息、product信息等。
+    - afterNodeEvaluate：为所有的node添加一个node评估后的回调函数。
+    - getBuildProfileOpt：获取当前构建的根目录下build-profile.json5文件中内容的obj对象。
+    - setBuildProfileOpt：设置当前构建的build-profile.json5文件中内容的obj对象。
+    
+    1. _//_ _动态修改App包名加版本号，工程级hvigorfile.ts_
+    2. import { appTasks, OhosPluginId } from '@ohos/hvigor-ohos-plugin';
+    3. import { hvigor } from '@ohos/hvigor'
+    
+    4. hvigor.afterNodeEvaluate((hvigorNode) => {
+    5.   const context = hvigorNode.getContext(OhosPluginId.OHOS_APP_PLUGIN)
+    6.   if (context && context.getBuildProfileOpt) {
+    7.     const buildProfile = context.getBuildProfileOpt();
+    8.     const products = buildProfile.app.products;
+    9.     for (const product of products) {
+    10.       if (product.name === context.getCurrentProduct().productBuildOpt.name) {
+    11.         product['output'] = {
+    12.           'artifactName': 'app-v1.0.3'
+    13.         }
+    14.       }
+    15.     }
+    16.     context.setBuildProfileOpt(buildProfile);
+    17.   }
+    18. })
+    
+    19. export default {
+    20.   system: appTasks, _/* Built-in plugin of Hvigor. It cannot be modified. */_
+    21.   plugins: [] _/* Custom plugin to extend the functionality of Hvigor. */_
+    22. }
+    
+- 动态生成har包名称实现方案。
+    
+    1. import { harTasks, OhosPluginId } from '@ohos/hvigor-ohos-plugin';
+    2. import { hvigor } from '@ohos/hvigor'
+    
+    3. hvigor.afterNodeEvaluate((hvigorNode) => {
+    4.   const context = hvigorNode.getContext(OhosPluginId.OHOS_HAR_PLUGIN)
+    5.   if (context && context.getBuildProfileOpt) {
+    6.     const buildProfile = context.getBuildProfileOpt();
+    7.     const targets = buildProfile.targets
+    8.     for (const target of targets) {
+    9.       if (target.name === 'default') {
+    10.         target['output'] = {
+    11.           'artifactName': 'myTestHar'
+    12.         }
+    13.       }
+    14.     }
+    15.     context.setBuildProfileOpt(buildProfile);
+    16.   }
+    17. })
+    
+    18. export default {
+    19.   system: harTasks, _/* Built-in plugin of Hvigor. It cannot be modified. */_
+    20.   plugins: [] _/* Custom plugin to extend the functionality of Hvigor. */_
+    21. }
+    
+
+## 常见FAQ
+
+Q：如何在hvigor自定义任务中使用npm包？
+
+A：在“hvigor/hvigor-config.json5”的dependencies中指定依赖，然后在自定义任务中使用。
+
+Q：如何查看编译的详细过程？
+
+A：在hvigor->hvigor-config.json5中"logging": { //"level": "info" }的注释取消，改为debug，改完后的结果为"logging": { "level": "debug" }，在编译时就可以看到编译的详细过程。
