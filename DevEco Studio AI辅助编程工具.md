@@ -3172,3 +3172,471 @@ Kit不支持导致的报错信息如：
 [设备支持类型](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-devicetype "设备支持类型")
 
 [管理模拟器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-management "管理模拟器")
+# 创建模拟器
+
+更新时间: 2025-12-16 15:58
+
+## 操作步骤
+
+1. 点击菜单栏的**Tools > Device Manager**，点击右下角的**Edit**设置模拟器实例的存储路径**Local Emulator Location**，Mac默认存储在~/.Huawei/Emulator/deployed下，Windows默认存储在C:\Users\xxx\AppData\Local\Huawei\Emulator\deployed下。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155837.30383431296821521601751937971647:50001231000000:2800:2681E9D8C5E332A45AAD8DDCDE67805F2E7336ED57DC32E693A09996E7533CD3.png "点击放大")
+    
+2. 在**Local Emulator**页签中，单击右下角的**New Emulator**按钮，创建一个模拟器。
+    
+    在模拟器配置界面，可以选择一个默认的设备模板，首次使用时请点击设备右侧的![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155837.54469843627824709649555471571571:50001231000000:2800:56D46D4F59F6433B8F09481A564D313AF4DFF0394175CE0CD821CAD364A2A719.png)下载模拟器镜像，您也可以在该界面更新或删除不同设备的模拟器镜像。单击**Edit**可以设置镜像文件的存储路径。macOS默认存储在~/Library/Huawei/Sdk下，Windows默认存储在C:\Users\xxx\AppData\Local\Huawei\Sdk下。
+    
+    说明
+    
+    如果配置界面显示异常，例如设备列表为空等，可先关闭DevEco Studio，并清理~/Library/Huawei（Windows路径为C:\Users\xxx\AppData\Local\Huawei）路径下对应DevEco Studio版本的缓存。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155837.48399077447258742845021381661797:50001231000000:2800:BBCA114EB74E538D4EF917EA2EB140A11710322D0A821C8FA9035B6253F9FEB4.png)
+    
+3. 单击**Next**，设置设备相关的参数。该功能从DevEco Studio 6.0.0 Beta1版本开始支持。
+    
+    - **Name**：设置模拟器的名称。
+    - **Screen Profile**：模拟器屏幕配置参数，可点击下拉框选择预置的机型配置，也可点击**Customize**自定义配置，在自定义配置的情况下可以对屏幕尺寸、分辨率和DPI进行修改，取值范围参考界面提示。
+        - **Screen size：**屏幕的对角线长度，单位为英寸。
+        - **Resolution**：分辨率，包括横向像素数量和纵向像素数量。
+        - **DPI**：像素密度，DPI 越高，UI组件占用的像素点越多，从而提供更精细的显示效果。
+    - **Memory**：设置模拟器的内存。
+    - **Storage**：设置模拟器的存储空间。
+    
+    确认所有参数后，点击**Finish**创建模拟器。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155837.03638161339931971803955377500457:50001231000000:2800:2B1AC2D593EBB039596DDBDD996530C2A3BFD39243F2EC95DBABEAD1AF85DD5D.png)
+    
+4. 在设备管理器页面，单击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155837.03928192550639788218523810423864:50001231000000:2800:EA4467A36B2F168A6BD418C2C3134ECBE52416E5B836896586A811DAD89D2ED2.png)启动模拟器。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155837.41534708540020853644485604372213:50001231000000:2800:FDB95347C00FC57CACF0D889090592CB410E0BAF90D393DB083C7C180C919D9D.png)
+    
+5. 单击DevEco Studio的**Run > Run'模块名称'**或![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155837.18182097114881126591351040492292:50001231000000:2800:5AA3441AC7A3646310719EFE62ACD2BAC36869B3B81257D9E3788B728B6094A1.png)。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155837.68091143927206647602032235376147:50001231000000:2800:CB7C366E0FF3A144EDD726B9E0558F300900A6E49D673C864F8B6971EFCA4A49.png)
+    
+6. DevEco Studio会启动应用/元服务的编译构建与推包，完成后应用/元服务即可运行在模拟器上。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155838.43013227424197323542543080836711:50001231000000:2800:0F6D6E1C406D0AB2143C991B6F1119453D60CB7318F5C6B929B76910604A7500.png)
+    
+
+[管理模拟器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-management "管理模拟器")
+
+[启动和关闭模拟器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-start-and-close "启动和关闭模拟器")
+# 启动和关闭模拟器
+
+更新时间: 2025-12-16 15:58
+
+在设备管理器页面，单击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155840.45387875142683932247728301003843:50001231000000:2800:B71B57CDF1A2BEF7766C8614709344BE682A409D03171D25C2858728FEF50B37.png)即可启动模拟器。模拟器启动时会默认携带上一次运行时的用户数据，包括用户上传的文件，安装的应用等。如果是新创建的模拟器，则不会携带用户数据。如果想清除上一次运行时的用户数据，点击**Actions >** ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155840.82949237282997555207066745300852:50001231000000:2800:C1E0536A11898002977FF1B093F428341B94DE9EB10B029390A1CE5BC35A5E51.png) **> Wipe User Data**。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155840.75541625950524459426785438534941:50001231000000:2800:1A3E4F8599EF1352831238C7180E28610F5CA62B8EC04EE44594F4494CB1D1F2.png "点击放大")
+
+在模拟器运行期间，可以点击**Actions >** ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155840.11077824638639791576319828003549:50001231000000:2800:FCE868AC952C0DCC34973A8CEC319647A2E6966776711C005DE0249DE87577EA.png) **> Show on Disk**显示模拟器在本地生成的用户数据。点击**Actions >** ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155840.92082699900410239225556189751708:50001231000000:2800:2EEA9A7D32564C83E2651FF0FECA79E4E858933833FB953F91DD8EE4BF32E628.png) **> Generate logs**可以生成模拟器自启动到此刻的所有日志信息。想要关闭运行时的模拟器，可以在设备管理器页面点击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155840.47307081516475048549005015361182:50001231000000:2800:49634D9A442F409A7DD64AAE2E8D6F873C4AD776E079B6BAF475E7DC76408E6A.png)，或者点击模拟器工具栏上的关闭按钮![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155840.86843067498259953860525038824222:50001231000000:2800:8860CEE5799D65489737FA7EA6EA84F9C4775D2E32FD2BBEDD628BD3F5B8323C.png)。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.45352989955589105560857734508914:50001231000000:2800:CD8C430CA26D5D63EA86504D77B8FA2F39AFF0E472233EF9AA6606C1BEC891F5.png "点击放大")
+
+模拟器关闭后，点击**Actions >** ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.77697742215449203999826711275312:50001231000000:2800:A386A33038D6494E4FBE5D001B707ADDA845141F8109BA303BBB5D3A75EE3A2C.png) **> Delete**可以删除模拟器，并清除模拟器的用户数据和配置信息。
+
+[创建模拟器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-create "创建模拟器")
+
+[使用模拟器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-use "使用模拟器")
+# 操控屏幕
+
+更新时间: 2025-12-16 15:58
+
+当模拟器运行时，您可以使用鼠标来模拟手指和设备屏幕进行交互，同时可以结合键盘来实现高级的屏幕操作，对应关系如下：
+
+|常用操作|描述|
+|:--|:--|
+|滑动屏幕|将鼠标放置屏幕上方，按住鼠标左键，在屏幕上轻扫，然后释放。|
+|拖动项目|将鼠标放置屏幕中的项目上方, 按住鼠标左键，移动项目，然后释放。|
+|单击屏幕|将鼠标放置屏幕上方，按住鼠标左键，然后释放。|
+|双击屏幕|将鼠标放置屏幕上方，快速双击鼠标左键，然后释放。|
+|长按屏幕|指向屏幕上的一个项目，按下鼠标左键，保持一段时间，然后释放。|
+|输入文字|鼠标点击输入域，随后您可以使用计算机键盘或屏幕上弹出的软键盘在模拟器中键入文字。|
+|双指缩放|Windows系统按下Control键（macOS上的Command）会弹出一个捏合手势多点触控界面。单击鼠标左键模拟按住双指，并释放鼠标左键模拟松开双指。鼠标充当第一个手指，穿过锚点是第二个手指。拖动光标以移动第一个点。|
+|垂直滑动|在屏幕上打开一个垂直菜单，使用鼠标滚轮滚动菜单项。单击菜单项可进行选择。|
+|复制粘贴|在计算机上复制一段文本后，您可以在模拟器屏幕的文本输入框内进行粘贴。可支持复制的最大文本长度为30000英文字符，超过该长度会对文本进行截断。<br><br>从DevEco Studio 6.0.1 Beta1版本开始，支持在计算机和模拟器之间互相复制粘贴。|
+
+[使用模拟器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-use "使用模拟器")
+
+[使用工具栏](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-toolbar "使用工具栏")
+# 使用工具栏
+
+更新时间: 2025-12-16 15:58
+
+工具栏上集成了模拟器的各种调试工具和控制选项，其中的扩展菜单栏包含了更加丰富的扩展功能。注意，部分工具栏按键需要在模拟器开机亮屏后才能使用。以下对工具栏的各个按键功能作简要说明：
+
+|按键|功能描述|
+|:--|:--|
+|关闭![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.21663509935017566374641978392517:50001231000000:2800:50B2D197143FBA05DB9F549AAD40ACD0C91A11069CD10F23039FA9A23B07725C.png)|关闭模拟器。|
+|最小化![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.46256104552347823048388676264126:50001231000000:2800:DF6E8D0A81E64F71EE0E8C658213640441CB0F06CC49569101A01412FF9CB062.png)|最小化模拟器窗口。|
+|更多![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.59326452345062239319256212681542:50001231000000:2800:B479B7246DA3768F54C349DB64AB17BB19E8656D23D3C80AAC2777A76F78F5A8.png)|打开侧边扩展菜单。|
+|置顶![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.48118454443520622644844195788988:50001231000000:2800:8F98F88E7A47D4E67A90B755B50D70741099A0B1E4C06BAE56354341AFFC47BF.png)|将模拟器置于所有打开窗口的顶层。|
+|左旋转![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.46347797419737119918752667015291:50001231000000:2800:10651FC0A4E67F78789C13DCD7C5911AECA6F026150B527AD6BBD83CCCB7A2FB.png)|将设备屏幕逆时针旋转90度。|
+|右旋转![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.41279959240204216614763945461961:50001231000000:2800:69F0E47C0545BFF0D67D77837049DAA859B1964049CFB2595B52880A95EEA23C.png)|将设备屏幕顺时针旋转90度。|
+|增大音量![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.16126153739314496896849585328554:50001231000000:2800:1B8A0382867D28A2E4BB2EC8E69BD9E241E47150D175D5624F5254C8D221DFFC.png)|调高设备音量，长按可持续调高设备音量。|
+|减小音量![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.63421737914068878450122077096705:50001231000000:2800:3219A65B785BD876CBF8A3123DDF0B6B279383A0A5521493DCCE036C229FB0F0.png)|调低设备音量，长按可持续调低设备音量。|
+|截屏![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.61976877405270584611438827264451:50001231000000:2800:B9A8E5A4ABBB3A27C0905AEDBD6D3AA0C022F393B90FA83843CC755CA7583D5B.png)|生成当前屏幕的截图，并将图片保存在本地计算机。|
+|返回![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.88691231485733005860349635118481:50001231000000:2800:4A142A6FEC1A10A4A74D59FE9ECDDEA119758F00C0BB1834C9007DB027106993.png)|返回上一屏幕或关闭对话框、选项菜单、通知面板或屏幕键盘。|
+|主屏![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.62755733244739721714020992322857:50001231000000:2800:DE0732C48F74752FEFA911078BB316A70ED71863E0526595A38ADA88F1EA0E46.png)|返回Home界面。|
+|最近![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.17453998518363703575452646072016:50001231000000:2800:206512A8BB5D4E45D28F4E29714B4047730B3613E6EC94AD5D137AF32FBF379E.png)|点按可打开最近使用过的应用的缩略图列表。要打开某个应用，请点按其缩略图。要从列表中删除缩略图，请向上滑动缩略图。|
+|摇一摇![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.37166147545079472622006265864708:50001231000000:2800:E6A4D2DEAD4D44D08B8D79A6AC0165E4591EC45B07B158D662AE5FBC3CB13310.png)|触发设备摇一摇操作，详情参考[摇一摇](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-more-features#section1241612419541)。|
+|多屏![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.49318518067504477075635591596875:50001231000000:2800:98A9C397EB1C18BC4C90252CBC98D050F18872C9BAC5FAD720C324D6DCE8533D.png)|打开多屏面板，可以动态增删屏幕，详情参考[模拟器多屏能力](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-more-features#section9744191415368)。|
+|电池![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.20560052187239411983148890235930:50001231000000:2800:F38AF69518B994337136C9F65B28E97198E45C0D85C00EC6F3826CABB922FDC3.png)|打开电池模拟面板，详情参考[电池](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-more-features#section169214910812)。|
+|GPS![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155841.64768973096989866355883250864631:50001231000000:2800:5B6887F5E784ACD128C6F2489CC19CF5379553F94C9A5B9D2B76C90116D3B465.png)|打开GPS模拟面板，详情参考[GPS定位](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-more-features#section81566471211)。|
+|虚拟传感器![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.03935817865615210665174642338922:50001231000000:2800:2637F90342395E39CEF1D5AD75C0E7CD3C65D6A852EFE98A05F19D930AB38574.png)|打开虚拟传感器面板，详情参考[虚拟传感器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-more-features#section830415558395)。|
+|网络代理![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.94393971268596272142071535567909:50001231000000:2800:0046425D6FB229AB757AD46936E6C007F075117D47218D99410C63758CCCE454.png)|打开网络代理面板，详情参考[网络代理](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-more-features#section206461549731)。|
+|设置![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.88847204676085137405961599363560:50001231000000:2800:313B310F3FA259F1F9B6936536C60F4040080EF6305C4111A3694641617B66D3.png)|打开设置面板。可设置模拟器主题、截屏保存路径、模拟器使用语言。|
+|Bug报告![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.25043374349595073384131327607836:50001231000000:2800:F55C75EB46745AD31C9F2FB6D213EB981F2D5184190752702876D97AB08FE70C.png)|打开Bug报告面板。点击**保存并发送**按钮可以将Bug日志传递给我们。|
+|关于![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.62454412015140312254618841147772:50001231000000:2800:3A0E2A8532FF0A81B83DCF9E60CB1045CAC43C42D29DD1536CE5A8E951258E7C.png)|打开关于面板。可以查看模拟器相关信息及许可证。|
+|展开![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.83250063686511815817375160702150:50001231000000:2800:7A32DF088B375BE51D8CC03512F433D3D6F8829BC40980E8E7DEED63763F32B5.png)|仅支持可折叠设备。切换设备形态至展开态。|
+|悬停![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.19778386455676634634488291835648:50001231000000:2800:B654EFDBD2EA8BB08D1144A987797000D90B62FAC5BFE33219E7B5897A445D3E.png)|仅支持可折叠设备。切换设备形态至悬停态，并显示折痕避让区。|
+|折叠![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.37600738704859076926985069876982:50001231000000:2800:480C47ADCCC1EA014F3575ED12F66F1F26457A566F830D3F23E252F6E4014A76.png)|仅支持可折叠设备。切换设备形态至折叠态。|
+|三屏![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.38495533488729339041373656304065:50001231000000:2800:AB5ADCC7AC11F878023E6F8133FE05B1E12EC3190ECDCB9C049830D9C58634E0.png)|仅支持三折叠设备。切换设备形态至三屏状态。|
+|双屏![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.55768012127392758098790396406985:50001231000000:2800:D172CB2EF979C5280F4579F1C92D2FD9E05CC28D7BD6850B271BC131A0A2F1F7.png)|仅支持三折叠设备。切换设备形态至双屏状态。|
+|单屏![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.32744078910350015692110996278311:50001231000000:2800:E4CF7FB4BE696773B891AE43E4CF641733FE0BAF21E43FE7BA18259E7BD9FD93.png)|仅支持三折叠设备。切换设备形态至单屏状态。|
+|横展![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.72595588656542193594425013827761:50001231000000:2800:C17C1F18D8E783E53F7761146FCFF0C14B56B076B179AC5193B20E036CCA859D.png)|仅支持折叠PC设备。切换设备形态至横展状态。|
+|竖展![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.98303786962846804653272950213679:50001231000000:2800:CFFE3E755B434B4A919B92589FC80766F1B814E9F8E6017E04A143AC4A9BDA2C.png)|仅支持折叠PC设备。切换设备形态至竖展状态。|
+|悬停![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.96503501557062918661089514395131:50001231000000:2800:67C82B065CCF81A2604E0EA98AF0F2A55E06DF2ACB0CA829F79F6DDA48E0F2E1.png)|仅支持折叠PC设备。切换设备形态至悬停状态。|
+|磁吸![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155842.36103839994607992818196774901692:50001231000000:2800:DA4390733D19BE09D10954800D223198EB4CBACDE56CD644B0C3EED00BFA15D6.png)|仅支持折叠PC设备。切换设备形态至磁吸状态。|
+
+[操控屏幕](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-control-screen "操控屏幕")
+
+[移动和缩放模拟器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-move-and-zoom "移动和缩放模拟器")
+# 移动和缩放模拟器
+
+更新时间: 2025-12-16 15:58
+
+- 移动模拟器
+    
+    您可以使用鼠标拖动模拟器到屏幕的指定位置。首先将鼠标放在屏幕边缘，当鼠标变成![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155843.83918086088653632177752927652123:50001231000000:2800:87C69A62020AFADC15582EDC5CF4075CD0C80EEF71DE7A62A15EBA8FA359E743.png)样式，按住鼠标左键并移动即可拖动模拟器。当模拟器被拖动到期望位置后，松开鼠标左键即可停止拖动。
+    
+- 缩放模拟器
+    
+    如需改变模拟器大小，将鼠标放到屏幕四角的任意一处，当鼠标变成![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155843.24675216984621571139677585717739:50001231000000:2800:85830E65160D2EBBFA7BFD7DC567DC40315581C99CD87287913BB6E3FB646BAE.png)，按住鼠标左键并移动即可缩放模拟器。当模拟器被缩放到期望大小后，松开鼠标左键即可完成缩放。
+    
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155843.76918805261974334494208571394584:50001231000000:2800:DBCF6E64FA091D8158BEB899BB4A0F4342246D60FFD6D5460494FC6C22F5EE45.gif "点击放大")
+
+[使用工具栏](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-toolbar "使用工具栏")
+
+[模拟器访问网络](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-access-network "模拟器访问网络")
+# 模拟器访问网络
+
+更新时间: 2025-12-16 15:58
+
+## 模拟器访问互联网
+
+模拟器可以通过本地计算机的网络直接访问互联网。
+
+如果连接失败请参考：[模拟器无法连接网络](https://developer.huawei.com/consumer/cn/doc/harmonyos-faqs/faqs-app-running-26) 和 [使用模拟器发起https请求时如何安装数字证书](https://developer.huawei.com/consumer/cn/doc/harmonyos-faqs/faqs-app-running-27)。
+
+说明
+
+由于模拟器的虚拟以太网一直处于连接状态，断开本地计算机的网络或模拟器内的WiFi，无法使模拟器进入网络完全断开的状态。
+
+## 模拟器访问本机网络
+
+在本地计算机上建立网络服务端，模拟器可以通过10.0.2.2:<localPort>访问本地计算机服务端，其中10.0.2.2为模拟器的默认网关。
+
+## 两个模拟器实现互相访问
+
+如果两个模拟器需要进行通信互联，请按如下步骤进行设置。
+
+1. 在本地计算机上，运行模拟器A和模拟器B，模拟器本机IP为10.0.2.15。
+2. 在模拟器B上设置服务端，使其监听10.0.2.15:<serverPort>。
+3. 在本地计算机上，设置从本地计算机localhost:<localPort>到模拟器B 10.0.2.15:<serverPort>的重定向，如：
+    
+    1. hdc -t 127.0.0.1:5555 fport tcp:<localPort> tcp:<serverPort>
+    
+    该命令中127.0.0.1:5555为模拟器B的HDC服务端口号，可通过hdc list targets命令查询。
+    
+4. 在模拟器A上，设置客户端连接到10.0.2.2:<localPort>，其中10.0.2.2为模拟器的默认网关。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155846.92661774713212520728770585230370:50001231000000:2800:E12FB1A88B06F36C1AD32B4C622521EA18CD726414A4458894E619936E1C907E.png)
+
+[移动和缩放模拟器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-move-and-zoom "移动和缩放模拟器")
+
+[安装应用程序包和上传文件](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-install-upload "安装应用程序包和上传文件")
+# 安装应用程序包和上传文件
+
+更新时间: 2025-12-16 15:58
+
+- 安装应用程序包
+    
+    您可以将本地的HAP包安装到模拟器上，只需要将本地的HAP包拖动到屏幕上即可进行安装，支持一次性拖拽安装多个HAP包。模拟器也支持安装包含HSP文件的应用，只需要将HSP和HAP一起拖动到屏幕上即可进行安装。
+    
+    您也可以在命令行窗口进入DevEco Studio安装目录的sdk\default\openharmony\toolchains目录下，使用hdc app install命令安装包。安装完成后，可在应用列表里查看已安装的应用。
+    
+- 上传文件
+    
+    您可以将本地文件上传到模拟器中，只需要将文件拖动至模拟器屏幕上即可。模拟器支持批量上传文件，上传的文件存放在虚拟设备的/storage/media/100/local/files/Docs/Download/目录下。您可以在模拟器上打开**文件管理 > 我的手机 > 下载**查看上传的文件。
+    
+    此外，您也可以在命令行窗口进入DevEco Studio安装目录的sdk\default\openharmony\toolchains目录下，使用hdc file send命令上传文件。
+    
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155847.06483076962319642185540586301903:50001231000000:2800:9E5703F296E14D2A733270AAD96A24EAEB22B88126878A7E8A79579E079D7F78.gif "点击放大")
+
+[模拟器访问网络](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-access-network "模拟器访问网络")
+
+[更多的扩展能力](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-more-features "更多的扩展能力")
+# 更多的扩展能力
+
+更新时间: 2025-12-16 15:58
+
+## 电池
+
+您可以在模拟器上模拟不同电池状态。在扩展菜单栏上点击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.83588355371687866031538329170839:50001231000000:2800:25FC922E0B57604D9CD21C10EB7E65472924B249F93DD1B9E4DA111ED45DDEC9.png)打开电池模拟界面。在该界面，您可以手动输入或拖动滑块来改变电量百分比，也可以点击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.56774037411692397777708515559080:50001231000000:2800:3E99B3D0873DC0B112D7B12D1A196AF676B0DEF6FB56D9F3180E1232584B973A.png)切换电池的充电/放电状态。电池具有以下三种充电状态：
+
+- ENABLE：开启充电按钮，此时正在充电且电量没充满。
+- NONE：关闭充电按钮，此时停止充电。
+- FULL：开启充电按钮，且电量为100%，电量已充满。
+
+在应用中，您可以通过[@ohos.batteryInfo](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/js-apis-battery-info)模块查询模拟器的剩余电量以及充电状态。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.91019226651472789785983545025498:50001231000000:2800:7726E48BA938D0DCD51A74312C86405A333A6DA34C77070B5684A7C6BA657630.gif "点击放大")
+
+## GPS定位
+
+模拟器可以模拟设备所处的位置。您可以打开扩展菜单，并点击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.00855201678657489456710003688164:50001231000000:2800:B52045C1BAF0E22163F87D31FA1C8BB5444A7B291D41826CED29DCA1C1F9D73F.png)进行位置信息的设置。模拟器提供以下方式的GPS位置模拟：
+
+- 手动设置：在该界面，您可以手动输入此时所处位置的经度，纬度，海拔以及方位角。您也可以通过点击城市下拉框，快速定位到所选城市。
+- 导入：在导入界面您可以注入一段时间内的连续位置信息。点击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.27459413559106024130400789288946:50001231000000:2800:755BC4B662DA28619E91951A67C61BF4E68C7AA2B7018A9E893BA46A5C688719.png)导入本地的GPX文件，点击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.44674710004427689282688093374923:50001231000000:2800:F9D4628CD3515A37E75163CD92B2132E367E08DFE23291392FCB5DC422A7EBD3.png)即可开始模拟GPX文件中的轨迹。此外，您还可以选择不同回放速率来改变移动的速度。
+- 场景模拟：如果没有本地的GPX文件，您可以在场景模拟界面使用我们预置的GPX文件。我们在模拟器内部预置了户外跑步、户外骑行、驾驶导航三种场景的GPX文件，点击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.46080697471064992138567210229113:50001231000000:2800:7BB67D93C39E535C5D9F7F7F5867A3785114971544199A8CDCBD65A8B6529F95.png)即可开始轨迹模拟。
+    
+    说明
+    
+    场景模拟功能仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
+    
+
+在应用中，您可以通过[@ohos.geoLocationManager](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/js-apis-geolocationmanager)模块获取模拟器的位置信息。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.76459915823527676332366984716798:50001231000000:2800:30DC333BB5DABA95BA461B8AC5F81980CF9C00870AA4B71686329577F919F6B9.gif "点击放大")
+
+## 虚拟传感器
+
+模拟器提供了虚拟传感器来模拟硬件传感器的能力。在扩展菜单上点击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.64899767607111340267297408326935:50001231000000:2800:F58144C48A501CFCBFAA4AD3FED56820E149AA1BED75680FE149D8D4E77A6448.png)打开虚拟传感器界面。在该界面，您可以调节不同的传感器来测试您的应用，使用[@ohos.sensor](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/js-apis-sensor)模块监听传感器值的变化。模拟器提供以下虚拟传感器：
+
+- 计步传感器：用于测量步数，对应的SensorId为PEDOMETER
+- 环境温度传感器：用于测量环境温度，对应的SensorId为AMBIENT_TEMPERATURE
+- 湿度传感器：用于测量湿度，对应的SensorId为HUMIDITY
+- 环境光传感器：用于测量光照强度，对应的SensorId为AMBIENT_LIGHT
+
+您可以拖动滑动条或者直接在文本框输入来改变不同传感器的值。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.98634733768950606071970755699668:50001231000000:2800:444BA6E8B306D9C0854ECD49CA7E9CF3BFF91EB0DEC22A183D887CBB42F5C8D4.png)
+
+## 网络代理
+
+说明
+
+该功能仅支持中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）。
+
+模拟器可以将网络请求代理到代理服务器，利用代理服务器去请求目标服务器。从而满足以下开发场景：
+
+- 开发者处于内网环境，希望通过设置代理的方式访问外网；
+- 开发者已经在DevEco Studio上配置了网络代理，不希望在模拟器上重复配置代理；
+- 开发者需要将网络请求代理到三方抓包工具，方便查看请求信息。
+
+您可以打开扩展菜单，并点击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.08783215015365711728827124249475:50001231000000:2800:7C3F3FD1ACE23AA90F876185D1151981CEADC7B9214B221EB2A4B5880DA2F905.png)进行代理的配置。模拟器提供以下三种代理模式：
+
+- 使用DevEco Studio代理：读取并应用DevEco Studio上的网络代理配置，在**DevEco Studio > Preferences/Settings**（Windows上为**File >Settings**） **> Appearance&Behavior>System Settings>HTTP Proxy**下（模拟器不支持**HTTP Proxy**下的**no proxy for**功能），无需在模拟器上重复配置。同时模拟器会去监听DevEco Studio侧代理配置的更改，从而进行代理配置的同步。当DevEco Studio选择的是自动代理模式或者是SOCKS代理方式时，模拟器不支持，会切换到无代理模式。
+- 无代理：不使用代理，即发送网络请求时会直接去请求目标服务器。
+- 手工配置代理：配置代理服务器的信息，将网络请求代理到代理服务器上。
+
+以上的代理配置需要点击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.16834350973058136041275876997301:50001231000000:2800:E2C37304FA1CC474A02A5C204CD060E185F184AC92D36B13FDEAE18F40E979BA.png)按钮生效，同时可以通过点击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155849.72544323005297522676023730743920:50001231000000:2800:B2CCAF1757459687ADD0A20E69B0F0EA441359BAB7FDA77E0A1FD52D1F953739.png)按钮对当前的代理配置进行校验。在发起https请求时，需要安装网站的数字证书，请参考[使用模拟器发起https请求时如何安装数字证书](https://developer.huawei.com/consumer/cn/doc/harmonyos-faqs/faqs-app-running-27)。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.37218535466320548125916927435006:50001231000000:2800:CAADA3F7A968834D2C72E9C718BC96B1D24ADED79035CB7AC173C3980D25377A.png "点击放大")
+
+## 摇一摇
+
+模拟器可以模拟用户对设备的摇一摇操作。点击工具栏上的![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.72823897720999084883981350875345:50001231000000:2800:49095CA572C963AEBE2419867EC49C04C57A1AC0CB6474B48BFE8700A5E986E4.png)，您可以模拟时长为1s的摇一摇操作。您的应用可以通过[@ohos.sensor](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/js-apis-sensor)模块监听加速度传感器变化，当加速度传感器的变化量达到设定阈值时，触发摇一摇对应的业务逻辑。
+
+说明
+
+仅phone和tablet类型的设备支持摇一摇。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.41877007485531449479355536406480:50001231000000:2800:BD3B1ECB22E6469223FDAE5C792B2FCE8377E1513743A0AB9A32D7F3AD555685.gif "点击放大")
+
+## 音频输入
+
+模拟器当前仅支持Audio Kit（音频服务）提供的音频输入能力，您可以使用本地计算机上的麦克风设备向模拟器中传输音频数据。使用步骤如下：
+
+1. 首先，请确保本地计算机已连接上麦克风设备。
+2. 应用调用Audio Kit提供的API接口（如AudioCapturer、OHAudio）开始接收音频数据。
+3. 使用本地麦克风进行语音输入。
+
+模拟器上的应用在调用相关API时，推荐使用如下格式的音频流信息格式，以保证清晰流畅的音质。
+
+|音频流信息|推荐值|
+|:--|:--|
+|samplingRate（采样率）|48000Hz|
+|channels（通道数）|2|
+|sampleFormat（采样格式）|带符号的16位整数|
+|encodingType（编码格式）|PCM编码|
+
+## 相机
+
+从DevEco Studio 5.1.0 Release版本开始，模拟器支持Camera Kit（相机服务）提供的预览和拍照能力，您可以使用本地计算机上的摄像头在模拟器上实现拍照和预览功能。
+
+1. 请确保本地计算机上存在可用的摄像头，不支持通过USB连接的摄像头。
+2. 应用调用Camera Kit提供的API接口，通过电脑摄像头展现拍摄画面、拍照。
+    
+    说明
+    
+    使用模拟器开发相机时，[相机配置信息](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/arkts-apis-camera-i#profile)请使用：RGBA_8888格式、1280 * 720分辨率。
+    
+
+## 表冠
+
+穿戴模拟器可以模拟表冠功能。
+
+- 鼠标单击表冠：根据当前所在页面，单击后跳转到表盘或桌面。
+- 鼠标双击表冠：进入多任务管理界面。
+- 在屏幕上使用鼠标滚轮：模拟表冠旋转。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.22397957369867372442588360631099:50001231000000:2800:3D92A26D179F7FFEA0AC97B9A54F4BE3A948C8D429C7F86F5CAA7CE70674324D.png "点击放大")
+
+## 模拟器多屏能力
+
+从DevEco Studio 6.0.0 Beta1版本开始，模拟器可以使用多屏能力，基于同一个镜像创建不同分辨率、DPI的多屏幕模拟器，满足开发者快速测试不同分辨率、DPI场景下的UI布局等需求。
+
+### 使用约束
+
+- 模拟器旋转功能和多屏功能互斥，不能同时使用。
+- 仅phone类型的模拟器支持多屏能力。从DevEco Studio 6.0.1 Beta1版本开始，新增tablet类型的模拟器支持多屏能力。
+- 多屏状态下扩展屏不支持使用画中画功能。
+
+### 添加屏幕
+
+1. 启动模拟器，点击工具栏的多屏按钮![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.10076681331612615574267191110975:50001231000000:2800:FB7DEBDA6E19A3C93A88F24F11C78B8C76982FBEBDD9863D2472222F9E56D689.png)，打开多屏界面。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.13097097203651472610502974348949:50001231000000:2800:F2C163267DA7E63771F72EB4424CBB09169A0364D038B89BD90CAF83EF5C1C8B.png)
+    
+2. 点击**添加**，可以选择Mate系列、Pura系列、Nova系列等产品型号，点击**应用**即可添加对应的屏幕。
+    
+    默认情况下，所有的屏幕是整体拖动和缩放的，如需单独拖动和缩放单个屏幕，请勾选界面上的**每个副屏在独立窗口中显示**，并点击**应用**按钮。从DevEco Studio 6.0.1 Beta1版本开始支持。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.53721356903129545722497838116751:50001231000000:2800:9524513F9B27CC647CF32E30A2C4F6D6DFF1A91D8E90E6D686D2EB405CBA54B6.png)
+    
+3. 如需在多个屏幕上同时启动应用，请按界面提示，将module.json5中的launchType字段配置为multiton，具体请参考[UIAbility组件启动模式](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/uiability-launch-type)。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.09721199952821173111333763401806:50001231000000:2800:79EBC679DEAD074F985289B4E4BA69721C0770F3EEAF247D3DFA07D659956536.png)
+    
+
+### 修改屏幕参数
+
+如需自定义屏幕分辨率、DPI或尺寸，可以在多屏界面上直接修改屏幕参数，取值范围参考界面提示，修改后点击**应用**。
+
+- **Width**：横向像素数量。
+- **Height**：纵向像素数量。
+- **DPI**：像素密度，DPI 越高，UI组件占用的像素点越多，从而提供更精细的显示效果。
+- **Size：**屏幕的对角线长度，单位为英寸。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.90949041405167859971799360350425:50001231000000:2800:CECCF8B70D7F0149670AE3C7B2CD9385228D9219BC515D8EE45CD45B9EA2DA0D.png)
+
+### 使用扩展屏
+
+- 点击扩展屏，再点击模拟器工具栏返回按键![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.89159388485956520914556485235434:50001231000000:2800:A7F83843E32420B09F03D10B81FD0231093B85D4098F382C26E960BE7730EA59.png)，即可返回上一级目录。按键主屏![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.15957499857358626287719518516556:50001231000000:2800:A9A7764DB50F7377C28AA33E2B84CDC7643B101D48F0B0AAAC8A2F3497984332.png)和最近![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.25690866702747356368943476706831:50001231000000:2800:F5CC61F527426E31F3AB85E505170BF11636DB452CE7D82CAF52B6C99B37EE02.png)暂不支持在扩展屏上使用。
+- 从扩展屏底部上滑，可直接清除应用。
+
+### 删除屏幕
+
+点击多屏界面上的删除按钮![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.43465778359783314162434915260830:50001231000000:2800:8D6F892320B2DFCA9D232AE96E6CC408DF537B6A9C5CF9303FD6F6D6E7597B15.png)，再点击**应用**，即可删除一块屏幕。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155850.35866261167146874803677728281634:50001231000000:2800:6482A91051AF3DAF9771B0AB0CB5C31E3E301AE1CEE3C59AC24B573AC444FD1D.png)
+
+[安装应用程序包和上传文件](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-install-upload "安装应用程序包和上传文件")
+
+[修改模拟器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-modify "修改模拟器")
+# 通过命令行使用模拟器
+
+更新时间: 2025-12-16 15:58
+
+除了在DevEco Studio的设备管理中使用模拟器外，开发者还可以通过Emulator命令行使用模拟器，支持Windows和macOS平台。
+
+## 环境准备
+
+Emulator命令行在DevEco Studio安装目录的tools/emulator目录下，有两种执行命令的方式。
+
+- 方式一：在命令行终端中进入emulator目录下，执行命令。
+- 方式二：配置环境变量后，在任意目录下执行命令。
+    - Windows环境变量设置方法：
+        
+        在系统或者用户的PATH变量中，添加Emulator的路径{DevEco Studio安装目录}/tools/emulator。
+        
+    - macOS环境变量设置方法：
+        
+        打开命令行终端，执行以下命令。
+        
+        1. export PATH={DevEco Studio安装目录}/tools/emulator:$PATH
+        
+
+## 前置条件
+
+在使用命令行之前，需要先通过DevEco Studio创建模拟器，记录模拟器实例路径和模拟器镜像路径，具体请参考[创建模拟器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-create)。
+
+## 模拟器命令
+
+说明
+
+- 如果模拟器名称或路径中包含特殊字符、空格等，需要对名称或路径添加引号。
+- 下列命令以Windows环境为例，如果在macOS上运行，并且未配置环境变量，需要在Emulator前添加./，例如./Emulator -help。
+
+### 获取帮助
+
+1. # 查看所有可执行的命令
+2. Emulator -help
+
+### 启动模拟器
+
+1. Emulator -hvd {模拟器名称} -path {模拟器实例路径} -imageRoot {模拟器镜像路径} -hdcport {hdc端口号}
+
+**表1** 参数列表
+|参数|参数说明|
+|:--|:--|
+|-hvd|必选参数，模拟器名称。|
+|-path|必选参数，模拟器实例路径。|
+|-imageRoot|必选参数，模拟器镜像路径。|
+|-hdcport|可选参数，hdc端口号，支持范围10000-16555。从DevEco Studio 6.0.1 Beta1版本开始支持。|
+
+**示例：**
+
+1. Emulator -hvd "my Emulator" -path D:\Emulator -imageRoot D:\Sdk
+
+说明
+
+如果在DevEco Studio中使用模拟器时需要登录开发者账号，那么该版本的模拟器无法通过命令行启动，请在DevEco Studio界面上启动。
+
+### 关闭模拟器
+
+1. Emulator -stop {模拟器名称}
+
+**示例：**
+
+1. Emulator -stop "my Emulator"
+
+### 收集模拟器日志
+
+模拟器在启动状态下，可以收集日志。
+
+1. # {日志zip文件存放路径}需要指定.zip后缀
+2. Emulator -logZip {模拟器名称} -logPath {日志zip文件存放路径}
+
+**示例：**
+
+1. Emulator -logZip "my Emulator" -logPath D:\EmulatorLog\20250730.zip
+
+### 查看模拟器实例
+
+从DevEco Studio 6.0.0 Beta3版本开始支持。
+
+1. Emulator -list
+
+### 查看模拟器版本
+
+1. Emulator -version
+
+[自定义屏幕配置](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-customize-screen-configuration "自定义屏幕配置")
+
+[模拟器错误码](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-faqs "模拟器错误码")
