@@ -1507,3 +1507,2447 @@ Plain Text
 5. **历史工程转换**：可以将已有的非端云工程转换为端云一体化工程，方法是创建一个同Bundle name的端云工程，然后用历史工程的  Application  目录替换新工程的  Application  目录。
 
 通过以上步骤，您就可以完成一个完整的端云一体化HarmonyOS应用的开发、调试和发布准备。这种模式极大地简化了云端开发的复杂性，让开发者可以更专注于业务逻辑创新。
+[开发](https://lbs.amap.com/api)  HarmonyOS NEXT 地图SDK  开发指南  在地图上绘制  绘制点标记
+
+# 绘制点标记最后更新时间: 2025年11月17日
+
+点标记用来在地图上标记任何位置，例如用户位置、车辆位置、店铺位置等一切带有位置属性的事物。
+
+## 绘制默认 Marker
+
+绘制 Marker 的代码如下
+
+```
+let options: MarkerOptions = new MarkerOptions();
+options.setPosition(new LatLng(39.992520, 116.336170));
+let marker = aMap.addMarker(options);
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1712734659242_e8448.png)
+
+#### Marker 常用属性
+
+|   |   |
+|---|---|
+|名称|说明|
+|setPosition /getPosition|设置/获取标记位置在地图上的经纬度值|
+|setTitle /getTitle|设置/获取标记的标题|
+|setSnippet/getSnippet|设置/获取标记的文字描述|
+|setDraggable/getDraggable|设置/获取标记是否可拖拽|
+|setVisible/getVisible|设置/获取点标记是否可见|
+|setAnchor|设置标记的锚点比例。锚点标记图标接触地图平面的点。图标的左顶点为（0,0）点，右底点为（1,1）点，默认为（0.5,1.0）|
+
+## 绘制自定义 Marker
+
+可根据实际的业务需求，在地图指定的位置上添加自定义的 Marker。MarkerOptions 是设置 Marker 参数变量的类，自定义 Marker 时会经常用到。
+
+下面以自定义 Marker 图标为例进行代码说明：
+
+```
+// add Marker
+let options: MarkerOptions = new MarkerOptions();
+let bitmapDes = await BitmapDescriptorFactory.fromRawfilePath(globalContext, "location_map_gps_locked.png");
+if (bitmapDes) {
+  options.setIcon(bitmapDes);
+}
+options.setTitle('标记'); //设置标记的标题
+options.setSnippet('详细信息') //设置标记的文字描述
+options.setPosition(new LatLng(39.992520, 116.336170));
+let marker1 = this.aMap?.addMarker(options);
+```
+
+提示
+
+设置 Marker 的图标时，相同图案 icon 的 Marker 最好使用同一个BitmapDescriptor对象以节省内存空间，
+
+## 绘制多个 Marker
+
+```
+let options1: MarkerOptions = new MarkerOptions().setPosition(new LatLng(39.992520, 116.336170)).setIcon(new BitmapDescriptor($rawfile('location_map_gps_locked.png'), 'location_map_gps_locked', 100, 100));
+let options2: MarkerOptions = new MarkerOptions().setPosition(new LatLng(40.02380181476392, 116.43124537956452)).setIcon(new BitmapDescriptor($rawfile('location_map_gps_locked.png'), 'location_map_gps_locked', 100, 100));
+let markerOptionsList: ArrayList<MarkerOptions> = new ArrayList<MarkerOptions>()
+markerOptionsList.add(options1);
+markerOptionsList.add(options2);
+let markers = aMap.addMarkers(markerOptionsList, false);
+```
+
+## 绘制动画效果 Marker
+
+自地图 SDK V2.2.4 版本起，SDK 提供了给 Marker 设置动画的方法，具体实现方法如下：
+
+```
+let animation: Animation = new ScaleAnimation(0, 1, 0, 1);
+const linearCurve: ICurve = { interpolate: (interpolate: number) => interpolate };
+animation.setInterpolator(linearCurve);
+//整个移动所需要的时间
+animation.setDuration(1000);
+//设置动画
+this.growMarker.setAnimation(animation);
+//开始动画
+this.growMarker.startAnimation();
+```
+
+## 移除 Marker
+
+```
+aMap.removeOverlay(marker.getId());
+```
+
+## 可触发的 Marker 事件
+
+#### Marker 点击事件
+
+```
+aMap.setOnMarkerClickListener((marker: Marker): boolean => {
+  // marker 被点击的 marker 对象
+  // 返回true表示已处理点击事件，不再继续传递；返回false则继续传递
+  console.log(marker.getId());
+  return true
+})
+```
+
+#### Marker 拖拽事件
+
+```
+//当 marker 开始被拖动时回调此方法, 这个 marker 的位置可以通过 getPosition() 方法返回。
+// 这个位置可能与拖动的之前的 marker 位置不一样。
+// marker 被拖动的 marker 对象。
+const onMarkerDragStart = (marker: Marker): void => {
+  // 处理拖动开始
+  // marker 被拖动的 marker 对象
+  // marker 的位置可以通过 getPosition() 方法返回
+}
+const onMarkerDrag = (marker: Marker): void => {
+  // 处理拖动中
+  // marker 被拖动的 marker 对象
+  // marker 的位置可以通过 getPosition() 方法返回
+}
+const onMarkerDragEnd = (marker: Marker): void => {
+  // 处理拖动结束
+  // marker 被拖动的 marker 对象
+  // marker 的位置可以通过 getPosition() 方法返回
+}
+
+// marker 拖动事件监听接口实例
+const dragListener: OnMarkerDragListener = new OnMarkerDragListener(onMarkerDragStart, onMarkerDrag, onMarkerDragEnd);
+
+//给 aMap 设置标记拖动监听器 
+aMap.setOnMarkerDragListener(dragListener)
+```
+
+## 关于 InfoWindow 的设置
+
+InfoWindow 是点标记的一部分，默认的 Infowindow 只显示 Marker 对象的两个属性，一个是 title 和另一个 snippet。
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1712735251437_174a9.png)
+
+#### 常用属性
+
+|   |   |   |
+|---|---|---|
+|名称|参数类型|说明|
+|setInfoWindowEnable(enabled)|boolean|设置 Marker 覆盖物的 InfoWindow 是否允许显示,默认为 true<br><br>true：允许显示,false：不允许显示|
+|setInfoWindowOffset(offsetX, offsetY)|number|设置 Marker 覆盖物的 InfoWindow 相对 Marker 的偏移<br><br>offsetX：InfoWindow 相对原点的横向像素偏移量，单位：像素<br><br>offsetY：InfoWindow 相对原点的纵向像素偏移量，单位：像素|
+|autoOverturnInfoWindow(autoOverturn)|boolean|设置Marker覆盖物的InfoWindow是否自动旋转<br><br>true：表示自动翻转,false：表示不自动翻转|
+|showInfoWindow()||显示 InfoWindow|
+|hideInfoWindow()||隐藏 InfoWindow|
+# 绘制线最后更新时间: 2025年11月04日
+
+地图上绘制的线是由 Polyline 类定义实现的，线由一组经纬度（LatLng 对象）点连接而成。
+
+## 绘制一条线
+
+与点标记一样，Polyline 的属性操作集中在 PolylineOptions 类中，添加一条线的示例如下：
+
+```
+let options: PolylineOptions = new PolylineOptions();
+options.add(new LatLng(39.925539, 116.279037)); //追加一个点到线段的坐标集合
+options.add(new LatLng(39.925539, 116.520285));
+aMap.addPolyline(options);
+```
+
+也可以使用addAll方法追加一批点到线段的坐标集合
+
+```
+let options: PolylineOptions = new PolylineOptions();
+let polylineOptionsList :ArrayList<LatLng> = new ArrayList<LatLng>()
+polylineOptionsList.add(new LatLng(39.925539, 116.279037))
+polylineOptionsList.add(new LatLng(39.925539, 116.520285))
+options.addAll(polylineOptionsList)
+aMap?.addPolyline(options);
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1712735500736_12bbe.png)
+
+## 绘制虚线
+
+示例如下
+
+```
+let options: PolylineOptions = new PolylineOptions();
+options.add(new LatLng(39.925539, 116.279037));
+options.add(new LatLng(39.925539, 116.520285));
+aMap.addPolyline(options.setDottedLine(true).setColor(1125058090).setWidth(20));
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1712735519329_8ec87.png)
+
+## 绘制线常用方法
+
+|   |   |
+|---|---|
+|名称|说明|
+|setColor|设置线段的颜色，需要传入32位的 ARGB 格式。默认：黑色( 0xff000000)|
+|setDottedLine|设置是否画虚线，默认：false（画实线）画实线|
+|setLineCapType|设置 Polyline 尾部形状|
+|setLineJoinType|设置 Polyline 连接处形状|
+|setTransparency|设置线段的透明度 0~1，默认：1（表示不透明）表示不透明|
+|setVisible|设置线段的可见性。默认：可见|
+|setWidth|设置线段的宽度，默认：10|
+|setZIndex|设置线段Z轴的值|
+|setGeodesic|设置线段是否为大地曲线，默认：false（不画大地曲线）|
+# 绘制弧线最后更新时间: 2025年10月10日
+
+地图上绘制的线是由 Arc 类定义实现的，线由一组三个经纬度坐标（LatLng对象）点连接而成圆弧。
+
+## 第一步，绘制弧线
+
+```
+let x = 39.904979;
+let y = 116.40964;
+// 绘制一个经过乌鲁木齐经过北京到哈尔滨弧形
+for (let i = 0; i < 10; i++) {
+  let x_ = 0;
+  let y_ = 0;
+  x_ = Math.random() * 0.5 - 0.25;
+  y_ = Math.random() * 0.5 - 0.25;
+  let x_2 = 0;
+  let y_2 = 0;
+  x_2 = Math.random() * 0.5 - 0.25;
+  y_2 = Math.random() * 0.5 - 0.25;
+  let x_3 = 0;
+  let y_3 = 0;
+  x_3 = Math.random() * 0.5 - 0.25;
+  y_3 = Math.random() * 0.5 - 0.25;
+  // 数据准备
+  let arcOptions: ArcOptions = new ArcOptions().point(
+    new LatLng(x+x_, y+y_), new LatLng(x+x_3,y+y_3),
+    new LatLng(x+x_2, y+y_2)).setStrokeColor(ColorUtil.colorStringToNumber("#ff0000"))
+  // 绘制弧线并保存句柄
+  this.arcList.push(this.aMap.addArc(arcOptions));
+}
+```
+
+## 第二步，修改弧线属性
+
+HeatmapTileProvider 是生成热力图的核心类，一些基础用法可参考如下代码：
+
+```
+// 通过句柄修改弧线的属性
+this.arcList.forEach((item: Arc | undefined) =>{
+  const colorNow = item?.getStrokeColor()
+  if(colorNow == ColorUtil.colorStringToNumber('#00ff00')){
+    item?.setStrokeColor(ColorUtil.colorStringToNumber('#ff0000'))
+  }else{
+    item?.setStrokeColor(ColorUtil.colorStringToNumber('#00ff00'))
+  }
+})
+```
+
+效果图如下：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758608086230_8266e.png)
+# 绘制面最后更新时间: 2025年11月04日
+
+地图上的面分为圆形和多边形两种
+
+## 绘制圆
+
+圆形由 Circle 类定义实现，构造一个圆形需要确定它的圆心和半径，具体的示例代码如下：
+
+```
+let circleOptions: CircleOptions = new CircleOptions();
+    circleOptions.setRadius(15000); //设置圆的半径，单位:米
+    circleOptions.setCenter(new LatLng(39.996441, 116.411146)); //设置圆心经纬度坐标
+    circleOptions.setFillColor(0xffff0000); //设置圆的填充颜色
+    circleOptions.setStrokeColor(0xff00ff00); //设置圆的边框颜色
+
+    let circleHoleOptions: CircleHoleOptions = new CircleHoleOptions();
+    circleHoleOptions.setRadius(5000);
+    circleHoleOptions.setCenter(new LatLng(39.996441, 116.411146));
+    circleOptions.addHoles(circleHoleOptions); //添加空心洞的配置项
+    aMap.addCircle(circleOptions)
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1712735656407_edcf9.png)
+
+## 绘制多边形
+
+多边形是由 Polygon 类定义的一组在地图上的封闭线段组成的图形，它由一组 LatLng 点按照传入顺序连接而成的封闭图形。与绘制线类似，面的属性操作集中在 PolygonOptions 中。
+
+```
+let polygonOptions: PolygonOptions = new PolygonOptions();
+polygonOptions.add(new LatLng(39.781892, 116.293413));
+polygonOptions.add(new LatLng(39.787600, 116.391842));
+polygonOptions.add(new LatLng(39.733187, 116.417932));
+polygonOptions.add(new LatLng(39.704653, 116.338255));
+polygonOptions.setFillColor(0xFFFF0000);
+
+let polygonHoleOptions: PolygonHoleOptions = new PolygonHoleOptions;
+polygonHoleOptions.add(new LatLng(39.781892 - 0.02, 116.293413 + 0.02));
+polygonHoleOptions.add(new LatLng(39.787600 - 0.02, 116.391842 - 0.02));
+polygonHoleOptions.add(new LatLng(39.733187 + 0.02, 116.417932 - 0.02));
+polygonHoleOptions.add(new LatLng(39.704653 + 0.02, 116.338255 + 0.02));
+let list: ArrayList<PolygonHoleOptions> = new ArrayList();
+list.add(polygonHoleOptions);
+polygonOptions.setHoleOptions(list);
+aMap.addPolygon(polygonOptions);
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1712735831426_97f74.png)
+# 绘制图片图层最后更新时间: 2025年09月29日
+
+## 简介
+
+定义在地图上绘制一个 Ground 覆盖物（一张图片以合适的大小贴在地图上的图片层）
+
+- 位置： 可以通过设置中心点或者图片区域来确定图片层的位置。
+    
+- 图片： 覆盖物的贴图。
+    
+- 角度： 图片从正北开始，顺时针方向旋转，中心点为锚点。
+    
+- Z轴 ： Z轴是控制地图覆盖物（overlay）之间的绘制层次的参数。这个参数能够控制Circles、Polygons、Polyline的绘制层次，但不会影响marker。Z轴数值越大的覆盖物（overlay）将会绘制在更上层。如果两个及两个以上覆盖物（overlay）的Z轴数值相同，则最后的绘制结果是随机的 。覆盖物（overlay）的默认为Z轴为0。
+    
+- 可见：这个属性表示了覆盖物是否可以显示在地图上。默认为可见。
+    
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758607654947_83b50.jpeg)
+
+## 展示Ground覆盖物
+
+#### 第1步 设置覆盖物属性
+
+```
+let options: GroundOverlayOptions = new GroundOverlayOptions();
+
+let texture = await BitmapDescriptorFactory.fromRawfilePath(globalContext, 'groundoverlay.png');
+
+if (texture) {
+  options.image(texture); // 设置图片
+}
+options.position(new LatLng(39.936713,116.386475), 1); // 根据位置和宽设置ground覆盖物
+let southwest: LatLng = new LatLng(39.935029, 116.384377)
+let northeast: LatLng = new LatLng(39.939577, 116.388331)
+let bounds: LatLngBounds = new LatLngBounds(southwest, northeast)
+options.positionFromBounds(bounds); // 根据矩形区域设置ground覆盖物的位置
+options
+  .anchor(0.5, 0.5) // 设置图片的对齐方式
+  .setTransparency(0.7) // 设置ground覆盖物的透明度
+```
+
+#### 第2步 添加覆盖物
+
+```
+// 添加一个groundOverlay
+aMap.addGroundOverlay(options);
+```
+
+## 绘制Ground覆盖物常用方法
+
+|   |   |
+|---|---|
+|名称|说明|
+|anchor(anchorU: number, anchorV: number)|设置图片的对齐方式|
+|position(location: LatLng \| undefined, width: number, height?: number)|根据位置和宽高设置ground覆盖物|
+|positionFromBounds(paramLatLngBounds: LatLngBounds)|根据矩形区域设置ground覆盖物的位置|
+|setBearing(bearing: number)|设置ground覆盖物从正北顺时针的角度|
+|setZIndex(zIndex: number)|设置ground覆盖物的z轴指数|
+|visible(visible: boolean)|设置ground覆盖物是否可见|
+|setTransparency(transparency: number)|设置ground覆盖物的透明度|
+# 绘制海量点图层最后更新时间: 2025年09月29日
+
+在地图上加载显示海量点，支持高达十万级点位的流畅显示。
+
+## 第 1 步：初始化 MapView 并获取 AMap 实例
+
+通过 MapViewComponent 创建地图视图，并在回调中获取底层 AMap 对象，用于后续操作。
+
+```
+@Builder
+buildMapMultiPointOverlay() {
+  Stack() {
+    MapViewComponent({ mapViewName: Constants.MAP_MULTIPOINTOVERLAY_FUNC })
+  }
+  .width('100%')
+  .height('100%')
+}
+
+private mapViewCreateCallback = (mapview?: MapView, mapViewName?: string) => {
+  if (!mapview || mapViewName !== Constants.MAP_MULTIPOINTOVERLAY_FUNC) return;
+
+  this.mapView = mapview;
+  this.mapView.onCreate();
+
+  this.mapView.getMapAsync(async (map: AMap) => {
+    this.aMap = map;
+    await this.setupMultiPointOverlay(); 
+  });
+};
+```
+
+## 第 2 步：准备点位数据源
+
+支持两种方式加载点位数据：
+
+#### 方式一：从本地文件加载（推荐用于真实数据）
+
+将经纬度数据以 CSV 格式保存在 resources/rawfile/point10w.txt 文件中，每行格式为：
+
+经度,纬度 116.397026,39.90976 116.401,39.912 ...
+
+```
+private async loadPointItemsFromFile(): Promise<MultiPointItem[]>
+```
+
+#### 方式二：动态生成测试数据（用于调试）
+
+可生成指定数量的随机点，中心坐标为中国北京附近。
+
+```
+const testPoints = this.generateTestPoints(10000);
+```
+
+## 第 3 步：创建 MultiPointOverlay 图层
+
+配置 MultiPointOverlayOptions，设置图标、锚点及初始点集。
+
+```
+const overlayOptions = new MultiPointOverlayOptions();
+overlayOptions.icon(bitmapDescriptor);        // 设置点图标
+overlayOptions.anchor(0.5, 0.5);              // 图标中心对齐
+overlayOptions.setMultiPointItems([]);        // 初始为空数组
+this.multiPointOverlay = this.aMap.addMultiPointOverlay(overlayOptions);
+```
+
+其中：
+
+|   |   |
+|---|---|
+|参数|说明|
+|icon(BitmapDescriptor)|点的显示图标，建议尺寸较小以提升性能|
+|anchor(x, y)|图标锚点位置，(0.5, 0.5) 表示居中对齐|
+|setMultiPointItems(items)|设置要渲染的点列表|
+
+## 第 4 步：加载并渲染点数据
+
+调用 loadAndRenderPoints() 方法异步加载文件中的点数据，并更新到 MultiPointOverlay。
+
+流程如下：
+
+1. 读取 rawfile/point10w.txt 文件内容；
+    
+2. 解析每一行为 LatLng 坐标；
+    
+3. 构造 MultiPointItem 并绑定自定义数据；
+    
+4. 保存至 this.allPointItems（用于点击检测）；
+    
+5. 调用 multiPointOverlay.setItems(items) 更新视图；
+    
+6. 启用图层 .setEnable(true)。
+    
+
+## 第 5 步：实现地图点击交互
+
+监听地图点击事件，在所有点中查找距离最近的一个，并用红色 Marker 高亮显示。
+
+```
+this.aMap.setOnMapClickListener(async (latLng: LatLng) => {
+  let closestItem: MultiPointItem | null = null;
+  let minDistSq = 0.1; // 阈值
+
+  for (const item of this.allPointItems) {
+    const dLat = item.getLatLng().latitude - latLng.latitude;
+    const dLon = item.getLatLng().longitude - latLng.longitude;
+    const distSq = dLat * dLat + dLon * dLon;
+    if (distSq < minDistSq) {
+      minDistSq = distSq;
+      closestItem = item;
+    }
+  }
+
+  if (closestItem) {
+    // 显示/移动红色 Marker
+    if (!this.marker) {
+      const redIcon = await BitmapDescriptorFactory.defaultMarkerASync(globalContext, BitmapDescriptorFactory.HUE_RED);
+      const options = new MarkerOptions();
+      options.setIcon(redIcon);
+      this.marker = this.aMap?.addMarker(options);
+    }
+    this.marker.setPosition(closestItem.getLatLng());
+    this.marker.setZIndex(1000); // 置顶显示
+  }
+});
+```
+
+## 其他：生命周期管理
+
+在页面销毁时释放资源：
+
+```
+aboutToDisappear(): void {
+  this.isDestroy = true;
+  MapViewManager.getInstance().unregisterMapViewCreatedCallback(this.mapViewCreateCallback);
+  if (this.mapView) {
+    this.mapView.onDestroy();
+    this.mapView = undefined;
+    this.aMap = undefined;
+  }
+}
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758607787480_fb5c8.png)
+# 点平滑移动最后更新时间: 2025年09月29日
+
+功能说明：根据输入的关键点和时间参数，实现点的平滑移动效果。
+
+使用场景：可应用到展示车辆行驶轨迹、用户移动轨迹等场景。
+
+效果示例：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758607919295_18284.jpeg)
+
+#### 如何实现点平滑移动
+
+MovingPointOverlay 代码位置：
+
+src/main/ets/com/amap/api/utils/overlay/MovingPointOverlay.ets
+
+#### 相关接口
+
+- 设置平滑移动的经纬度数组：public setPoints(List points):void
+    
+- 设置平滑移动的总时间：public setTotalDuration(int duration):void
+    
+- 设置移动Marker的图标 ：public setDescriptor(BitmapDescriptor descriptor):void
+    
+- 开始平滑移动 ：public startSmoothMove():void
+    
+- 停止平滑移动 ：public stopMove():void
+    
+
+代码调用示例:
+
+```
+// 读取轨迹点
+    let points:ArrayList<LatLng> = this.readLatLngs();
+
+    // 实例 MovingPointOverlay 对象
+    if(this.smoothMarker == null && this.mAMap) {
+      // 设置 平滑移动的 图标
+      let descriptor = BitmapDescriptorFactory.fromRawfilePathSync(this.context,"icon_car.png")
+      if(descriptor){
+        this.marker = this.mAMap.addMarker(new MarkerOptions().setIcon(descriptor).setAnchor(0.5,0.5));
+        if(this.marker)
+          this.smoothMarker = new MovingPointOverlay(this.mAMap, this.marker);
+      }
+    }
+
+    // 取轨迹点的第一个点 作为 平滑移动的启动
+    let drivePoint:LatLng = points[0];
+    let pair = SpatialRelationUtil.calShortestDistanceLatLng(points, drivePoint);
+    if(pair && pair[0])
+      points[pair[0]]=drivePoint;
+    let subList = points.subArrayList(pair?.[0], points.length);
+
+    // 设置轨迹点
+    this.smoothMarker?.setPoints(subList);
+    // 设置平滑移动的总时间  单位  秒
+    this.smoothMarker?.setTotalDuration(40);
+    this.smoothMarker?.startSmoothMove();
+```
+# 绘制热力图最后更新时间: 2025年11月17日
+
+## 绘制热力图
+
+热力图功能提供将业务数据展示在地图上，可以给使用者直观描述一个区域的人员，车辆等事物的热度情况。
+
+#### 第一步，组织热力图数据
+
+以下以本地模拟数据为例，简单说明 SDK 热力图需要的是经纬度点数组/列表数据。
+
+示例代码如下：
+
+```
+// 第一步： 生成热力点坐标列表
+let latlngs: LatLng[] = [];
+let x = 39.904979;
+let y = 116.40964;
+
+for (let i = 0; i < 1; i++) {
+  let x_ = 0;
+  let y_ = 0;
+  x_ = Math.random() * 0.5 - 0.25;
+  y_ = Math.random() * 0.5 - 0.25;
+  latlngs.push(new LatLng(x + x_, y + y_))
+}
+```
+
+#### 第二步，构建热力图 HeatmapTileProvider
+
+HeatmapTileProvider 是生成热力图的核心类，一些基础用法可参考如下代码：
+
+```
+// 第二步： 构建热力图 TileProvider
+let builder: HeatMapBuilder = new HeatMapBuilder();
+builder.setData(latlngs);
+// 设置热力图绘制的数据
+builder.setGradient(HeatMapController.ALT_HEATMAP_GRADIENT); // 设置热力图渐变，有默认值 DEFAULT_GRADIENT，可不设置该接口
+// Gradient 的设置可见参考手册
+// 构造热力图对象
+let heatmapTileProvider: HeatmapTileProvider | undefined = builder.build();
+```
+
+#### 第三步，绘制热力图图层
+
+通过 TileOverlay 绘制热力图，方法如下：
+
+```
+// 第三步： 构建热力图参数对象
+let tileOverlayOptions: TileOverlayOptions = new TileOverlayOptions();
+if (heatmapTileProvider) {
+  tileOverlayOptions.tileProvider(heatmapTileProvider); // 设置瓦片图层的提供者
+}
+// 第四步： 添加热力图
+this.tileOverlay = this.mAMap?.addTileOverlay(tileOverlayOptions);
+```
+
+a
+
+效果图如下：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758607988774_09dd8.png)
+
+## 绘制蜂窝热力图
+
+蜂窝热力图功能提供将业务数据展示在地图上，以蜂窝的形式给使用者直观展示热度情况。
+
+#### 第一步，组织蜂窝热力图数据
+
+以下以本地模拟数据为例，简单说明 SDK 热力图需要的是经纬度点数组/列表数据。
+
+示例代码如下：
+
+```
+// 第一步： 生成热力点坐标列表，数据格式（119.518251,35.683927,1159）
+let heatMapStr = Utils.uint8ArrayToString(HoneycombHeatMapController.readFileContentsFromAssets(getContext(), "heatmap/heatmap_honey.data"));
+let heatMapStrs = heatMapStr.split("\n");
+let weightlatlngs = new ArrayList<WeightedLatLng>();
+for (let str of heatMapStrs) {
+  let dataItem = str.split(",");
+  if (dataItem && dataItem.length == 3) {
+    weightlatlngs.add(new WeightedLatLng(new LatLng(Number.parseFloat(dataItem[1]), Number.parseFloat(dataItem[0])), Number.parseFloat(dataItem[2])))
+  }
+}
+let colors = [
+  ColorUtil.colorStringToNumber("#ecda9a"),
+  ColorUtil.colorStringToNumber("#efc47e"),
+  ColorUtil.colorStringToNumber("#f3ad6a"),
+  ColorUtil.colorStringToNumber("#f7945d"),
+  ColorUtil.colorStringToNumber("#f97b57"),
+  ColorUtil.colorStringToNumber("#f66356"),
+  ColorUtil.colorStringToNumber("#ee4d5a")
+];
+let startPoints = new Array<number>(colors.length);
+for(let i = 0;i < startPoints.length; i++) {
+  startPoints[i] = i * 1.0 / startPoints.length
+}
+```
+
+#### 第二步，构建热力图 HeatMapLayerOptions
+
+HeatMapLayerOptions 是生成热力图的核心类，一些基础用法可参考如下代码：
+
+```
+// 第二步： 构建蜂窝热力图 HeatMapLayerOptions
+let heatMapLayerOptions = new HeatMapLayerOptions();
+
+// 带权重的经纬度
+heatMapLayerOptions.weightedData(weightlatlngs);
+
+// 指定颜色和颜色变化索引
+let gradient = new Gradient(colors, startPoints);
+heatMapLayerOptions.gradient(gradient);
+// heatMapLayerOptions.gradient(HeatMapLayerOptions.DEFAULT_GRADIENT);
+
+// 大小和间隔
+heatMapLayerOptions.size(6000);
+heatMapLayerOptions.gap(300);
+
+// 最大最小缩放级别
+heatMapLayerOptions.setMinZoom(5);
+heatMapLayerOptions.setMaxZoom(19);
+
+// 整个覆盖物的透明度
+heatMapLayerOptions.opacity(0.85);
+
+// 热力图类型为蜂窝
+heatMapLayerOptions.setType(HeatMapLayerOptions.TYPE_HEXAGON);
+
+// 控制在底图文字的上面，默认底图文字级别是0
+heatMapLayerOptions.setZIndex(1);
+```
+
+#### 第三步，绘制蜂窝热力图图层
+
+通过 HeatMapLayerOptions 绘制热力图，方法如下：
+
+```
+this.layer = this.mAMap?.addHeatMapLayer(heatMapLayerOptions);
+```
+
+#### 第四步，注册地图点击事件，回调位置的热力情况
+
+通过 设置点击事件，获取经纬度信息，通过经纬度获取位置的热力情况，方法如下：
+
+```
+// 获取指定位置的热力情况
+this.mAMap?.setOnMapClickListener((latLng: LatLng) => {
+  if (this.layer && this.mAMap && latLng) {
+    let item: HeatMapItem | undefined = this.layer.getHeatMapItem(latLng);
+    if (item) {
+      let stringBuffer = ""
+      stringBuffer += "热力中心："
+      stringBuffer += (item.getCenter() + "\n");
+      stringBuffer += "热力值："
+      stringBuffer +=  (item.getIntensity() + "\n");
+      let indexes = "";
+      for(let integer of item.getIndexes()) {
+        indexes += integer + ",";
+      }
+      stringBuffer += ("热力索引：" + indexes + "\n");
+      stringBuffer += ("数据数量：" + item.getIndexes().length);
+      this.updateHeatItemTv(stringBuffer.toString());
+    } else {
+      this.updateHeatItemTv("未找到热力信息");
+    }
+
+
+  }
+})
+```
+
+a
+
+效果图如下：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763089128689_df426.png)
+# 绘制3D模型最后更新时间: 2025年11月17日
+
+```
+public async addGL3DModel(): Promise<void> {
+    // vertexData string
+    let options = new GL3DModelOptions();
+    let data = globalContext.resourceManager.getRawFileContentSync('obj/logistic_detail_3d_truck.obj');
+    let decoder = util.TextDecoder.create('utf-8');
+    let content = decoder.decodeWithStream(new Uint8Array(data));
+
+    options.angle(50)
+        .position(new LatLng(39.955436, 116.335769))
+        .setAltitude(1000)
+        .setFixDisplaySize(100, 100)
+        .setFixedDisplaySizeEnabled(true)
+        .setModelFixedLength(1000)
+        .setVisible(true)
+        .setZIndex(5)
+            // .setSnippet("gl3dmodel")
+            // .setTitle("amap3d")
+        .vertexData(content)
+
+    let texture = await BitmapDescriptorFactory.fromRawfilePath(globalContext,
+        'obj/babel_order_logistic_detail_3d_truck_transport.png');
+    if (texture) {
+        options.textureDrawable(texture);
+    }
+
+    this.gl3DModel = this.aMap?.addGL3DModel(options);
+    this.gl3DModel?.showInfoWindow();
+}
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763088367918_883dd.png)
+# 轨迹纠偏最后更新时间: 2025年11月17日
+
+轨迹记录、纠偏类需求强烈建议您使用高德开放平台提供的猎鹰SDK或者猎鹰服务API，后续版本的地图SDK会逐步停止轨迹纠偏接口的维护。
+
+## 简介
+
+轨迹纠偏可帮助您将您记录的行车轨迹点进行抽稀、纠偏操作，将轨迹匹配到道路上，提供平滑的绘制效果，并计算行驶里程（地图SDK V2.2.5以上支持）；也可以通过结合高德定位帮助您记录真实行车轨迹（地图SDK V2.2.5版本以上支持）。
+
+值得注意的是，目前该功能只支持将驾车轨迹纠正到路上。
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763088792929_539f7.png)
+
+## 结合定位轨迹纠偏（自2.2.5版本起支持）
+
+### 第 1 步 初始化LBSTraceClient
+
+开始记录轨迹，每2s记录一次轨迹，每隔5个点合并请求一次纠偏并回调。
+
+```
+this.traceClient = LBSTraceClient.getInstance(getContext());
+```
+
+### 第 2 步 开启轨迹纠偏
+
+```
+this.traceClient.startTrace(this.traceStatusListener);//开始采集,需要传入一个状态回调监听。
+```
+
+### 第 3 步 解析返回结果
+
+```
+  traceStatusListener: TraceStatusListener = {
+     onTraceStatus:(locations?:ArrayList<TraceLocation>,rectifications?:ArrayList<LatLng>,errorInfo?:string)=>{
+     //locations 定位得到的轨迹点集，rectifications 纠偏后的点集，errorInfo 轨迹纠偏错误信息
+    }
+  }
+```
+
+### 第 4 步 结束轨迹纠偏
+
+```
+this.traceClient.stopTrace()//在不需要轨迹纠偏时（如行程结束），可调用此接口结束纠偏
+```
+
+## 自有轨迹纠偏
+
+### 第 1 步，初始化LBSTraceClient
+
+```
+this.mTraceClient = new LBSTraceClient(getContext())
+```
+
+### 第 2 步，构造轨迹点数据 List
+
+需要按照 TraceLocation 定义好的格式构造轨迹点 List。
+
+TraceLocation 的信息通过下表中的方法设置：
+
+需要您注意的是，
+
+1、必填信息的缺失会导致纠偏失败，非必填信息的缺失会在一定程度影响最终纠偏结果，因此尽可能的多提供以下信息是确保绘制一条平滑轨迹的最佳方案。建议使用HarmonyOS定位SDK中高精度，且有速度和角度返回的位置点数据。
+
+2、传入的经纬度点，必须是国内的坐标，轨迹纠偏功能不支持国外的坐标点的纠偏。
+
+|   |   |   |   |
+|---|---|---|---|
+|方法名|参数说明|返回值说明|方法效果|
+|setLongitude(mLongitude:number)|mLongitude：经度，必填。|void|设置经度。|
+|setLatitude(mLatitude:number)|mLatitude：纬度，必填。|void|设置纬度。|
+|setSpeed(mSpeed:number)|mSpeed：速度，必填。|void|设置速度。|
+|setBearing(mBearing:number)|mBearing：方向角，必填。|void|设置方向角。|
+|setTime(mTime:number)|mTime：时间，必填。|void|设置时间。|
+
+### 第 3 步，进行轨迹纠偏
+
+轨迹纠偏支持传入多种坐标系（高德、GPS原始坐标以及百度）的轨迹点数据，并且可支持多条数据同时纠偏。进行轨迹纠偏的方法如下：
+
+|   |   |   |   |
+|---|---|---|---|
+|方法名|参数说明|返回值说明|方法效果|
+|queryProcessedTrace|lineID： 用于标示一条轨迹，支持多轨迹纠偏，如果多条轨迹调起纠偏接口，则lineID需不同。<br><br>locations ： 一条轨迹的点集合。建议为一条行车GPS高精度定位轨迹。<br><br>type： 轨迹坐标系，目前支持高德 LBSTraceClient.TYPE_AMAP;<br><br>GPS LBSTraceClient.TYPE_GPS;百度 LBSTraceClient.TYPE_BAID。<br><br>listener ： 轨迹纠偏回调|void|进行轨迹纠偏，返回纠偏后的轨迹数据。|
+
+```
+this.mTraceClient.queryProcessedTrace(this.mSequenceLineID,this.mTraceList,this.mCoordinateType,this.traceListener)
+```
+
+### 第 4 步，获取纠偏后的数据
+
+#### 1、实现 TraceListener 监听器。
+
+TraceListener 监听器作为轨迹纠偏方法的参数传入后，通过其回调函数，获取纠偏点数据、轨迹的总距离。
+
+#### 2、轨迹纠偏结束回调。
+
+只要当前轨迹点纠偏全部成功就一定会进入 onFinished 回调。该回调方法的说明如下：
+
+|   |   |   |   |
+|---|---|---|---|
+|方法名|参数说明|返回值说明|方法效果|
+|onFinished|lineID：用于标示一条轨迹，支持多轨迹纠偏，如果多条轨迹调起纠偏接口，则lineID需不同。<br><br>linepoints：整条轨迹经过纠偏后点的经纬度集合。<br><br>distance：轨迹经过纠偏后总距离，单位米。<br><br>waitingtime：该轨迹中间停止时间，以GPS速度为参考，单位秒。|void|传入的轨迹点数据全部纠偏完成时回调。|
+
+#### 3、轨迹纠偏失败回调。
+
+当传入的轨迹点数据出现以下几种情况，会因为参数错误导致纠偏失败，进入 onRequestFailed 回调。
+
+- 网络不连通。
+    
+- 原始轨迹数据只有1个点。
+    
+
+该回调方法的说明如下
+
+|   |   |   |   |
+|---|---|---|---|
+|方法名|参数说明|返回值说明|方法效果|
+|onRequestFailed|lineID：用于标示一条轨迹，支持多轨迹纠偏，如果多条轨迹调起纠偏接口，则lineID需不同。<br><br>errorInfo：轨迹纠偏失败原因。|void|轨迹纠偏发生错误时回调。|
+
+#### 4、轨迹纠偏过程回调。
+
+我们采用分段的方式处理轨迹数据，按分段的顺序，每完成一段轨迹数据的纠偏就会进 onTraceProcessing 回调。
+
+采用分段方式有以下两个优势：
+
+- 当轨迹点数据量大的时候，可减少处理整条轨迹数据的等待时间。
+    
+- 当有部分的轨迹数据不符合要求导致纠偏失败时，通过过程回调可看到已完成部分的结果。
+    
+
+该回调方法的说明如下：
+
+|   |   |   |   |
+|---|---|---|---|
+|方法名|参数说明|返回值说明|方法效果|
+|onTraceProcessing|lineID：用于标示一条轨迹，支持多轨迹纠偏，如果多条轨迹调起纠偏接口，则lineID需不同。<br><br>index：一条轨迹分割为多个段,标示当前轨迹段索引。<br><br>segments：一条轨迹分割为多个段，segments标示当前轨迹段经过纠偏后经纬度点集合。|void|一条轨迹分割为多个段，按索引顺序回调其中一段。|
+
+```
+  private traceListener:TraceListener = {
+    /**
+     * 轨迹纠偏失败回调
+     */
+    onRequestFailed:(lineID: number, errorInfo: string)=>{
+      this.getUIContext().getPromptAction().showToast({ message: errorInfo})
+      if (this.mOverlayList.hasKey(lineID)) {
+        const overlay = this.mOverlayList.get(lineID)
+        overlay.setTraceStatus(TraceOverlay.TRACE_STATUS_FAILURE)
+        this.setDistanceWaitInfo(overlay)
+      }
+    },
+    /**
+     * 轨迹纠偏过程回调
+     */
+    onTraceProcessing:(lineID: number,index: number,segments: ArrayList<LatLng>)=>{
+      if (!segments) {
+        return
+      }
+      if (this.mOverlayList.hasKey(lineID)) {
+        const overlay = this.mOverlayList.get(lineID)
+        overlay.setTraceStatus(TraceOverlay.TRACE_STATUS_PROCESSING)
+        overlay.add(segments)
+      }
+
+    },
+    /**
+     * 轨迹纠偏结束回调
+     */
+    onFinished:(lineID: number,linepoints:ArrayList<LatLng>, distance:number,waitingtime: number)=>{
+      this.getUIContext().getPromptAction().showToast({ message: 'onFinished'})
+      if (this.mOverlayList.hasKey(lineID)) {
+        const overlay = this.mOverlayList.get(lineID)
+        overlay.setTraceStatus(TraceOverlay.TRACE_STATUS_FINISH)
+        overlay.setDistance(distance)
+        overlay.setWaitTime(waitingtime)
+        this.setDistanceWaitInfo(overlay)
+      }
+    }
+  }
+```
+
+### 注意事项
+
+1、作为地图SDK的功能，需要设置正确的高德Key才能保证轨迹纠偏功能的正确使用。
+
+2、若您对纠偏结果存疑（例如：距离计算不准确，轨迹不正确等等），可将您的轨迹点转成标准的 JSON 格式文件，通过工单提交给我们（注意：我们只接受转成我们能验证格式的轨迹点数据）。
+
+      a）标准的 JSON 格式文件可通过 http://tool.oschina.net/codeformat/json 转化。
+
+      b）检查参数的字段名称是否与下表吻合，不一样请修改成一样。
+
+|   |   |
+|---|---|
+|经度|lon|
+|纬度|lat|
+|时间（单位：毫秒）|loctime|
+|速度（单位：Km/h）|speed|
+|角度（单位：度）|bearing|
+
+ c）通过工单提交给我们
+ # 控件交互最后更新时间: 2025年11月17日
+
+## 地图logo控件
+
+高德地图的 logo 默认在左下角显示，不可以移除，但支持调整到固定位置。设置的方法是：
+
+```
+public setLogoPosition(position: number): void //设置“高德地图”Logo的位置
+```
+
+|   |   |
+|---|---|
+|名称|位置说明|
+|AMapOptions.LOGO_POSITION_BOTTOM_CENTER|Logo位置（地图底部居中）|
+|AMapOptions.LOGO_POSITION_BOTTOM_LEFT|Logo位置（地图左下角）|
+|AMapOptions.LOGO_POSITION_BOTTOM_RIGHT|Logo位置（地图右下角）|
+|AMapOptions.LOGO_MARGIN_LEFT|LOGO边缘MARGIN（左边）|
+|AMapOptions.LOGO_MARGIN_BOTTOM|LOGO边缘MARGIN（底部）|
+|AMapOptions.LOGO_MARGIN_RIGHT|LOGO边缘MARGIN（右边）|
+
+## 指南针控件
+
+指南针用于向 App 端用户展示地图方向，默认不显示。通过如下接口控制其显示：
+
+```
+public setCompassEnabled(enabled: boolean): void //设置指南针是否可见
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763087640303_d199c.jpeg)
+
+## 比例尺控件
+
+比例尺控件（最大比例是1：10m,最小比例是1：1000Km），位于地图右下角，可控制其显示与隐藏，设置的方法是：
+
+```
+public setScaleControlsEnabled(enabled: boolean): void //控制比例尺控件是否显示
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763087668619_6a878.png)
+# 手势交互最后更新时间: 2025年11月17日
+
+地图 SDK 提供了多种手势供用户与地图之间进行交互，如缩放、旋转、拖拽、倾斜。这些手势默认开启，如果想要关闭某些手势，可以通过 UiSettings 类提供的接口来控制手势的开关。
+
+## 手势方法说明
+
+#### 以下是控制手势生效与否的方法：
+
+|   |   |
+|---|---|
+|名称|说明|
+|setZoomGesturesEnabled(boolean)|设置缩放手势是否可用|
+|setScrollGesturesEnabled(boolean)|设置拖拽手势是否可用|
+|setRotateGesturesEnabled(boolean)|设置旋转手势是否可用|
+|setTiltGesturesEnabled(boolean)|设置倾斜手势是否可用|
+|setGestureScaleByMapCenter(boolean)|设置是否以地图中心点缩放|
+|setAllGesturesEnabled(boolean)|设置所有手势是否可用|
+
+#### 以下是检测手势是否生效的方法：
+
+|   |   |
+|---|---|
+|名称|说明|
+|isZoomGesturesEnabled()|缩放手势是否可用|
+|isScrollGesturesEnabled()|拖拽手势是否可用|
+|isRotateGesturesEnabled()|旋转手势是否可用|
+|isTiltGesturesEnabled()|倾斜手势是否可用|
+|isGestureScaleByMapCenter()|是否地图中心点缩放|
+
+## 缩放手势
+
+缩放手势可改变地图的缩放级别，地图响应的手势如下：
+
+- 双击地图可以使缩放级别增加1 (放大)
+    
+- 两个手指捏/拉伸
+    
+
+以下是控制缩放手势开启关闭的代码：
+
+```
+aMap.getUiSettings()?.setZoomGesturesEnabled(boolean);
+```
+
+## 拖拽手势
+
+您可以用手指拖动地图四处滚动（平移）或用手指滑动地图（动画效果），也可以禁用或开启平移（滑动）手势。
+
+以下介绍控制拖拽手势开启关闭的方法，示例代码如下：
+
+```
+aMap.getUiSettings()?.setScrollGesturesEnabled(boolean);
+```
+
+## 旋转手势
+
+您可以用两个手指在地图上转动，可以旋转地图，也可以禁用旋转手势。
+
+以下介绍控制旋转手势开启关闭的方法，示例代码如下：
+
+```
+aMap.getUiSettings()?.setRotateGesturesEnabled(boolean);
+```
+
+## 倾斜手势
+
+用户可以在地图上放置两个手指，移动它们一起向下或向上去增加或减小倾斜角，也可以禁用倾斜手势。
+
+以下是控制倾斜手势开启关闭的代码：
+
+```
+aMap.getUiSettings()?.setTiltGesturesEnabled(boolean);
+```
+
+## 地图中心点缩放
+
+用户可以设置地图缩放位置，可以以中心点缩放或在缩放位置缩放。
+
+以下是控制地图中心点缩放开启关闭的代码：
+
+```
+aMap.getUiSettings()?.setGestureScaleByMapCenter(boolean);
+```
+
+## 所有手势是否可用
+
+用户可以统一设置地图是否支持手势交互。
+
+以下是控制所有手势是否可用的代码：
+
+```
+aMap.getUiSettings()?.setAllGesturesEnabled(boolean);
+```
+
+## 指定屏幕中心点的手势操作
+
+在对地图进行手势操作时（滑动手势除外），可以指定屏幕中心点后执行相应手势。
+
+指定屏幕中心点的接口如下，在AMap类中：
+
+```
+/**
+ * 设置屏幕上的某个像素点为地图中心点。
+ * <p>使用该方法设置后，地图将以所设置的屏幕坐标点为中心进行旋转、倾斜。同时， {@link #moveCamera(CameraUpdate) } 方法也将会以此坐标点为中心进行设置。
+ *
+ * @param x 屏幕像素点x轴坐标。
+ * @param y 屏幕像素点y轴坐标。
+ * @since v2.2.0
+ */
+public setPointToCenter(x: number, y: number): void
+```
+
+开启以中心点进行手势操作的接口如下，在UiSettings类中：
+
+```
+/**
+ * 设置是否以地图中心点缩放 <br>
+ * 注：优先级低于{@link AMap#setPointToCenter(int, int)}
+ *
+ * @param isGestureScaleByMapCenter true:以地图中心的进行缩放,false:不以地图中心的进行缩放
+ * @since 1.0.0
+ */
+public setGestureScaleByMapCenter(isGestureScaleByMapCenter: boolean): void
+```
+# 调用方法交互最后更新时间: 2025年11月04日
+
+方法交互的概念是从程序角度出发提出的。地图 SDK 提供了很多与地图交互的接口方法，例如：改变地图显示的区域（即改变地图中心点）、改变地图的缩放级别、设置地图的显示范围等。
+
+## 改变地图旋转角度
+
+方法交互的核心方法均依赖 AMap 类提供的这两个方法：animateCamera（带有动画效果），moveCamera（直接改变状态，没有动画效果）。
+
+#### 带有动画效果：
+
+```
+aMap.animateCamera(CameraUpdateFactory.changeBearing(90)) //逆时针旋转90°
+```
+
+#### 不带有动画效果：
+
+```
+aMap.moveCamera(CameraUpdateFactory.changeBearing(90)) //逆时针旋转90°
+```
+
+## 改变地图的中心点
+
+如果想改变地图中心点，可以通过 changeLatLng 方法，示例代码如下：
+
+```
+aMap.moveCamera(CameraUpdateFactory.changeLatLng(new LatLng(39.897743, 116.321349)))
+```
+
+## 改变地图的缩放级别
+
+如果想改变地图的缩放级别，可以通过 zoomTo 方法，示例代码如下：
+
+```
+aMap.moveCamera(CameraUpdateFactory.zoomTo(12))
+```
+
+地图的缩放级别一共分为 18 级，从 3 到 20。数字越大，展示的图面信息越精细。
+
+|   |   |
+|---|---|
+|名称|说明|
+|zoomIn()|放大地图缩放级别，在当前地图显示的级别基础上加1|
+|zoomOut()|缩小地图缩放级别，在当前地图显示的级别基础上减1|
+|zoomTo(zoom)|设置地图缩放级别|
+|newLatLngZoom(latLng, zoom)|设置地图中心点以及缩放级别|
+|zoomBy(amount)|根据给定的增量调整地图级别，即在现有地图级别上加上该增量值|
+
+## 设置地图显示范围
+
+如果想将地图的显示范围设置在规定屏幕内，可以通过 newLatLngBounds 方法，示例代码如下：
+
+```
+aMap.moveCamera(CameraUpdateFactory.newLatLngBounds(new LatLngBounds(new LatLng(39.889863, 116.354148), new LatLng(39.946781, 116.437982)), 20))
+```
+
+除上述介绍的方法外，地图 SDK 支持：给地图设置一个新的状态、修改地图倾斜度等，具体可以查阅 [参考手册](https://a.amap.com/lbs-dev-yuntu/static/reference/harmonyosnext-sdk/map/docs/index.html)。
+# 地图截屏功能最后更新时间: 2025年09月29日
+
+地图 SDK 支持对当前屏幕显示区域进行截屏，可以对地图、覆盖物（包含信息窗口）、Logo进行截取屏幕，这其中不包括地图控件、Toast窗口。
+
+详细示例如下：
+
+```
+this.aMap?.getMapScreenShot({
+  onMapScreenShot: (mapScreenShot: PixelMap | undefined, status: number) => {
+
+    this.image = mapScreenShot;
+    let buffer: string = "";
+    if (mapScreenShot) {
+      buffer += "截屏成功 ";
+    } else {
+      buffer += "截屏失败 ";
+    }
+    if (status != 0) {
+      buffer += "地图渲染完成，截屏无网格";
+    } else {
+      buffer += "地图未渲染完成，截屏有网格";
+    }
+
+    promptAction.showToast({ message: `${buffer}` });
+
+  }
+});
+```
+# 获取POI数据最后更新时间: 2025年09月15日
+
+## 简介
+
+高德提供了千万级别的 POI（Point of Interest，兴趣点）。在地图表达中，一个 POI 可代表一栋大厦、一家商铺、一处景点等等。通过POI搜索，完成找餐馆、找景点、找厕所等等的功能。地图 SDK 的搜索功能提供多种获取 POI 数据的接口，下文将逐一介绍。
+
+## 关键字检索POI
+
+根据关键字检索适用于在某个城市搜索某个名称相关的POI，例如：查找北京市的“肯德基”。
+
+#### 1，创建回调监听
+
+```
+private poiSearchListener: OnPoiSearchListener = {
+  onPoiSearched: (pageResult: PoiResult | undefined, errorCode: number) => {
+    if (errorCode === AMapException.CODE_AMAP_SUCCESS) { 
+    }
+  },
+  onPoiItemSearched: (poiItem: PoiItem | undefined, errorCode: number) => {}
+};
+```
+
+#### 2，构建查询对象
+
+```
+this.poiQuery = new PoiQuery(this.keyword, "",  this.city);
+this.poiSearch.setQuery(this.poiQuery);
+```
+
+#### 3，构造 PoiSearch 对象，并设置监听
+
+```
+this.poiSearch = new PoiSearch(this.context!, undefined);
+this.poiSearch.setOnPoiSearchListener(this.poiSearchListener);
+```
+
+#### 4，调用 PoiSearch 的 searchPOIAsyn() 方法发送请求
+
+```
+this.poiSearch.searchPOIAsyn();
+```
+
+#### 5，通过回调接口 onPoiSearched 解析返回的结果，将查询到的 POI 以绘制点的方式显示在地图上。
+
+#### 6，说明
+
+1）可以在回调中解析result，获取POI信息。
+
+2）result.getPois()可以获取到PoiItem列表，Poi详细信息可参考PoiItem类。
+
+3）若当前城市查询不到所需POI信息，可以通过result.getSearchSuggestionCitys()获取当前Poi搜索的建议城市。
+
+4）如果搜索关键字明显为误输入，则可通过result.getSearchSuggestionKeywords()方法得到搜索关键词建议。
+
+5）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）
+
+效果图：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930156326_83b50.jpeg)
+
+## 周边检索POI
+# 获取地址描述数据最后更新时间: 2025年09月15日
+
+## 地理编码（地址转坐标）
+
+#### 地理编码基本介绍
+
+地理编码，又称为地址匹配，是从已知的结构化地址描述到对应的经纬度坐标的转换过程。该功能适用于根据用户输入的地址确认用户具体位置的场景，常用于配送人员根据用户输入的具体地址找地点。
+
+结构化地址的定义： 首先，地址肯定是一串字符，内含国家、省份、城市、城镇、乡村、街道、门牌号码、屋邨、大厦等建筑物名称。按照由大区域名称到小区域名称组合在一起的字符。一个有效的地址应该是独一无二的。注意：针对大陆、港、澳地区的地理编码转换时可以将国家信息选择性的忽略，但省、市、城镇等级别的地址构成是不能忽略的。
+
+注意：该功能可以返回一部分POI数据内容，但核心能力是完成结构化地址到经纬度的转换。
+
+- POI关键字搜索，是根据关键词找到现实中存在的地物点（POI）。
+    
+- 地理编码是依据当前输入，根据标准化的地址结构（省/市/区或县/乡/村或社区/商圈/街道/门牌号/POI）进行各个地址级别的匹配，以确认输入地址对应的地理坐标，只有返回的地理坐标匹配的级别为POI，才会对应一个具体的地物（POI）。
+    
+
+根据给定的地理名称和查询城市，返回地理编码的结果列表。显示效果如图：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930296840_4a47a.png)
+
+实现步骤如下：
+
+1、继承 OnGeocodeSearchListener 监听。
+
+2、构造 GeocodeSearch 对象，并设置监听。
+
+```
+
+this.geocoderSearch = new GeocodeSearch(this.context)
+this.geocoderSearch.setOnGeocodeSearchListener(this.onGeocodeSearchListener)
+```
+
+3、通过 GeocodeQuery(java.lang.String locationName, java.lang.String city) 设置查询参数，调用 GeocodeSearch 的 getFromLocationNameAsyn(GeocodeQuery geocodeQuery) 方法发起请求。
+
+```
+// 第一个参数表示地址，第二个参数表示查询城市，中文或者中文全拼，citycode、adcode，
+let query = new GeocodeQuery(name, city) 
+// 设置同步地理编码请求
+this.geocoderSearch.getFromLocationNameAsyn(query) 
+```
+
+4、通过回调接口 onGeocodeSearched 解析返回的结果。
+
+说明：
+
+1）可以在回调中解析result，获取坐标信息。
+
+2）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）
+
+```
+
+public onGeocodeSearched: (geocodeResult: GeocodeResult | undefined, errorCode: number): void => {
+//解析geocodeResult获取坐标信息
+}
+
+```
+
+## 逆地理编码（坐标转地址）
+
+逆地理编码，又称地址解析服务，是指从已知的经纬度坐标到对应的地址描述（如行政区划、街区、楼层、房间等）的转换。常用于根据定位的坐标来获取该地点的位置详细信息，与定位功能是黄金搭档。
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930307013_fb5c8.png)
+
+示例代码如下：
+
+1、继承 OnGeocodeSearchListener 监听。
+
+2、构造 GeocodeSearch 对象，并设置监听。
+
+```
+this.geocoderSearch = new GeocodeSearch(this.context)      this.geocoderSearch.setOnGeocodeSearchListener(this.onGeocodeSearchListener)
+```
+
+3、通过 RegeocodeQuery(LatLonPoint point, float radius, java.lang.String latLonType) 设置查询参数，调用 GeocodeSearch 的 getFromLocationAsyn(RegeocodeQuery regeocodeQuery) 方法发起请求。
+
+```
+// 第一个参数表示一个Latlng，第二参数表示范围多少米，第三个参数表示是火系坐标系还是GPS原生坐标系
+let query =new ReGeocodeQuery(latLonPoint, 200, GeocodeSearch.AMAP) 
+ // 设置异步逆地理编码请求
+this.geocoderSearch.getFromLocationAsyn(query)
+```
+
+4、通过回调接口 onRegeocodeSearched 解析返回的结果。
+
+说明：
+
+1）可以在回调中解析result，获取地址、adcode等等信息。
+
+2）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）
+
+```
+public onReGeocodeSearched: (reGeocodeResult: ReGeocodeResult | undefined, errorCode: number): void => {
+//解析reGeocodeResult获取地址描述信息
+}
+```
+
+## 注意事项
+
+请注意：使用上述功能需要下载地图SDK，导入搜索功能的har包。
+# 获取行政区划数据最后更新时间: 2025年09月29日
+
+根据县（区）级行政区划名称查询其下级区划的详细信息，如：中心点坐标、编码等等。
+
+目前能查询到街道级别的信息，例如：中国>山东省>济南市>历下区>舜华路街道（国>省>市>区>街道）。
+
+## 示例代码：
+
+```
+let search = new DistrictSearch(mContext);
+let query = new DistrictSearchQuery();
+query.setKeywords("朝阳区");//传入关键字
+query.setShowBoundary(true);//是否返回边界值
+search.setQuery(query);
+search.setOnDistrictSearchListener(this);//绑定监听器
+search.searchDistrictAnsy();//开始搜索
+```
+
+通过回调接口获取数据
+
+```
+public onDistrictSearched: (districtResult: DistrictResult | undefined): void => { 
+
+//在回调函数中解析districtResult获取行政区划信息
+//在districtResult.getAMapException().getErrorCode()=1000时调用districtResult.getDistrict()方法
+//获取查询行政区的结果，详细信息可以参考DistrictItem类。
+
+}
+```
+
+显示效果如图所示：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758606758258_4a47a.png)
+
+## 注意事项
+
+请注意：使用上述功能需要下载地图SDK，导入搜索功能的har包。
+# 获取天气数据最后更新时间: 2025年09月15日
+
+## 简介
+
+通过天气查询，可获取城市的实时天气、今天和未来3天的预报天气，可结合定位和逆地理编码功能使用，查询定位点所在城市的天气情况。注意：仅支持中国部分地区数据（台湾省目前没有数据）返回。
+
+天气查询是一个可用来改善app体验的功能，如：在跑步类app中加入天气的提醒；出行前了解天气情况以便安排行程。
+
+天气查询的请求参数类为 WeatherSearch，city（城市）为必设参数，type（气象类型）为可选，包含有两种类型：WEATHER_TYPE_LIVE为实况天气；WEATHER_TYPE_FORECAST为预报天气，默认为 实况天气。
+
+## 示例代码
+
+实况天气的代码如下：
+
+ 第一步：设置查询条件及天气监听接口。
+
+```
+//检索参数为城市和天气类型，实况天气为WEATHER_TYPE_LIVE、天气预报为WEATHER_TYPE_FORECAST
+et query = new WeatherSearchQuery(this.cityName, WeatherSearchQuery.WEATHER_TYPE_FORECAST)
+this.weatherSearch = new WeatherSearch(this.context)
+      this.weatherSearch.setOnWeatherSearchListener(this.weatherSearchListener)
+this.weatherSearch.setQuery(query)
+//异步搜索
+this.weatherSearch.searchWeatherAsyn()
+```
+
+第二步：获取天气查询结果。
+
+```
+
+/**
+  * 实时天气查询回调
+  */
+public onWeatherLiveSearched: (weatherLiveResult: LocalWeatherLiveResult | undefined, errorCode: number): void => {
+      if (errorCode === AMapException.CODE_AMAP_SUCCESS) {
+        if (weatherLiveResult && weatherLiveResult.getLiveResult()) {
+          this.weatherLive = weatherLiveResult.getLiveResult()
+        } else {
+          ToastUtil.show(this.uiContext, '对不起，没有搜索到相关数据！')
+        }
+      } else {
+        ToastUtil.showError(this.uiContext, errorCode)
+      }
+    }
+```
+
+截图效果如下：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930372283_4a47a.png)
+
+## 注意事项
+
+请注意：使用上述功能需要下载地图SDK，导入搜索功能的包。
+# 获取公交数据最后更新时间: 2025年11月17日
+
+## 公交站点查询
+
+实现公交站点查询的步骤如下:
+
+1、继承 OnBusStationSearchListener 监听。
+
+2、通过 BusStationQuery(query: string, city: string)设置搜索条件。
+
+```
+// 第一个参数表示公交线路名，第二个参数表示公交线路查询，第三个参数表示所在城市名或者城市区号
+this.busStationQuery = new BusStationQuery(search, this.getCityCode());
+```
+
+3、构造 BusStationSearch 对象，并设置监听，并调用 BusStationSearch 的 searchBusStationAsyn() 方法发起查询。
+
+```
+this.busStationSearch = new BusStationSearch(this.mContext, this.busStationQuery);
+// 设置查询结果的监听
+this.busStationSearch?.setOnBusStationSearchListener(this.busStationSearchListener); 
+this.busStationSearch?.searchBusStationAsyn();
+```
+
+4、通过回调接口 onBusStationSearched 解析返回的结果。
+
+说明：
+
+1）可以在回调中解析result，获取公交站点信息。
+
+2）result.getBusStations()可以获取到 BusStationItem 列表。
+
+3）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）
+
+```
+  private busStationSearchListener: OnBusStationSearchListener = {
+    onBusStationSearched: (result: BusStationResult, rCode: number) => {
+      //ToDo
+    }
+  }
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763087949254_4b7ff.png)
+
+## 公交路线查询
+
+### 线路名称查询
+
+1、设置查询条件
+
+根据 BusLineQuery(query: string, ctgr: BusSearchType, city: string) 创建一个 BusLineQuery 对象，并设置查询条件，再根据 BusLineSearch(act: Context, query: BusLineQuery) 创建一个 BusLineSearch 对象。查询类型参数 ctgr 此处设置为 BusLineQuery.SearchType.BY_LINE_NAME。
+
+2、发送请求和接收数据
+
+使用 BusLineSearch.searchBusLineAsyn() 搜索公交线路。在 OnBusLineSearchListener 的接口回调方法 onBusLineSearched: (busLinePagedResult: BusLineResult, resultID: number) => void处理返回结果。当根据线路名称搜索无结果时，会自动匹配关键字为途经点名称进行搜索。显示效果如图：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763087976935_a7c12.png)
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763088009425_fcf62.png)
+
+结果返回线路信息有线路 ID、公交类型、线路名称、坐标串、城市编码、首发站、末站。
+
+发送请求
+
+```
+this.busLineQuery = new BusLineQuery(search, BusSearchType.BY_LINE_NAME,
+  this.getCityCode()); // 第一个参数表示公交线路名，第二个参数表示公交线路查询，第三个参数表示所在城市名或者城市区号
+this.busLineQuery.setPageSize(10); // 设置每页返回多少条数据
+this.busLineQuery.setPageNumber(this.currentPage); // 设置查询第几页，第一页从0开始算起
+this.busLineSearch = new BusLineSearch(this.mContext, this.busLineQuery); // 设置条件
+this.busLineSearch?.setOnBusLineSearchListener(this.busLineSearchListener); // 设置查询结果的监听
+this.busLineSearch?.searchBusLineAsyn(); // 异步查询公交线路名称
+```
+
+回调方法
+
+```
+private busLineSearchListener: OnBusLineSearchListener = {
+  onBusLineSearched: (result: BusLineResult, rCode: number) => {
+    //ToDo
+  }
+}
+```
+
+### 线路 ID 查询
+
+获取公交线路的详细信息，可使用线路 ID 查询。结果返回线路信息有线路 ID、公交类型、线路名称、线路坐标、城市编码、首发站、末站、首班车时间、末班车时间、所属公交公司、全程里程、起步价、全程票价、矩形区域（外包矩形的左下与右上顶点）、线路沿途坐标。
+
+1、参照线路名称查询步骤1设置查询条件。此时，查询类型参数 ctgr 此处设置为 BusLineQuery.SearchType.BY_LINE_ID。
+
+2、发送请求和接收数据。可参考线路名称查询步骤2。可以根据得到的公交线路数据，使用 BusLineOverlay 画出公交线路图层，包括起终点和所有公交站点。另外也可以自定义 Marker 和 InfoWindow 的图标和信息。
+# 驾车出行路线规划最后更新时间: 2025年09月15日
+
+## 驾车出行路线规划
+
+驾车路径规划可以根据起终点和驾车路线的数据，使用 DrivingRouteOverlay 画出驾车路线图层，包括起终点和转弯点。另外也可以自定义起终点和驾车转弯点的图标。
+
+注意：地图SDK V1.0.0版本开始，SDK不再提供 com.amap.api.maps.overlay 包下的 overlay，已在官方demo中开源。
+
+#### 第 1 步，初始化 RouteSearch 对象
+
+```
+routeSearch = new RouteSearch(this.mContext)
+```
+
+#### 第 2 步，设置数据回调监听器
+
+```
+this.mRouteSearch.setRouteSearchListener(this.onRouteSearchListener)
+```
+
+#### 第 3 步，设置搜索参数
+
+通过 DriveRouteQuery(fromAndTo: FromAndTo, mode: number, passedByPoints: ArrayList<LatLonPoint>, avoidpolygons: ArrayList<ArrayList<LatLonPoint>>, avoidRoad: string) 设置搜索条件，方法对应的参数说明如下：
+
+- fromAndTo，路径的起点终点；
+    
+- mode，路径规划的策略，可选，默认为0-速度优先；
+    
+- passedByPoints，途经点，可选；
+    
+- avoidpolygons，避让区域，可选，支持32个避让区域，每个区域最多可有16个顶点。如果是四边形则有4个坐标点，如果是五边形则有5个坐标点。
+    
+- avoidRoad，避让道路，只支持一条避让道路，避让区域和避让道路同时设置，只有避让道路生效。
+    
+
+```
+// fromAndTo包含路径规划的起点和终点，drivingMode表示驾车模式
+// 第三个参数表示途经点（最多支持6个），第四个参数表示避让区域（最多支持32个），第五个参数表示避让道路
+const query = new DriveRouteQuery(fromAndTo, RouteSearch.DrivingDefault, undefined,
+      undefined, ""); // 第一个参数表示路径规划的起点和终点，第二个参数表示驾车模式，第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路
+```
+
+#### 第 4 步，发送请求
+
+使用类 RouteSearch 的 calculateDriveRouteAsyn(query: DriveRouteQuery) 方法进行骑行规划路径计算。
+
+```
+this.mRouteSearch.calculateDriveRouteAsyn(query);
+```
+
+#### 第 5 步，接收数据
+
+在 OnRouteSearchListener 接口回调方法 onDriveRouteSearched(result: DriveRouteResult | undefined, rCode: number): DriveRouteResult 处理驾车规划路径结果。返回的信息中包括：路线的距离、高速费用（仅针对7座以下轿车）、路况情况等等。
+
+说明：
+
+1）可以在回调中解析 result，获取驾车的路径。
+
+2）result.getPaths()可以获取到 DrivePath 列表，驾车路径的详细信息可参考 DrivePath 类。
+
+3）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）
+
+```
+private onRouteSearchListener: OnRouteSearchListener = {
+  onDriveRouteSearched: (result: DriveRouteResult | undefined, errorCode: number): void => {
+  //todo: 处理result驾车路径信息
+  },
+  onRideRouteSearched: (result: RideRouteResult, errorCode: number): void => {
+  },
+  onWalkRouteSearched: (result: WalkRouteResult, errorCode: number) => {
+  },
+  onBusRouteSearched: (result: BusRouteResult, errorCode: number): void => {
+  }
+}
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930498029_4a47a.png)       ![](https://a.amap.com/lbs/static/img/doc/doc_1757930503438_fb5c8.png)
+
+## 驾车出行路线规划V2
+
+驾车路径规划可以根据起终点和驾车路线的数据，使用 DrivingRouteOverlay 画出驾车路线图层，包括起终点和转弯点。另外也可以自定义起终点和驾车转弯点的图标。
+
+注意：地图SDK V1.0.0版本开始，SDK不再提供 com.amap.api.maps.overlay 包下的 overlay，已在官方demo中开源。
+
+#### 第 1 步，初始化 RouteSearchV2 对象
+
+```
+routeSearch = new RouteSearchV2(this.mContext)
+```
+
+#### 第 2 步，设置数据回调监听器
+
+```
+this.mRouteSearch.setRouteSearchListener(this.onRouteSearchListener)
+```
+
+#### 第 3 步，设置搜索参数
+
+通过 DriveRouteQueryV2(fromAndTo: FromAndTo, mode: number, passedByPoints: ArrayList<LatLonPoint>, avoidpolygons: ArrayList<ArrayList<LatLonPoint>>, avoidRoad: string) 设置搜索条件，方法对应的参数说明如下：
+
+- fromAndTo，路径的起点终点；
+    
+- mode，路径规划的策略，可选，默认为0-速度优先；
+    
+- passedByPoints，途经点，可选；
+    
+- avoidpolygons，避让区域，可选，支持32个避让区域，每个区域最多可有16个顶点。如果是四边形则有4个坐标点，如果是五边形则有5个坐标点。
+    
+- avoidRoad，避让道路，只支持一条避让道路，避让区域和避让道路同时设置，只有避让道路生效。
+    
+
+```
+// fromAndTo包含路径规划的起点和终点，drivingMode表示驾车模式
+// 第三个参数表示途经点（最多支持6个），第四个参数表示避让区域（最多支持32个），第五个参数表示避让道路
+const fromAndTo = new FromAndTo(this.mStartPoint, this.mEndPoint);
+    const query = new DriveRouteQueryV2(fromAndTo, DrivingStrategy.DEFAULT.getValue(), undefined,
+      undefined, ""); // 第一个参数表示路径规划的起点和终点，第二个参数表示驾车模式，第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路
+    query.setShowFields(0b0010101)
+```
+
+#### 第 4 步，发送请求
+
+使用类 RouteSearch 的 calculateRideRouteAsyn(RideRouteQuery query) 方法进行骑行规划路径计算。
+
+```
+this.mRouteSearch.calculateDriveRouteAsyn(query);
+```
+
+#### 第 5 步，接收数据
+
+在 RouteSearch.OnRouteSearchListener 接口回调方法 void onDriveRouteSearched(DriveRouteResult result, int rCode) 处理驾车规划路径结果。返回的信息中包括：路线的距离、高速费用（仅针对7座以下轿车）、路况情况等等。
+
+说明：
+
+1）可以在回调中解析 result，获取驾车的路径。
+
+2）result.getPaths()可以获取到 DrivePath 列表，驾车路径的详细信息可参考 DrivePath 类。
+
+3）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）
+
+```
+private onRouteSearchListener: OnRouteSearchListenerV2 = {
+  onDriveRouteSearched: (result: DriveRouteResultV2 | undefined, errorCode: number): void => {
+    //todo: 处理result驾车路径信息，详情参考demo
+  },
+  onRideRouteSearched: (result: RideRouteResultV2, errorCode: number): void => {
+  },
+  onWalkRouteSearched: (result: WalkRouteResultV2, errorCode: number) => {
+  },
+  onBusRouteSearched: (): void => {
+  }
+}
+```
+# 步行出行路线规划最后更新时间: 2025年09月15日
+
+## 步行出行路线规划
+
+步行路径规划可以根据起终点和步行路线的数据，使用 WalkRouteOverlay 画出步行路线图层，包括起终点和转弯点。另外也可以自定义起终点和步行转弯点的图标。
+
+#### 第 1 步，初始化 RouteSearch 对象
+
+```
+this.mRouteSearch = new RouteSearch(this.mContext)
+```
+
+#### 第 2 步，设置数据回调监听器
+
+```
+this.mRouteSearch.setRouteSearchListener(this.onRouteSearchListener)
+```
+
+#### 第 3 步，设置搜索参数
+
+通过 WalkRouteQuery(fromAndTo: FromAndTo) 设置搜索条件。其中：
+
+- fromAndTo，路径的起终点；
+    
+
+```
+//fromAndTo，路径的起终点；
+const fromAndTo = new FromAndTo(this.mStartPoint, this.mEndPoint)
+// 第一个参数表示路径规划的起点和终点
+const query = new WalkRouteQuery(fromAndTo); 
+//设置扩展字段,可选
+query.setExtensions(RouteSearch.EXTENSIONS_ALL);
+```
+
+#### 第 4 步，发送请求
+
+使用类 RouteSearch 的 calculateWalkRouteAsyn(WalkRouteQuery query) 方法进行步行规划路径计算。
+
+```
+this.mRouteSearch.calculateWalkRouteAsyn(query)
+```
+
+#### 第 5 步，接收数据
+
+在 OnRouteSearchListener 接口回调方法中的 onWalkRouteSearched: (walkRouteResult: WalkRouteResult, errorCode: number) => void处理步行规划路径结果。返回的信息中您可以获得路段的距离、步行的预计时间、步行路段的坐标点、步行路段的道路名称、导航主要操作等信息。显示效果如下：
+
+说明：
+
+1）可以在回调中解析result，获取步行的路径。
+
+2）result.getPaths()可以获取到 WalkPath 列表，步行路径的详细信息可参考 WalkPath 类。
+
+3）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站错误码对照表）
+
+```
+private onRouteSearchListener: OnRouteSearchListener = {
+  onWalkRouteSearched: (result: WalkRouteResult, errorCode: number) => {
+    //todo: 处理result步行路径信息
+  },
+  onDriveRouteSearched: () => {
+  },
+  onRideRouteSearched: () => {
+  },
+  onBusRouteSearched: () => {
+  }
+}
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930566550_10fb1.png)
+
+## 步行出行路线规划V2
+
+步行路径规划可以根据起终点和步行路线的数据，使用 WalkRouteOverlayV2 画出步行路线图层，包括起终点和转弯点。另外也可以自定义起终点和步行转弯点的图标。
+
+#### 第 1 步，初始化 RouteSearchV2 对象
+
+```
+this.mRouteSearch = new RouteSearchV2(this.mContext)
+```
+
+#### 第 2 步，设置数据回调监听器
+
+```
+this.mRouteSearch.setRouteSearchListener(this.onRouteSearchListener)
+```
+
+#### 第 3 步，设置搜索参数
+
+通过 WalkRouteQueryV2(fromAndTo: FromAndTo) 设置搜索条件。其中：
+
+- fromAndTo，路径的起终点；
+    
+
+```
+//fromAndTo，路径的起终点；
+const fromAndTo = new FromAndTo(this.mStartPoint, this.mEndPoint)
+// 第一个参数表示路径规划的起点和终点
+const query = new WalkRouteQueryV2(fromAndTo); 
+//设置请求数据返回的字段
+query.setShowFields(0b0010101)//对应'cost,navi,polyline'，可在网站api查询
+//设置返回的步行路线数量
+query.setAlternativeRoute(3)
+```
+
+#### 第 4 步，发送请求
+
+使用类 RouteSearch 的 calculateWalkRouteAsyn(WalkRouteQuery query) 方法进行步行规划路径计算。
+
+```
+this.mRouteSearch.calculateWalkRouteAsyn(query)
+```
+
+#### 第 5 步，接收数据
+
+在 OnRouteSearchListenerV2 接口回调方法中的 onWalkRouteSearched: (walkRouteResult: WalkRouteResultV2, errorCode: number) => void 处理步行规划路径结果。返回的信息中您可以获得路段的距离、步行的预计时间、步行路段的坐标点、步行路段的道路名称、导航主要操作等信息。显示效果如下：
+
+说明：
+
+1）可以在回调中解析result，获取步行的路径。
+
+2）result.getPaths()可以获取到 WalkPath 列表，步行路径的详细信息可参考 WalkPath 类。
+
+3）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站错误码对照表）
+
+```
+private onRouteSearchListener: OnRouteSearchListenerV2 = {
+  onWalkRouteSearched: (result: WalkRouteResultV2, errorCode: number) => {
+    //todo: 处理result步行路径信息
+  },
+  onDriveRouteSearched: () => {
+  },
+  onRideRouteSearched: () => {
+  },
+  onBusRouteSearched: () => {
+  }
+}
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930573813_09dd8.png)
+# 公交出行路线规划最后更新时间: 2025年09月29日
+
+公交路径规划可以根据起终点和公交换乘的数据，使用 BusRouteOverlay 画出公交路线图层，包括起终点和换乘点。另外也可以自定义起终点和换乘点的图标。
+
+目前支持跨城公交路线规划，提供不同城市之间的火车换成方案。
+
+## 公交出行路线规划
+
+#### 第 1 步，初始化 RouteSearch 对象
+
+```
+this.mRouteSearch = new RouteSearch(this.mContext)
+```
+
+#### 第 2 步，设置数据回调监听器
+
+```
+this.mRouteSearch.setRouteSearchListener(this.onRouteSearchListener)
+```
+
+#### 第 3 步，设置搜索参数
+
+通过 BusRouteQuery(fromAndTo: FromAndTo, mode: numer, city: string,  nightflag: number) 设置搜索条件。方法中的参数说明如下:
+
+- fromAndTo，路径的起终点；
+    
+- mode，计算路径的模式，可选，默认为最快捷；
+    
+- city，城市名称/城市区号/电话区号，此项不能为空；当进行跨城查询时，该参数对应起点的城市；
+    
+- nightflag，是否计算夜班车，默认为不计算，0：不计算，1：计算，可选。
+    
+
+如果选择计算夜班车（nightflag=1），返回的夜班车数据将会排列在结果的前边。
+
+如果存在地铁换乘出行，返回结果中还包括地铁的入站口和出站口信息。
+
+如果是跨城公交出行，返回结果中包含火车信息。进行跨城公交查询时，还需调用 BusRouteQuery 的 setCityd(city: string) 方法设置终点城市。
+
+```
+// fromAndTo包含路径规划的起点和终点，RouteSearch.BusLeaseWalk表示公交查询模式
+// 第三个参数表示公交查询城市区号，第四个参数表示是否计算夜班车，0表示不计算,1表示计算
+let query = new BusRouteQuery(fromAndTo, RouteSearch.BusLeaseWalk, "010",0);
+//query.setCityd("027");//终点城市区号
+```
+
+#### 第 4 步，发送请求
+
+使用类 RouteSearch 的 calculateBusRouteAsyn( query: BusRouteQuery) 方法进行公交规划路径计算。
+
+```
+this.mRouteSearch.calculateBusRouteAsyn(query)
+```
+
+#### 第 5 步，接收数据
+
+在 OnRouteSearchListener 接口回调方法 onBusRouteSearched( busRouteResult: BusRouteResult, rCode: number) 处理公交路径规划结果。
+
+说明：
+
+1）可以在回调中解析 result，获取驾车的路径。
+
+2）result.getPaths()可以获取到 BusPath 列表，公交路径的详细信息可参考 BusPath 类。公交路径规划的一个路段（类 BusStep），必存在一段公交导航信息，最多包含一段步行信息。返回结果构成如下图所示：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758606981193_fb5c8.png)
+
+3）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）
+
+```
+private onRouteSearchListener: OnRouteSearchListener = {
+  onBusRouteSearched: (result: BusRouteResult, errorCode: number): void => {
+    //todo处理返回的公交路线结果
+  },
+  onRideRouteSearched: () => {
+  },
+  onWalkRouteSearched: () => {
+  },
+  onDriveRouteSearched: () => {
+  }
+}
+```
+
+ ![](https://a.amap.com/lbs/static/img/doc/doc_1758606998123_10fb1.png)     ![](https://a.amap.com/lbs/static/img/doc/doc_1758607002240_09dd8.png)
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758607006813_8266e.png)
+
+## 公交出行路线规划V2
+
+公交路径规划可以根据起终点和公交换乘的数据，使用 BusRouteOverlayV2 画出公交路线图层，包括起终点和换乘点。另外也可以自定义起终点和换乘点的图标。
+
+目前支持跨城公交路线规划，提供不同城市之间的火车换成方案。
+
+#### 第 1 步，初始化 RouteSearchV2 对象
+
+```
+this.mRouteSearch = new RouteSearchV2(this.mContext)
+```
+
+#### 第 2 步，设置数据回调监听器
+
+```
+this.mRouteSearch.setRouteSearchListener(this.onRouteSearchListener)
+```
+
+#### 第 3 步，设置搜索参数
+
+通过 BusRouteQueryV2(fromAndTo: FromAndTo, mode: numer, city: string,  nightflag: number) 设置搜索条件。方法中的参数说明如下:
+
+- fromAndTo，路径的起终点；
+    
+- mode，计算路径的模式，可选，默认为最快捷；
+    
+- city，城市区号，此项不能为空；当进行跨城查询时，该参数对应起点的城市；
+    
+- nightflag，是否计算夜班车，默认为不计算，0：不计算，1：计算，可选。
+    
+
+如果选择计算夜班车（nightflag=1），返回的夜班车数据将会排列在结果的前边。
+
+如果存在地铁换乘出行，返回结果中还包括地铁的入站口和出站口信息。
+
+如果是跨城公交出行，返回结果中包含火车信息。进行跨城公交查询时，还需调用 BusRouteQueryV2 的 setCityd(city: string) 方法设置终点城市。
+
+```
+// fromAndTo包含路径规划的起点和终点，RouteSearch.BusLeaseWalk表示公交查询模式
+// 第三个参数表示公交查询城市区号，第四个参数表示是否计算夜班车，0表示不计算,1表示计算
+let query = new BusRouteQueryV2(fromAndTo, RouteSearch.BusLeaseWalk, "010",0);
+//query.setCityd("027");//终点城市区号
+//query.setShowFields(0b0010101);//对应查询结果'cost,navi,polyline'字段展示，可在网站api查询
+```
+
+#### 第 4 步，发送请求
+
+使用类 RouteSearchV2 的 calculateBusRouteAsyn( query: BusRouteQueryV2) 方法进行公交规划路径计算。
+
+```
+this.mRouteSearch.calculateBusRouteAsyn(query)
+```
+
+#### 第 5 步，接收数据
+
+在 OnRouteSearchListenerV2接口回调方法 onBusRouteSearched( busRouteResult: BusRouteResultV2, rCode: number) 处理公交路径规划结果。
+
+说明：
+
+1）可以在回调中解析 result，获取驾车的路径。
+
+2）result.getPaths()可以获取到 BusPathV2 列表，公交路径的详细信息可参考 BusPathV2 类。公交路径规划的一个路段（类 BusStepV2），必存在一段公交导航信息，最多包含一段步行信息。
+
+3）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）
+
+```
+private onRouteSearchListener: OnRouteSearchListenerV2 = {
+  onBusRouteSearched: (result: BusRouteResultV2, errorCode: number): void => {
+    //todo处理返回的公交路线结果
+  },
+  onRideRouteSearched: () => {
+  },
+  onWalkRouteSearched: () => {
+  },
+  onDriveRouteSearched: () => {
+  }
+}
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758607019334_f19c9.png)     ![](https://a.amap.com/lbs/static/img/doc/doc_1758607022899_9eb9c.png)
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758607026447_602e8.png)
+# 骑行出行路线规划最后更新时间: 2025年09月15日
+
+## 骑行出行路线规划
+
+从搜索功能1.0.0 版本开始支持骑行出行路线规划功能。
+
+骑行路径规划可以根据起终点和骑行路线的数据，使用 RideRouteOverlay 画出骑行路线图层，包括起终点和转弯点。另外也可以自定义起终点和骑行转弯点的图标。
+
+注意：地图SDK V1.0.0版本开始，SDK不再提供 com.amap.api.maps.overlay 包下的 overlay，已在官方demo中开源。
+
+#### 第 1 步，初始化 RouteSearch 对象
+
+```
+this.mRouteSearch = new RouteSearch(this.mContext)
+```
+
+#### 第 2 步，设置数据回调监听器
+
+```
+this.mRouteSearch.setRouteSearchListener(this.onRouteSearchListener)
+```
+
+#### 第 3 步，设置搜索参数
+
+通过 RideRouteQuery(fromAndTo:FromAndTo,mode?:number) 设置搜索条件。参数：fromAndTo，路径的起终点；mode，计算路径的模式。可选，默认为“推荐路线及最快路线综合模式”。
+
+```
+const fromAndTo = new FromAndTo(this.mStartPoint, this.mEndPoint);
+const query = new RideRouteQuery(fromAndTo);
+query.setExtensions(RouteSearch.EXTENSIONS_ALL);
+```
+
+#### 第 4 步，发送请求
+
+使用类 RouteSearch 的 calculateRideRouteAsyn(query:RideRouteQuery) 方法进行骑行规划路径计算。
+
+```
+this.mRouteSearch.calculateRideRouteAsyn(query)
+```
+
+#### 第 5 步，接收数据
+
+在 RouteSearch.OnRouteSearchListener 接口回调方法 onRideRouteSearched: (result: RideRouteResult, errorCode: number): void  处理骑行规划路径结果。返回的信息中您可以获得预估的骑行距离、骑行的预计时间、骑行路段的道路名称、坐标点等信息。
+
+说明：
+
+1）可以在回调中解析result，获取骑行的路径。
+
+2）result.getPaths()可以获取到 RidePath 列表，骑行路径的详细信息可参考 RidePath 类。
+
+3）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）
+
+```
+  private onRouteSearchListener: OnRouteSearchListener = {
+    onRideRouteSearched: (result: RideRouteResult, errorCode: number): void => {
+      //解析result获取算路结果，可参考官方demo
+    }
+  }
+```
+
+显示效果如下：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930651341_8266e.png)       ![](https://a.amap.com/lbs/static/img/doc/doc_1757930656718_f19c9.png)
+
+## 骑行出行路线规划V2
+
+从搜索功能1.0.0 版本开始支持骑行出行路线规划功能。
+
+骑行路径规划可以根据起终点和骑行路线的数据，使用 RideRouteOverlay 画出骑行路线图层，包括起终点和转弯点。另外也可以自定义起终点和骑行转弯点的图标。
+
+注意：地图SDK V1.0.0版本开始，SDK不再提供 com.amap.api.maps.overlay 包下的 overlay，已在官方demo中开源。
+
+#### 第 1 步，初始化 RouteSearch 对象
+
+```
+this.mRouteSearch = new RouteSearchV2(this.mContext)
+```
+
+#### 第 2 步，设置数据回调监听器
+
+```
+this.mRouteSearch.setRouteSearchListener(this.onRouteSearchListener)
+```
+
+#### 第 3 步，设置搜索参数
+
+通过 RideRouteQueryV2(fromAndTo:FromAndTo) 设置搜索条件。参数：fromAndTo，路径的起终点
+
+```
+const fromAndTo = new FromAndTo(this.mStartPoint, this.mEndPoint);
+const query = new RideRouteQueryV2(fromAndTo); query.setShowFields(0b0011111)
+```
+
+#### 第 4 步，发送请求
+
+使用类 RouteSearchV2 的 calculateRideRouteAsyn(query:RideRouteQuery) 方法进行骑行规划路径计算。
+
+```
+this.mRouteSearch.calculateRideRouteAsyn(query);
+```
+
+#### 第 5 步，接收数据
+
+在 RouteSearchV2.OnRouteSearchListener 接口回调方法 onRideRouteSearched: (result: RideRouteResult, errorCode: number): void  处理骑行规划路径结果。返回的信息中您可以获得预估的骑行距离、骑行的预计时间、骑行路段的道路名称、坐标点等信息。
+
+说明：
+
+1）可以在回调中解析result，获取骑行的路径。
+
+2）result.getPaths()可以获取到 RidePath 列表，骑行路径的详细信息可参考 RidePath 类。
+
+3）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）
+
+```
+private onRouteSearchListener: OnRouteSearchListenerV2 = {
+    onRideRouteSearched: (result: RideRouteResultV2, errorCode: number): void => {
+      //解析result获取算路结果，可参考官方demo
+    }
+  }
+```
+
+显示效果如下：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930666140_9eb9c.png)       ![](https://a.amap.com/lbs/static/img/doc/doc_1757930670752_602e8.png)
+# 货车出行路线规划最后更新时间: 2025年09月29日
+
+从搜索功能1.0.1 版本开始支持货车出行路线规划功能，货车出行路线规划的具体策略可参见服务文档。
+
+#### 第 1 步，初始化 RouteSearch 对象
+
+```
+this.mRouteSearch = new RouteSearch(this.mContext)
+```
+
+#### 第 2 步，设置数据回调监听器
+
+```
+this.mRouteSearch.setOnTruckRouteSearchListener(this.onTruckRouteSearchListener)
+```
+
+#### 第 3 步，设置搜索参数
+
+通过 TruckRouteQuery(fromAndTo: FromAndTo, mode: number,passedByPoints:ArrayList<LatLonPoint>|null|undefined,truckSize: number) 设置搜索条件。
+
+|   |   |
+|---|---|
+|参数|说明|
+|fromAndTo|路径的起终点|
+|mode|计算路径的模式（可选），默认为“躲避拥堵”|
+|passedByPoints|途经点|
+|truckSize|货车大小，默认轻型车|
+
+```
+const fromAndTo = new FromAndTo(this.mStartPoint, this.mEndPoint);
+//设置车牌
+fromAndTo.setPlateNumber("A000XXX");
+fromAndTo.setPlateProvince("京");
+const query = new TruckRouteQuery(fromAndTo,RouteSearch.TRUCK_AVOID_CONGESTION,null,RouteSearch.TRUCK_SIZE_HEAVY); 
+//设置车辆信息
+query.setTruckAxis(6)
+query.setTruckHeight(3.9)
+query.setTruckWidth(3)
+query.setTruckLoad(45)
+query.setTruckWeight(50)
+```
+
+#### 第 4 步，发送请求
+
+使用类 RouteSearch 的calculateTruckRouteAsyn(truckQuery: TruckRouteQuery) 方法进行路线规划路径计算。
+
+```
+this.mRouteSearch.calculateTruckRouteAsyn(query)
+```
+
+#### 第 5 步，接收数据
+
+在 RouteSearch.OnTruckRouteSearchListener 接口回调方法 onTruckRouteSearched:(result: TruckRouteRestult, errorCode: number)处理货车规划路径结果。返回的信息中您可以获得预估的货车路线距离、货车路线的预计时间、货车路线路段的道路名称、坐标点等信息。
+
+说明：
+
+1）可以在回调中解析result，获取货车的路径。
+
+2）result.getPaths()可以获取到 TruckPath 列表，货车路线的具体方案的详细信息可参考 TruckPath 类。
+
+3）返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）
+
+```
+private  onTruckRouteSearchListener:OnTruckRouteSearchListener = {
+
+onTruckRouteSearched:(result: TruckRouteRestult, errorCode: number): void => {
+      //解析result获取算路结果，可参考官方demo
+      //建议通过TruckPath中getRestriction() 判断路线上是否存在限行
+
+  }
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758607160901_7afbb.png)
+# 未来行程路线规划最后更新时间: 2025年09月15日
+
+## 简介
+
+自地图 SDK 搜索功能 1.0.0 版本起新增未来行程路线规划，简称ETD。 未来出行规划（ETD）服务已覆盖全国所有城市，可提供未来7天的出行路线规划。 
+
+注意：下面介绍的功能使用的是地图SDK的搜索功能，需要在工程中导入
+
+## 未来行程路线规划
+
+#### 第一步，  初始化 RouteSearch 对象
+
+```
+this.mRouteSearch = new RouteSearch(this.mContext);
+```
+
+#### 第二步， 设置数据回调监听器
+
+```
+this.mRouteSearch?.setOnRoutePlanSearchListener(this.onRoutePlanSearchListener);
+```
+
+#### 第三步， 设置搜索参数
+
+通过 DrivePlanQuery(RouteSearch.FromAndTo fromAndTo, int firstTime, int interval, int count) 设置搜索条件，方法对应的参数说明如下：
+
+fromAndTo，路径的起点终点，必设。
+
+firstTime，出发时间，第一个时间戳（unix时间戳，精确到秒)，必设；
+
+interval，规划的时间间隔，单位为秒，必设；
+
+count，规划时间点个数，最大48个，必设。
+
+设置终点的父POIID，无父POI的情况留空即可：
+
+DrivePlanQuery.setDestParentPoiID(destParentPoiID)
+
+设置规划策略模式，可选，默认为速度优先；
+
+DrivePlanQuery.setMode(int mode)
+
+设置车辆类型，默认为普通汽车：
+
+DrivePlanQuery.setCarType(int carType)
+
+```
+const fromAndTo = new FromAndTo(
+    this.mStartPoint, this.mEndPoint);
+    const time = Math.floor(Date.now() / 1000)
+    const query = new DrivePlanQuery(fromAndTo, time + utils.queryFirstInterval * 60, utils.queryInterval * 60,
+      48); // 第一个参数表示路径规划的起点和终点，第二个参数表示驾车模式，第三个参数表示途经点，第四个参数表示避让区域，第五个参数表示避让道路
+```
+
+#### 第四步，发送请求
+
+ 使用类 RouteSearch 的 calculateDrivePlanAsyn(DrivePlanQuery driveQuery) 方法进行骑行规划路径计算。
+
+```
+this.mRouteSearch?.calculateDrivePlanAsyn(query)
+```
+
+#### 第五步，接收数据
+
+ 在 RouteSearch.OnRoutePlanSearchListener接口回调方法 void OnRoutePlanSearchListener(DriveRouteResult result, int rCode) 处理驾车规划路径结果。返回的信息中包括：路线的距离、规划时间、路况情况等。
+
+ 说明：
+
+- 可以在回调中解析 result，获取驾车的路径；
+
+- result.getPaths()可以获取到 DrivePath 列表，驾车路径的详细信息可参考 DrivePlanPath 类；
+
+- 返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）。
+
+```
+private onRoutePlanSearchListener: OnRoutePlanSearchListener = {
+  onDriveRoutePlanSearched: (result: DriveRoutePlanResult | undefined, errorCode: number): void => {
+    //解析result获取算路结果，可参考官方demo
+  }
+}
+```
+# 坐标转换最后更新时间: 2025年11月17日
+
+## 经纬度坐标与屏幕像素坐标互转
+
+屏幕像素坐标转经纬度坐标
+
+```
+map.getProjection()?.fromScreenLocation(new Point(10, 10), (coord) => {
+console.log('地理坐标', coord)
+});
+```
+
+经纬度坐标转屏幕像素坐标
+
+```
+map.getProjection()?.toScreenLocation(new LatLng(39.957957,116.369404),(coord)=>{
+console.log('屏幕坐标', coord)
+});
+```
+
+## 其他坐标系转到高德坐标系
+
+支持GPS/Mapbar/Baidu等多种类型坐标在高德地图上使用。参见类CoordinateConverter。
+
+```
+  const converter = new CoordinateConverter(getContext(this).getApplicationContext())
+  // CoordType.GPS 待转换坐标类型
+   converter.from(CoordType.GPS)
+  // sourceLatLng待转换坐标点
+  converter.coord(sourceLatLng)
+  // 执行转换操作
+  const  desLatLng = converter.convert()
+```
+# 距离测量最后更新时间: 2025年09月29日
+
+此功能可以在不请求驾车出行路线规划接口的同时完成距离计算。目前支持直线距离和驾车距离的测量。
+
+#### 第1步，初始化DistanceSearch
+
+```
+const context: Context | undefined = this.getUIContext().getHostContext()
+const distanceSearch = new DistanceSearch(context!);
+```
+
+#### 第2步，设置数据回调监听
+
+```
+distanceSearch.setDistanceSearchListener({
+      onDistanceSearched: (distanceResult: DistanceResult, errorCode: number) => {
+        if (errorCode === AMapException.CODE_AMAP_SUCCESS) {
+
+        }
+      }
+    });
+```
+
+#### 第3步，设置搜索参数
+
+```
+const start0: LatLonPoint = new LatLonPoint(39.902896,116.42792);
+const start1: LatLonPoint = new LatLonPoint(39.865208,116.378596);
+const start2: LatLonPoint = new LatLonPoint(39.894914,116.322062);
+const start3: LatLonPoint = new LatLonPoint(39.945261,116.352994);
+const dest: LatLonPoint = new LatLonPoint(39.902896, 116.42792);
+
+//设置起点和终点，其中起点支持多个
+const latLonPoints: ArrayList<LatLonPoint> = new ArrayList<LatLonPoint>();
+latLonPoints.add(start0);
+latLonPoints.add(start1);
+latLonPoints.add(start2);
+latLonPoints.add(start3);
+
+const distanceQuery = new DistanceQuery();
+distanceQuery.setOrigins(latLonPoints);
+distanceQuery.setDestination(dest);
+distanceQuery.setType(DistanceSearch.TYPE_DRIVING_DISTANCE);
+```
+
+#### 第4步，发送请求
+
+```
+ distanceSearch.calculateRouteDistanceAsyn(distanceQuery);
+```
+
+#### 第5步，接收数据
+
+在 DistanceSearch对象的setDistanceSearchListener方法中，设置OnDistanceSearchListener回调监听，处理距离测量结果。返回的信息中您可以获得预估的直线或驾车路线距离。
+
+说明：
+
+1. 可以在回调中解析distanceResult，距离测量结果
+    
+2. distanceResult.getDistanceResults()可以获取到DistanceItem列表，距离测量结果详细信息可参考 DistanceItem 类。
+    
+3. 返回结果成功或者失败的响应码。1000为成功，其他为失败（详细信息参见网站开发指南-实用工具-错误码对照表）
+    
+
+效果事例图：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1758607241736_549cf.jpeg)
+# 距离/面积计算最后更新时间: 2025年11月17日
+
+地图SDK提供了很多计算方法，包括：计算亮点距离、矩形面积、坐标转换、判断点是否在圆或者多边形内等等，下面做简单介绍：
+
+## 两点间的直线距离计算
+
+根据用户指定的两个经纬度坐标点，计算这两个点的直线距离，单位为米。代码如下：
+
+```
+/**
+ * 根据用户的起点和终点经纬度计算两点间距离，单位米。
+ *
+ * @param startLatlng 起点的坐标。
+ * @param endLatlng   终点的坐标。
+ * @return 返回两点间的距离，单位米。
+ * @since 1.0.0
+ */
+public static calculateLineDistance(startLatlng: LatLng, endLatlng: LatLng):  number
+```
+
+## 面积计算
+
+高德地图SDK支持计算矩形的面积。代码如下：
+
+```
+/**
+ * 计算地图上矩形区域的面积，单位平方米。
+ *
+ * @param leftTopLatlng     矩形区域左上角坐标。
+ * @param rightBottomLatlng 矩形区域右下角坐标。
+ * @return 返回地图上矩形区域的面积，单位平方米。
+ * @since 1.0.0
+ */
+public static calculateRectangleArea(leftTopLatlng: LatLng, rightBottomLatlng: LatLng):  numbe
+```
+# 常见问题最后更新时间: 2024年10月29日
+
+### 如何获取AppID
+
+请在当前应用的Ability中使用如下代码获取
+
+```
+let flag = bundleManager.BundleFlag.GET_BUNDLE_INFO_WITH_SIGNATURE_INFO;
+let bundleInfo = bundleManager.getBundleInfoForSelfSync(flag)
+let appId = bundleInfo.signatureInfo.appId;
+```
+
+### 如何确定鸿蒙开发环境是否兼容？
+
+高德地图开放平台当前适配的鸿蒙版本为DevEco Studio: NEXT Beta1-5.0.3.800, SDK: API12 Release(5.0.0.65)，后续鸿蒙系统稳定版本也会持续适配
