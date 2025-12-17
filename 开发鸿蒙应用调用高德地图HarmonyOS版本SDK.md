@@ -314,6 +314,415 @@ mapView.getMapAsync((map) => {
 显示效果如下：
 
 ![](https://a.amap.com/lbs/static/img/doc/doc_1763086875883_57355.jpeg)
+# 显示定位蓝点最后更新时间: 2025年11月04日
+
+定位蓝点指的是进入地图后显示当前位置点的功能。
+
+## 实现定位蓝点
+
+1
+
+#### 准备地图
+
+显示地图详细讲解，前往 [显示地图](https://lbs.amap.com/api/harmonyosnext-map3d-sdk/guide/create-map/show-map) 文档。
+
+```
+let aMap: AMap = map;
+aMap?.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(40.024279, 116.434153), 13)); //设置地图中心点以及缩放级别
+```
+
+2
+
+#### 设置定位图层样式
+
+```
+let locationStyle: MyLocationStyle = new MyLocationStyle(); //定位样式构造函数
+
+//设置我的位置展示模式
+locationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW); //定位、且将视角移动到地图中心点，定位点跟随设备移动
+
+aMap?.setMyLocationStyle(locationStyle); //设置定位图层的样式
+```
+
+3
+
+#### 设置定位源
+
+```
+//定义了一个定位源，为地图提供定位数据
+let locationSource: LocationSource = {
+  activate(listener: OnLocationChangedListener): void {
+    let location: geoLocationManager.Location = {
+      accuracy: 1000,
+      altitude: 0,
+      direction: 0,
+      //116.438055,40.025108
+      latitude: 40.025108,
+      longitude: 116.438055,
+      speed: 0,
+      timeSinceBoot: 123587419434256,
+      timeStamp: 0,
+      altitudeAccuracy: 0,
+      speedAccuracy: 0,
+      directionAccuracy: 0,
+      uncertaintyOfTimeSinceBoot: 0,
+      sourceType: 1
+    }
+    try {
+      listener.onLocationChanged(location);
+    } catch (e) {
+      console.info((e as BusinessError).message);
+    }
+  },
+  deactivate() {
+  }
+};
+
+aMap?.setLocationSource(locationSource); //设置定位源
+```
+
+4
+
+#### 打开定位图层
+
+```
+aMap?.setMyLocationEnabled(true); //打开定位图层
+```
+# 显示室内地图最后更新时间: 2025年12月10日
+
+开启室内地图后，如果可见区域内包含室内地图覆盖区域（如：西单大悦城等知名商场），且缩放达到一定级别，便可直接在地图上看到精细室内地图效果。
+
+缩放级别放大到一定级别时，地图上可以显示室内地图。
+
+缩放级别继续放大时，不仅可以看到室内地图效果，还允许操作切换楼层，显示精细化室内地图。
+
+左上角为楼层切换组件
+
+如下图示：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1765347727047_076c2.png)
+
+可以通过以下接口控制是否显示室内地图：
+
+```
+/**
+ * 设置是否显示室内地图，默认不显示。<br>
+ * <p>
+ * 注：如果打开了室内地图，会显示3D建筑物，即如果之前有设置不显示3D建筑物，3D建筑物也会被显示出来。
+ *
+ * @param enabled true：显示室内地图；false：不显示；
+ */
+public showIndoorMap(enabled: boolean): void {
+    this.mapDelegate.setIndoorEnabled(enabled);
+}
+```
+
+可以通过以下接口控制切换显示室内地图的某一层：
+
+```
+/**
+ * 室内地图楼层控制接口，通过此接口可以控制某个室内地图显示的楼层。
+ *
+ * @param indoorBuildingInfo indoorBuildingInfo 对象，它定义了室内地图属性,详情{@link IndoorBuildingInfo}。
+ */
+public setIndoorBuildingInfo(indoorBuildingInfo: IndoorBuildingInfo): void {
+    this.mapDelegate.setIndoorBuildingInfo(indoorBuildingInfo);
+}
+```
+
+可以通过以下接口设置室内地图楼层状态监听(demo中实现楼层切换的关键)
+
+```
+/**
+ * 设置室内地图状态监听接口
+ *
+ * @param listener 室内地图状态监听接口。
+ * @since V2.2.4
+ */
+public setIndoorFloorSwitchAdapter(listener: IndoorFloorSwitchAdapter): void {
+    try {
+        this.mapDelegate.setIndoorFloorSwitchAdapter(listener);
+    } catch (e) {
+        LogUtil.e(Constants.MODULE_TAG, "AMap", e);
+    }
+}
+```
+
+调用上述室内地图的接口实现的demo(部分)
+
+```
+# 设置状态变量实现楼层切换组件与室内地图楼层之间的实时同步
+ @State floorSwitch: IndoorFloorSwitchAdapter = new IndoorFloorSwitchAdapter();
+
+# 楼层切换组件变化后的回调
+  OnPicker(valueName: string): void {
+    let indoorBuildingInfo: IndoorBuildingInfo = this.floorSwitch.mIndoorBuildingInfo;
+    let offset: number = indoorBuildingInfo.floor_names.findIndex((value: string) => value === valueName);
+    if (offset >= indoorBuildingInfo.floor_names.length || offset < 0) {
+      return
+    }
+    let index = indoorBuildingInfo.floor_indexs[offset];
+    this.floorSwitch.offset = offset;
+    indoorBuildingInfo.activeFloorIndex = index;
+    indoorBuildingInfo.activeFloorName = valueName;
+    this.mAMap?.setIndoorBuildingInfo(indoorBuildingInfo);
+  }
+
+# 设置楼层切换组件
+TextPicker({range: this.floorSwitch?.mIndoorBuildingInfo.floor_names, selected: this.floorSwitch?.offset})
+  .position({left:0, top: 0})
+  .visibility(this.floorSwitch.visible)
+  .onScrollStop((value: string | string[], index: number | number[]) => {
+    this.OnPicker(value as tring);
+  })
+  .opacity(1)
+```
+# 显示3D地形图最后更新时间: 2025年12月10日
+
+地形图是在3D地图的基础上，融入地形高程，使3D地图能够显示地形的高低起伏，显示山脉的形状以及走向等。
+
+可以通过以下接口控制是否显示3D地形图：
+
+```
+/**
+ * 设置是否打开地形图, 默认为关闭
+ * 打开地形图之后，底图会变成3D模式，添加的点线面等覆盖物也会自动带有高程
+ * <p>
+ * 注意：需要在MapView创建之前调用
+ *
+ * @param isTerrainEnable true为打开，默认false
+ * @since 2.2.4
+ */
+public static setTerrainEnable(isTerrainEnable: boolean)
+```
+
+效果如下：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1765347794339_0d50f.png)
+
+注意：地形图的渲染和普通3D地形图使用的引擎不同不能够同时显示。
+# 自定义地图最后更新时间: 2025年09月15日
+
+## 简介
+
+自 Harmony 3D 地图 SDK v2.2.2 起，高德地图支持使用可视化自定义地图模版改变底图颜色和样式，实现可视化的编辑和控制显示地图元素。
+
+## 创建样式文件
+
+### 创建地图样式
+
+高德地图开放平台的开发者在取得开发者账号后，可以进入[开发者控制台](https://lbs.amap.com/dev/key)，在[地图自定义平台](https://lbs.amap.com/dev/mapstyle/index)选择“创建地图样式”，可以选择一个模板进行创建。
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930035503_4a47a.png)
+
+#### 编辑地图样式 
+
+在创建的页面的左侧列表选择任一要素编辑样式属性；也可以单击地图，在弹出的列表中选择要素进行编辑。
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930043484_fb5c8.png)
+
+#### 发布地图样式并下载 
+
+编辑完成后点击右上角“保存”->“发布”，发布完成后，选择“使用方法”，然后选择“android”平台，点击“下载离线文件”。
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930050494_10fb1.png)
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930056708_09dd8.png)
+
+## 设定样式文件
+
+注意：自地图SDK v2.2.2 起，自定义地图使用方法进行了较大更新，具体请参见以下具体文档说明。
+
+### 一、设定离线样式文件
+
+1、在官网控制台-我的地图样式中选择与当前使用的地图SDK版本号所对应的版本进行样式文件下载：(注意：harmony 也是使用Android 离线地图样式，版本号选择最新版本)
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1757930065470_8266e.png)
+
+2.下载得到的Zip文件，内部目录结构如下，每个文件都会对应 CustomMapStyleOptions 中一个接口：
+
+|   |   |   |
+|---|---|---|
+|文件名称|文件内容说明|对应接口|
+|style_extra.data|扩展内容，如网格背景色等|CustomMapStyleOptions.setStyleExtraData/setStyleExtraPath|
+|style.data|具体样式配置|CustomMapStyleOptions.setStyleData/setStyleDataPath|
+|textures.zip|纹理图片(zip文件)|CustomMapStyleOptions.setStyleTextureData/setStyleTexturePath|
+
+注意：可将配置好的样式文件放入任意路径，比如“/mnt/sdcard/amap”
+
+```
+//该方法在AMap类中提供
+this.aMap?.setCustomMapStyle(new CustomMapStyleOptions()
+    .setEnable(true)
+    .setStyleDataPath("file://docs/storage/Users/currentUser/style.data")
+    .setStyleExtraPath("file://docs/storage/Users/currentUser/style_extra.data")
+    .setStyleTexturePath("file://docs/storage/Users/currentUser/textures.zip")
+)
+```
+
+注意：纹理功能需要[开通相关权限](https://lbs.amap.com/home/package?active=mapstyle)才可使用。
+
+#### 二、设定在线样式文件（需要[开通权限](https://lbs.amap.com/home/package?active=mapstyle)）
+
+1、如果觉得下载样式文件过程比较繁琐，也可以使用在线的方式调用：在自定义平台发布新样式后获得样式ID，并通过SDK的 setCustomMapStyleID 设置使用。如果需要变动样式，只需要在发布之后重新加载一次地图即可看到效果；
+
+2、如果同时设置了在线样式和离线样式，会优先进行在线拉取，如果拉取失败了会再次读取离线样式；
+
+3、示例代码：
+
+```
+//该方法在AMap类中提供
+  this.aMap.setCustomMapStyle(
+    new CustomMapStyleOptions()
+    .setEnable(true)
+    .setStyleId("您的styleid")//官网控制台-自定义样式 获取
+    );
+```
+
+注意：纹理暂不支持在线拉取,如果调用了styleid也需要将纹理通过setStyleTexturePath设置了才会生效。
+# 显示英文地图最后更新时间: 2025年11月17日
+
+设置地图为英文地图
+
+```
+/**
+ * 设置地图底图语言，目前支持中文底图和英文底图
+ *
+ * @param language 中文"zh_cn", 英文"en"
+ * @since 2.2.4
+ */
+public static setMapLanguage(language: string)
+```
+
+效果如下：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763087490591_b8fad.png)
+# 使用离线地图最后更新时间: 2025年11月17日
+
+## 离线地图与基本地图联动
+
+高德3D 地图 SDK支持离线地图功能。（2D 地图 SDK 不支持离线地图功能）
+
+离线地图可满足在无网络环境下查看地图信息的需求，在设备本地有离线地图数据的情况下，SDK 会优先加载离线地图。
+
+## 离线地图UI组件（推荐）
+
+自3D地图SDK V2.2.5起，新增离线地图UI组件，组件涵盖城市下载、暂停、更新、删除以及关键字城市查询等功能，是高德地图客户端离线地图功能的一个子集，UI交互风格上靠拢高德地图app，也考虑到与开发者应用UI的融合问题，尽可能的保持了简约极致。以下方法实现一键完成离线地图开发。
+
+#### 增加权限
+
+```
+"requestPermissions": [
+  {
+    "name": 'ohos.permission.INTERNET',
+  },
+  {
+    "name": 'ohos.permission.GET_NETWORK_INFO'
+  }
+]
+```
+
+#### 导入OfflineMapPage
+
+离线地图使用的是OfflineMapPage组件，本组件在SDK内部实现，仅需要在当前Page中import { OfflineMapPage } from "@amap/amap_lbs_map3d" 即可使用OfflineMapPage组件。
+
+#### 使用离线地图组件
+
+```
+import { OfflineMapPage } from "@amap/amap_lbs_map3d"
+
+@Entry
+@Component
+export struct MapOfflineMapController {
+  build() {
+      OfflineMapPage()
+  }
+}
+```
+
+#### UI示意
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763364960039_036ce.png)
+
+## 自定义离线地图UI
+
+#### 开始下载
+
+可以根据城市编码和城市名称两种方式下载当前城市的离线地图。示例代码如下：
+
+```
+//构造OfflineMapManager对象 
+this.amapManager = new OfflineMapManager(this.context, this)
+//按照citycode下载
+this.amapManager?.downloadByCityCode(citycode:string)；
+//按照cityname下载
+this.amapManager?.downloadByCityName(cityname:string)；
+```
+
+#### 暂停下载
+
+通过代码暂停地图的下载:
+
+示例代码如下：
+
+```
+this.amapManager?.pause();
+```
+
+#### 停止下载
+
+停止所有当前正在执行的下载，包括下载队列中等待的部分。
+
+示例代码如下：
+
+```
+this.amapManager.stop();
+```
+
+#### 更改离线地图存储目录
+
+离线地图默认会下载到手机存储卡的“amap”目录下，也可以自定义路径：
+
+通过 MapInitializer.sdcardDir 设置路径时，需要在 AMap 对象初始化之前进行，否则操作会无效。
+
+```
+// 设置应用单独的地图存储目录
+MapsInitializer.sdcardDir = "自定义的目录";
+```
+
+#### 获取离线地图列表
+
+其属性参数见下表：
+
+|   |   |
+|---|---|
+|名称|说明|
+|获取城市列表|OfflineMapManager.getOfflineMapCityList()|
+|获取省列表|OfflineMapManager.getOfflineMapProvinceList()|
+|获取已下载城市列表|OfflineMapManager.getDownloadOfflineMapCityList()|
+|获取正在或等待下载城市列表|OfflineMapManager.getDownloadingCityList()|
+
+## 检查更新
+
+通过如下代码检查离线地图数据是否存在更新，检查更新操作会同时将本地离线地图配置文件更新成最新的，App 用户可依据最新的配置文件下载新版离线地图数据。
+
+示例代码如下：
+
+```
+//通过updateOfflineCityByName方法判断离线地图数据是否存在更新
+this.amapManager?.updateOfflineCityByName(city);
+```
+
+## 删除离线地图
+
+执行 remove 操作时，需要等待 OfflineLoadedListener 回调之后才可以，否则（即使OfflineMapDownloadListener回调成功）操作将会无效。 
+
+示例代码如下：
+
+```
+//删除某一城市的离线地图包
+this.amapManager?.remove(city);
+```
 
 ## 📋 **从零开始创建HarmonyOS项目（ArkTS）**
 
