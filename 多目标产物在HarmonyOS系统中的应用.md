@@ -1,4 +1,173 @@
-# 能力说明
+# # 实践说明
+
+更新时间: 2025-12-16 15:59
+
+某对外发布应用共有两个版本：
+
+1. Community社区版本，免费，向个人开发者用户提供该应用绝大部分基础功能，但是不提供部分定制化限定功能及技术支持。
+
+2. Ultimate终极版本，收费，向个人、政企等开发者用户提供该应用全部基础功能，同时提供定制化限定功能及技术支持。
+
+可以看出在Community版本与Ultimate版本之间，部分功能存在重合，同时也存在某些特定功能，所以期望通过一次开发以实现差异化，根据不同配置完成多种特定运行环境的开发、预览、打包、调试等功能。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155927.03153565758301484936462732542955:50001231000000:2800:F06E637921572ED77D30AB03AA90A09845AAD27236A5E18C5DDE49BE87D7BA6F.png)
+
+1. 两个不同版本的软件，可能存在差异：如不同的应用标题、应用图标、版本声明。我们可以在工程级build-profile.json5->app{}->products[]中，可以对两种不同的外发版本进行差异化定制，新增两个product：Community和Ultimate。根据已支持的字段进行定制修改。
+
+2. {
+3.   "name": "Ultimate",
+4.   // ultimate版本签名
+5.   "signingConfig": "Ultimate",
+6.   // ultimate版本包名
+7.   "bundleName": "com.example.ultimate.app",
+8.   // ultimate版本应用图标
+9.   "icon": "$media:app_icon",
+10.   // ultimate版本应用标签
+11.   "label": "$string:app_name",
+12.   "versionCode": 10000,
+13.   "versionName": "1.0.0",
+14.   // ultimate版本指定资源目录
+15.   "resource": {
+16.     "directories": [
+17.       "./AppScope/ultimateRes"
+18.     ]
+19.   },
+20.   // ultimate版本指定输出产物名
+21.   "output": {
+22.     "artifactName": "ultimate_version"
+23.   },
+24.   "bundleType": "app",
+25.   "compatibleSdkVersion": "6.0.1(21)",
+26.   "runtimeOS": "HarmonyOS"
+27. },
+28. {
+29.   "name": "Community",
+30.   "signingConfig": "Community",
+31.   // community版本签名
+32.   "bundleName": "com.example.community.app",
+33.   // community版本包名
+34.   "icon": "$media:app_icon",
+35.   // community版本应用图标
+36.   "label": "$string:app_name",
+37.   // community版本应用标签
+38.   "versionCode": 10000,
+39.   "versionName": "1.0.0",
+40.   // community版本指定资源目录
+41.   "resource": {
+42.     "directories": [
+43.       "./AppScope/communityRes"
+44.     ]
+45.   },
+46.   // community版本指定输出产物名
+47.   "output": {
+48.     "artifactName": "community_version"
+49.   },
+50.   "bundleType": "app",
+51.   "compatibleSdkVersion": "6.0.1(21)",
+52.   "runtimeOS": "HarmonyOS",
+53. }
+
+54. 应用软件部分功能可能针对特定场景存在定制场景：如ultimate版本的功能A在phone设备类型上免费，在TV设备类型上需要收费；再如community版本的功能B在2in1设备类型上的启动页与在wearable设备类型上呈现效果存在差异。在模块级build-profile.json5->targets[]中新增2个 target：vip和free。
+
+55. {
+56.   "name": "vip",
+57.   // 定制vip包输出产物名
+58.   "output": {
+59.     "artifactName": "vipVersion"
+60.   },
+61.   // 定制vip包源码指定页面
+62.   "source": {
+63.     "pages": [
+64.       "pages/vipIndex"
+65.     ]
+66.   },
+67.   // 指定vip包资源目录
+68.   "resource": {
+69.     "directories": [
+70.       "./src/main/ultimateRes"
+71.     ]
+72.   },
+73.   "config": {
+74.     // 指定vip包适用设备类型
+75.     "deviceType": [
+76.       "phone",
+77.       "tablet",
+78.       "2in1"
+79.     ]
+80.   }
+81. },
+82. {
+83.   "name": "free",
+84.   // 定制free包输出产物名
+85.   "output": {
+86.     "artifactName": "freeVersion"
+87.   },
+88.   // 定制free包源码指定页面
+89.   "source": {
+90.     "pages": [
+91.       "pages/freeIndex"
+92.     ]
+93.   },
+94.   // 指定free包资源目录
+95.   "resource": {
+96.     "directories": [
+97.       "./src/main/communityRes"
+98.     ]
+99.   },
+100.   "config": {
+101.     // 指定free包适用设备类型
+102.     "deviceType": [
+103.       "phone",
+104.       "tablet"
+105.     ]
+106.   }
+107. }
+
+108. 新增product、target后，需要在工程级build-profile.json5->modules[]->targets[]->applyToProducts中，指定关联关系。此处表示当前模块的target具体应用到工程product的配置。
+
+109. "targets": [
+110.   {
+111.     "name": "default",
+112.     "applyToProducts": [
+113.       "default",
+114.       "Community",
+115.       "Ultimate"
+116.     ]
+117.   },
+118.   {
+119.     "name": "free",
+120.     "applyToProducts": [
+121.       "default",
+122.       "Community"
+123.     ]
+124.   },
+125.   {
+126.     "name": "vip",
+127.     "applyToProducts": [
+128.       "default",
+129.       "Ultimate"
+130.     ]
+131.   }
+132. ]
+
+由上配置：
+
+- target：default被应用至product：default、Ultimate、Community中；
+- target：vip被应用至product：default、Ultimate中；
+- target：free被应用至product：default、Community中。
+
+4. 在实际构建中，可通过可视化窗口灵活选择product-target的关联关系以构建出需要的APP/HAP包。
+
+例：用户需要构建Ultimate版本的且具有vip特性的应用，可以选择product：Ultimate，target：vip，apply之后执行构建。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155927.41502832397563865442071473231876:50001231000000:2800:4F6B44004C603BE8D046F8FBE4C59291757092A93D7E109B562744ECEA1ED655.png)
+
+查看构建产物
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155927.94145353286063048080169494513659:50001231000000:2800:EA685A1AA2BEAA061360B958F909359A016F53309C5C167A8D03155947F3688B.png)
+
+[能力说明](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-guides "能力说明")
+
 
 更新时间: 2025-12-16 15:59
 
