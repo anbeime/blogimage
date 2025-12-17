@@ -2346,3 +2346,829 @@ DevEco Studio支持HarmonyOS分布式应用/元服务开发，同一个应用/�
 [Profile Manager](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-previewer-profile-manager "Profile Manager")
 
 [Inspector双向预览](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-previewer-inspector "Inspector双向预览")
+# Inspector双向预览
+
+更新时间: 2025-12-16 15:58
+
+DevEco Studio提供HarmonyOS应用/元服务的UI预览界面与源代码文件间的双向预览功能，支持ets文件与预览器界面的双向预览。使用双向预览功能时，需要在预览器界面单击![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155834.66532853828847730111098131631777:50001231000000:2800:FE05EC1F3BDB9BEE9D435483F455D0040A3FE013FBC77C2CB04A901FE2716D0D.png)图标打开双向预览功能。
+
+说明
+
+不支持服务卡片的双向预览功能。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155834.27523625731752152331030901547607:50001231000000:2800:E9DDE75A59B1B59D152F5A4879B8A61E8889B773E89E221FE9C361EFA6FF0445.png)
+
+开启双向预览功能后，支持代码编辑器、UI界面和Component Tree组件树三者之间的联动：
+
+- 选中预览器UI界面中的组件，则组件树上对应的组件将被选中，同时代码编辑器中的布局文件中对应的代码块高亮显示。
+- 选中布局文件中的代码块，则在UI界面会高亮显示，组件树上的组件节点也会呈现被选中的状态。
+
+- 选中组件树中的组件，则对应的代码块和UI界面也会高亮显示。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155834.17008042405700900456122960156893:50001231000000:2800:9472A80F6FC555BC103AAC364B201EDE13801030160A4866DA5FBB3F45F105FD.png "点击放大")
+
+在预览界面还可以通过组件的属性面板修改可修改的属性或样式，在预览界面修改后，预览器会自动同步到代码编辑器中修改源码，并实时的刷新UI界面；同样的，如果在代码编辑器中修改源码，也会实时刷新UI界面，并更新组件树信息及组件属性。
+
+说明
+
+- 如果组件有做数据绑定，则其属性不支持在属性面板修改。
+- 如果界面有使用动画效果或者带动画效果组件，则其属性不支持在属性面板修改。
+- 多设备预览时，不支持双向预览。
+
+[查看多端设备预览效果](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-previewer-multi-profile "查看多端设备预览效果")
+
+[预览数据模拟](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-previewer-mock "预览数据模拟")
+# 预览数据模拟
+
+更新时间: 2025-12-16 15:58
+
+说明
+
+仅API 11及以上版本的Stage工程支持。
+
+在预览场景中，由于代码的运行环境与真机设备上的运行环境不同，调用部分接口时无法获取到有效的返回值（例如获取电池电量信息等，在预览场景下batteryInfo.voltage返回的是一个固定的值0），这样开发者就无法在预览时查看到不同返回值带来的界面变化。因此，Hamock提供了预览场景的模拟功能，在不改变业务运行逻辑的同时，开发者可以模拟UI组件上的属性或方法，或模拟import的模块接口。
+
+## 使用前提
+
+使用Hamock在预览场景模拟，需要在工程或模块的oh-package.json5中添加该依赖，然后重新同步工程。
+
+1. "devDependencies": {
+2.     "@ohos/hamock": "1.0.0"
+3. }
+
+## UI组件上的Mock
+
+Hamock提供了@MockSetup用于修饰Mock方法，仅支持声明式范式的组件。当开发者预览该组件时，预览运行时将在组件初始化时执行被@MockSetup修饰的方法。因此，开发者可以在这个被修饰的方法内重定义组件的方法或重赋值组件的属性，其将在预览时生效。
+
+说明
+
+@MockSetup修饰的方法仅在预览场景会自动触发，并先于组件的aboutToAppear执行。
+
+### UI组件的方法
+
+1. 在ArkTS页面代码中引入Hamock。
+    
+    1. import { MockKit, when, MockSetup } from '@ohos/hamock';
+    
+2. 在目标组件中定义一个方法，并用@MockSetup修饰该方法。在这个方法中，使用MockKit模拟目标方法。
+    
+    1. import { MockKit, when, MockSetup } from '@ohos/hamock';
+    
+    2. @Entry
+    3. @Component
+    4. struct Index {
+    5.  ...
+    6.  @MockSetup
+    7.  randomName() {
+    8.   let mocker: MockKit = new MockKit();
+    9.   let mockfunc: Object = mocker.mockFunc(this, this.method1);
+    10.   // mock 指定的方法在指定入参的返回值
+    11.   when(mockfunc)('test').afterReturn(1);
+    12.  }
+    13.  ...
+    14.  // 业务场景调用方法
+    15.  const result = this.method1('test'); // in previewer, result = 1
+    16. }
+    
+
+### UI组件的属性
+
+1. 在ArkTS页面代码中引入Hamock。
+    
+    1. import { MockSetup } from '@ohos/hamock';
+    
+2. 在目标组件中定义一个方法，并用@MockSetup修饰该方法。在这个方法中，对于需要Mock的属性，可以重新赋值。
+    
+    1. import { MockSetup } from '@ohos/hamock';
+    
+    2. @Component
+    3. struct Person {
+    4.  @Prop species: string;
+    5.  // 在@MockSetup片段中，定义对象属性
+    6.  @MockSetup
+    7.  randomName() {
+    8.   this.species = 'primates'
+    9.  }
+    10.  ...
+    11.  // 业务场景调用属性（如果从初始化到调用期间，该属性无变化）
+    12.  const result = this.species // in previewer, result = primates
+    13. }
+    
+
+说明
+
+- ArkUI部分类型属性不支持Mock，如readonly、@ObjectLink。
+- 被@Link/@Consume/@Prop/@BuilderParam装饰器修饰的变量，ArkUI语法要求父容器需要有对应属性的定义，因此更推荐开发者通过定义⼀个预览场景父容器（并通过父容器传递合适的数据）来预览这⼀类的组件。
+
+## 模块的Mock
+
+模块的Mock支持对系统模块、依赖模块及本地模块的Mock，通过新建ArkTS文件定义Mock实现代码，并在mock-config.json5配置文件中定义目标模块与Mock实现代码文件的映射关系。目标模块与Mock实现代码文件为一对一的关系，即对于同一目标模块，仅支持一份Mock实现代码，预览运行时，所有页面import目标模块都将指向这一份Mock实现代码。
+
+### 系统模块/依赖的模块
+
+1. 在src/mock目录下新建一个ArkTS文件，在这个文件内定义目标模块的Mock实现。
+    
+    1. // src/mock/MeasureText.mock.ets
+    2. import MeasureText from '@ohos.measure'
+    
+    3. // 类的mock使用继承(extends)的方式实现
+    4. class MockMeasureText extends MeasureText {
+    5.   // 定义mock实现
+    6.   static measureText(): number {
+    7.     console.log('Return value of the mock measureText function')
+    8.     return 100;
+    9.   }
+    10. };
+    
+    11. export default MockMeasureText;
+    
+    说明
+    
+    用户在对类定义Mock的实现时，需要使用继承(extends)的方式实现。
+    
+2. 在Mock配置文件src/mock/mock-config.json5中定义目标模块与Mock实现的替换关系。该替换关系会在预览场景下生效。
+    
+    1. {
+    2.   "@ohos.measure": { // 待替换的moduleName
+    3.     "source": "src/mock/MeasureText.mock.ets" // Mock代码的路径，相对于模块根目录
+    4.   },
+    5.  ...
+    6. }
+    
+3. 在原调用处中添加Hilog日志，方便在预览时，在Log中打印获取返回值，从而验证Mock是否生效。
+    
+    1. hilog.debug(DomainNumber, logTag, 'Mock %{public}s', `${MeasureText.measureText({textContent: 'Hello World'})}`)
+    
+
+### 本地模块
+
+1. 在src/mock目录下新建一个ArkTS文件，在这个文件内定义目标模块的Mock实现。
+    
+    1. // src/mock/module/utils/CommonUtils.mock.ts
+    2. // import local module
+    3. import LibDefaultExport from '../../../main/ets/utils/CommonUtils'; // get origin default export
+    4. import { methodA, ObjectB } from '../../../main/ets/utils/CommonUtils'; // get origin export on demand
+    
+    5. class DefaultExportMock extends LibDefaultExport {
+    6.   // 定义mock实现
+    7.   public static getName(): String {
+    8.     return "Mocked Name";
+    9.   }
+    10. };
+    
+    11. export {
+    12.   methodA,
+    13.   ObjectB,
+    14. }
+    
+    15. export default DefaultExportMock;
+    
+    其中CommonUtils.ets文件示例如下：
+    
+    16. export default class CommonUtils {
+    17.   public static getName(): String {
+    18.     return "origin name";
+    19.   }
+    
+    20.   public static getTitle(): String {
+    21.     return "origin title";
+    22.   }
+    23. }
+    
+    24. export const methodA = (): string => {
+    25.   return "methodA"
+    26. }
+    
+    27. export const ObjectB: Object = new Object();
+    
+    说明
+    
+    本地模块的Mock仅支持src/main/ets目录下的ArkTS或TS文件。
+    
+2. 在Mock配置文件src/mock/mock-config.json5中定义目标模块与Mock实现的替换关系。该替换关系会在预览场景下生效。
+    
+    1. {
+    2.  "utils/CommonUtils.ets": { // 本地模块只支持ets/xxx的相对路径，并需明确文件后缀
+    3.   "source": "src/mock/module/utils/CommonUtils.mock.ts"
+    4.  },
+    5.  ...
+    6. }
+    
+3. 在原调用处中添加Hilog日志，方便在预览时，在Log中打印获取返回值，从而验证Mock是否生效。
+    
+    1. hilog.debug(DomainNumber, logTag, 'Mock %{public}s', CommonUtils.getName());
+    
+
+[Inspector双向预览](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-previewer-inspector "Inspector双向预览")
+
+[使用预览器调试应用](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-previewer-debug "使用预览器调试应用")
+# 使用预览器调试应用
+
+更新时间: 2025-12-16 15:58
+
+使用真机或模拟器进行调试时，修改后的代码需要经过较长时间的编译和安装过程，才能刷新至调试环境。使用预览器进行调试，可快速地修改代码和运行应用，在DevEco Studio中直接查看修改后的界面显示效果。
+
+开发者可以使用预览器运行调试Ability生命周期代码和界面代码，预览器调试支持基础调试能力，包括断点、调试执行、变量查看等。
+
+## 使用约束
+
+- 一个工程内不支持启动多个预览调试任务。
+- 一个预览器只能支持普通预览或预览调试模式，不可同时支持两种模式。
+- 使用预览器进行调试不支持以下场景：
+    - 不支持Attach调试。
+    - 不支持跨Ability调试。
+    - 不支持C++调试。
+    - 不支持Hot Reload。
+    - 不支持多进程和worker/taskpool调试。
+
+## 普通预览与预览调试能力对比
+
+|   |   |   |   |
+|---|---|---|---|
+**表1** 普通预览与预览调试能力对比
+|**功能**|**普通预览**|**预览调试**|   |
+|**页面预览**|**运行模式**|**调试模式**|
+|ets页面预览|支持|支持|支持|
+|动态预览|支持|支持|支持|
+|指定页面文件预览|支持|不支持|不支持|
+|Inspector双向预览|支持|从DevEco Studio 6.0.0 Beta2版本开始支持|从DevEco Studio 6.0.0 Beta2版本开始，支持查看，不支持修改|
+|实时预览|支持|支持|断点中断时不支持|
+|极速预览|支持|从DevEco Studio 6.0.0 Beta2版本开始支持|不支持|
+|组件预览|支持|不支持|不支持|
+|多语言切换|支持|从DevEco Studio 6.0.0 Beta2版本开始支持|从DevEco Studio 6.0.0 Beta2版本开始支持，但断点中断时不支持|
+|动态修改分辨率|支持|从DevEco Studio 6.0.0 Beta2版本开始，支持横竖屏切换|从DevEco Studio 6.0.0 Beta2版本开始，支持横竖屏切换，但断点中断时不支持|
+|引用HSP|从DevEco Studio 6.0.0 Beta3版本开始支持|   |   |
+
+[预览数据模拟](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-previewer-mock "预览数据模拟")
+
+[支持使用预览器的API清单](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-previewer-api-list "支持使用预览器的API清单")
+# 支持使用预览器的API清单
+
+更新时间: 2025-12-16 15:58
+
+## 组件
+
+### ArkTS组件
+
+|组件|API|
+|:--|:--|
+|基础组件|AlphabetIndexer|
+|Blank|
+|Button|
+|Checkbox|
+|CheckboxGroup|
+|DataPanel|
+|DatePicker|
+|Divider|
+|Gauge|
+|Image|
+|ImageAnimator|
+|ImageSpan|
+|LoadingProgress|
+|Marquee|
+|Menu|
+|MenuItem|
+|MenuItemGroup|
+|Navigation|
+|NavRouter|
+|NavDestination|
+|PatternLock|
+|Progress|
+|QRCode|
+|Radio|
+|Rating|
+|ScrollBar|
+|Search|
+|Select|
+|Slider|
+|Span|
+|Stepper|
+|StepperItem|
+|Text|
+|TextArea|
+|TextClock|
+|TextInput|
+|TextPicker|
+|TextTimer|
+|Toggle|
+|容器组件|Badge|
+|Column|
+|ColumnSplit|
+|Counter|
+|Flex|
+|FlowItem|
+|GridCol|
+|GridRow|
+|List|
+|ListItem|
+|ListItemGroup|
+|Navigator|
+|Panel|
+|Refresh|
+|RelativeContainer|
+|Row|
+|RowSplit|
+|Scroll|
+|SideBarContainer|
+|Stack|
+|Swiper|
+|Tabs|
+|TabContent|
+|WaterFlow|
+|绘制组件|Circle|
+|Ellipse|
+|Line|
+|Polyline|
+|Path|
+|Rect|
+|Shape|
+|画布组件|Canvas|
+|CanvasGradient|
+|CanvasPattern|
+|CanvasRenderingContext2D|
+|ImageBitmap|
+|ImageData|
+|Matrix2D|
+|OffscreenCanvasRenderingContext2D|
+|Path2D|
+
+### JS组件
+
+|组件|API|
+|:--|:--|
+|基础组件|button|
+|chart|
+|divider|
+|image|
+|image-animator|
+|input|
+|label|
+|marquee|
+|menu|
+|option|
+|picker|
+|picker-view|
+|piece|
+|progress|
+|qrcode|
+|rating|
+|search|
+|select|
+|slider|
+|span|
+|switch|
+|text|
+|textarea|
+|toolbar|
+|toolbar-item|
+|toggle|
+|容器组件|badge|
+|dialog|
+|div|
+|form|
+|list|
+|list-item|
+|list-item-group|
+|panel|
+|popup|
+|refresh|
+|stack|
+|stepper|
+|stepper-item|
+|swiper|
+|tabs|
+|tab-bar|
+|tab-content|
+|画布组件|canvas|
+|CanvasRenderingContext2D|
+|Image|
+|CanvasGradient|
+|ImageData|
+|Path2D|
+|ImageBitmap|
+|OffscreenCanvas|
+|OffscreenCanvasRenderingContext2D|
+|栅格组件|grid-container|
+|grid-row|
+|grid-col|
+|svg组件|svg|
+|rect|
+|circle|
+|ellipse|
+|path|
+|line|
+|polyline|
+|polygon|
+|text|
+|tspan|
+|textPath|
+|animate|
+|animateMotion|
+|animateTransform|
+
+## 接口
+
+### UI界面
+
+|模块|API|
+|:--|:--|
+|@ohos.animator (动画)|Animator|
+|AnimatorResult|
+|AnimatorOptions|
+|@ohos.mediaquery (媒体查询)|matchMediaSync|
+|MediaQueryResult|
+|MediaQueryListener|
+|@ohos.promptAction (弹窗)|showToast|
+|showDialog|
+|showActionMenu|
+|ShowToastOptions|
+|Button|
+|ShowDialogSuccessResponse|
+|ShowDialogOptions|
+|ActionMenuSuccessResponse|
+|ActionMenuOptions|
+|@ohos.router (页面路由)|pushUrl|
+|replaceUrl|
+|back|
+|clear|
+|getLength|
+|getState|
+|enableAlertBeforeBackPage|
+|disableAlertBeforeBackPage|
+|getParams|
+|RouterMode|
+|RouterOptions|
+|RouterState|
+|EnableAlertOptions|
+
+### 网络管理
+
+|模块|API|
+|:--|:--|
+|@ohos.net.http (数据请求)|http.createHttp<br><br>如果Http请求需要配置代理才能访问，API 12及以上的预览器支持使用系统的http_proxy/https_proxy/no_proxy环境变量。|
+
+### 数据管理
+
+|模块|API|
+|:--|:--|
+|@ohos.data.preferences (用户首选项)|data_preferences.getPreferences|
+|data_preferences.deletePreferences|
+|data_preferences.removePreferencesFromCache|
+|Preferences|
+|ValueType|
+
+### 文件管理
+
+从DevEco Studio 6.0.0 Beta5版本开始，仅支持在预览/预览调试Stage模型的HAP/HSP时，使用文件管理的相关API，并且需要先打开**Enable file operation**开关。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155836.18279119716189057183090535272472:50001231000000:2800:6C852E1CEEAC5DCA9DBBCF2AE041DACA5670CD849B59DDE4944D90EC7CB097BD.png)
+
+|模块|API|
+|:--|:--|
+|@ohos.file.fs (文件管理)|fs.open|
+|fs.close|
+|fs.fdatasync|
+|fs.fsync|
+|fs.read|
+|fs.write|
+|fs.mkdir|
+|fs.mkdtemp|
+|fs.rename|
+|fs.rmdir|
+|fs.unlink|
+|fs.stat|
+|fs.truncate|
+
+[使用预览器调试应用](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-previewer-debug "使用预览器调试应用")
+
+[配置调试签名](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-signing "配置调试签名")
+# 使用仿真器运行轻量级穿戴应用
+
+更新时间: 2025-12-16 15:58
+
+DevEco Studio提供的**Simulator**可以运行和调试Lite Wearable设备上的HarmonyOS应用，兼容签名与不签名两种类型的HAP。
+
+## 操作步骤
+
+1. 在DevEco Studio右上角的设备框中选择**Huawei Lite Wearable Simulator。**
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155812.42102936304212653386209335837007:50001231000000:2800:723186763962839348C8C8E0A622525FB5221D20619889278F638AECAB28FD96.png)
+    
+2. 点击**Run** ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155812.08084707982390229750097840579555:50001231000000:2800:9A48F240955BEF5B593BC9E2C7AB25F4AD317DEE362D5AED9585B39C1748584E.png)或**Debug** ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155813.08103934683018527486121364226255:50001231000000:2800:F515A2DC7DA954232013DBA634B7D318B49E2CBA72E863C32CFCE4424DD69B88.png)按钮，在弹框中选择设备形状和分辨率，点击**OK**按钮，开始运行或调试应用。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155813.01251819743178912389935756879672:50001231000000:2800:F12436E05E9D3B24E37A4C522C4A1D3DE3B6E3FC9B76C16C9BF8BDFB87D88DC8.png "点击放大")
+    
+3. DevEco Studio会启动编译构建和安装，完成后应用即可运行在Simulator上。
+
+## 功能介绍
+
+在Simulator界面中，点击设备上方的**More**可展开更多功能。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155813.11955936062531119325997947546605:50001231000000:2800:33C7847EC26EE48ABF0695A36CAB8B202567C84F7E0F1A1A44C956C79EDC949A.png "点击放大")
+
+### 屏幕
+
+- **Turn screen on：**控制屏幕开关。
+- **Keep screen on：**控制屏幕是否保持常亮状态。关闭开关时，息屏计时结束后，屏幕自动关闭，同时**Turn screen on**开关自动关闭。开启屏幕后，打开**Keep screen on**开关才能使屏幕常亮。
+- **Brightness adjustment mode：**调节屏幕亮度。
+    - **Manual：**手动调节，可拖动滑动条，或直接输入亮度。
+        
+        ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155813.81891681890448868055195615278134:50001231000000:2800:5FEE018D239B3908E12B465C35109B7C960BA98E10B3AE738F69E041E688E71B.png)
+        
+    - **Automatic：**自动调节。
+- **Resolution：**运行/调试模式下暂不支持调整分辨率，如需调整，请停止运行后，按照[操作步骤](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-run-simulator#section1332819367496)选择分辨率。
+
+### 传感器
+
+仿真器提供了虚拟传感器来模拟硬件传感器的能力。在该界面，您可以调节不同的传感器来测试您的应用，使用[@system.sensor](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/js-apis-system-sensor)模块监听传感器值的变化，使用[@system.geolocation](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/js-apis-system-location)模块监听地理位置的变化。仿真器提供以下虚拟传感器：
+
+- **On-body status**：传感器所在设备穿戴状态，包括已穿戴和未穿戴。
+- **Barometer：**气压传感器用于测量环境气压，单位为Pa。
+- **Heart rate：**心率传感器用于测量心率数值，拖动滑动条，或直接输入心率大小。
+- **Step count：**计步传感器用于统计行走步数，拖动滑动条，或直接输入步数。
+- **Geographic location：**输入经度、纬度，模拟设备所处的地理位置。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155813.50770284466856789189063059715280:50001231000000:2800:343686F004C82EA033CB7816520590F8B7F775902B4BD7C7581636577697EE89.png)
+
+### 电池
+
+您可以通过仿真器模拟不同的电池状态，包括以下三种充电状态，也可以手动输入或拖动滑动条来改变电量大小。在应用中，您可以通过[@system.battery](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/js-apis-system-battery)模块查询仿真器的剩余电量以及充电状态。
+
+- Not charging：未充电。
+- Charging：正在充电。
+- Wireless charging：无线充电。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155813.84188326877619990071507581433662:50001231000000:2800:862DF011B71C9F46E8B714C32CF4F637B9A8CD4E3C2BC02DF782B7279BBCEFD2.png)
+
+### 设备设置
+
+您可以更改设备的语言和地区，当前仅运行模式可以更改，调试模式暂不支持。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155813.76424311131264936105981369406736:50001231000000:2800:44B71E485662D80D0036B041924295D5ECAD48D051882B491D56E7E47ADBB09A.png)
+
+### 调试
+
+- **Screen coordinate system****：**开启屏幕坐标系后，将光标移动到表盘上时，会显示屏幕坐标。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155813.32422772720459637309632360270579:50001231000000:2800:1585C31EEC850B0FC6D8773274C0ABC05CED5F118A7A036154EECB3DAADA60B4.gif "点击放大")
+    
+- **Show device mask****：**关闭开关后，表盘周围的表冠颜色淡化。
+    
+    ![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155813.32575327342751054639988654194064:50001231000000:2800:B77C3022417FAE16DCFF6B940942A70C640FE6A25642244A274BE4A6486967E5.gif "点击放大")
+    
+
+[使用本地真机运行应用](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-run-device "使用本地真机运行应用")
+
+[使用模拟器运行应用](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-run-emulator "使用模拟器运行应用")
+# 使用环境
+
+更新时间: 2025-12-16 15:58
+
+模拟器在本地计算机上创建和运行，在运行和调试应用/元服务时可以保持良好的流畅性和稳定性，但是需要耗费一定的计算机资源，具体的运行环境要求如下。
+
+Windows运行环境：
+
+|类别|最低要求|推荐|
+|:--|:--|:--|
+|操作系统|Windows 10企业版、专业版或教育版及以上，且操作系统版本不低于10.0.18363|最新的64位Windows|
+|CPU|- 具有二级地址转换 (SLAT) 的64位处理器<br>- CPU支持AES指令集<br>- CPU支持VM监视器模式扩展（Intel CPU的VT-c技术）<br>- 不支持在虚拟机系统中运行模拟器<br>- 不支持采用ARM CPU的Windows计算机<br>- 2017年以后CPU型号。|- 最新的Intel Core i5、i7、i9系列CPU<br>- 最新的AMD Ryzen 5、6、7、9系列CPU<br>- CPU后缀为H/HK/HX的笔记本电脑或后缀为S/F/K的台式机<br><br>由于性能不足，不推荐使用 Intel® Core™ N 系列和 U 系列处理器|
+|RAM|16GB|32GB及以上|
+|磁盘空间|16GB|32GB及以上|
+|屏幕|屏幕分辨率1280*800像素以上|屏幕分辨率1920*1080像素以上|
+|GPU|支持OpenGL版本4.1<br><br>从DevEco Studio 6.0.0 Release版本开始，AMD的GPU显示驱动要求不低于24.1.1版本|支持OpenGL版本4.1及以上<br><br>AMD的GPU显示驱动版本24.1.1及以上|
+
+Mac运行环境：
+
+|类别|最低要求|推荐|
+|:--|:--|:--|
+|操作系统|macOS系统为12.5及以上版本|最新的64位macOS|
+|CPU|- 不支持在虚拟机系统中运行模拟器<br>- Apple Silicon芯片|最新的Apple Silicon|
+|RAM|8GB|16GB及以上|
+|磁盘空间|16GB|32GB及以上|
+|屏幕|屏幕分辨率1280*800像素以上|屏幕分辨率1920*1080像素以上|
+|GPU|支持OpenGL版本4.1|支持OpenGL版本4.1及以上|
+
+[概述](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-overview "概述")
+
+[设备支持类型](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-devicetype "设备支持类型")
+# 设备支持类型
+
+更新时间: 2025-12-16 15:58
+
+模拟器在不同系统上支持的设备类型见下表。
+
+|系统类型|设备类型|备注|
+|:--|:--|:--|
+|Windows(X86)<br><br>macOS(ARM)|Phone（包括折叠屏）|仅支持在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）使用。|
+|Tablet|仅支持在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）使用。|
+|PC/2in1（包括折叠屏）|从DevEco Studio 5.0.13.200版本开始，支持在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）使用PC/2in1设备。<br><br>从DevEco Studio 6.0.0.456版本开始，支持在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）使用折叠屏PC/2in1设备。|
+|Wearable|从DevEco Studio 6.0.0.828版本开始，支持在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）使用。<br><br>从DevEco Studio 6.0.1.249版本开始，支持在所有国家/地区使用。|
+|TV|从DevEco Studio 5.1.1.840版本开始，支持在中国境内（香港特别行政区、澳门特别行政区、中国台湾除外）使用。|
+
+说明
+
+使用x86模拟器时，C++工程及三方库需要编译出x86_64版本的so，请在工程级或模块级build-profile.json5的externalNativeOptions/abiFilters的值中增加"x86_64"，具体编译配置请参见[externalNativeOptions](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-cpp#section0721057575)。
+
+[使用环境](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-requirements "使用环境")
+
+[模拟器与真机的差异](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-specification "模拟器与真机的差异")
+# 模拟器与真机的差异
+
+更新时间: 2025-12-16 15:58
+
+模拟器是开发和调试HarmonyOS应用/元服务的便捷工具，例如不需要配置服务器域名即可开发和调试元服务，在大多数情况下，模拟器上推包调试不需要签名，但部分Kit仍需签名后才能正常运行，具体要求请参考Kit的开发指南。
+
+由于模拟器和真机在硬件和能力上存在差异，部分功能场景仍需在真机上进行开发。您可以通过阅读本文档来决定哪些功能在模拟器中测试，哪些功能在真机上测试。
+
+## 通用差异
+
+模拟器是运行在Mac或Windows电脑上的虚拟机应用，会使用电脑的硬件资源，包括CPU、内存和网络连接等。这些资源在容量和速度上可能与真机存在显著差异。因此，模拟器不适合用于测试应用/元服务的性能（如数据处理、图形渲染、网络速度）、资源占用（如内存、CPU、功耗），模拟器的性能测试结果仅能用于评估应用功能的相对差异。如需获取真实场景下的用户体验数据，建议在真机上进行测试。
+
+## 显示效果差异
+
+- 模拟器使用电脑的显示器，与真机屏幕不同，可能会导致文本和图像在模拟器上出现边缘锯齿。放大模拟器窗口比例可以使文字和图像更清晰。
+- 电脑屏幕的色域范围可能与移动设备不同，从而导致颜色显示不准确。
+- 模拟器不支持屏幕亮度调节。
+
+## 图形接口差异
+
+- 不支持OpenGL ES 3.1、3.2接口
+- 不支持Vulkan接口
+
+## Kit能力差异
+
+当前部分Kit不支持在模拟器上使用，具体参考以下说明。部分Kit能力有设备类型和使用地区限制，具体请参考对应Kit指南。
+
+如遇到因Kit能力不支持导致的应用闪退问题，可以使用[动态引入Kit](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-dynamic-import#%E5%8A%A8%E6%80%81import%E5%AE%9E%E7%8E%B0%E6%96%B9%E6%A1%88%E4%BB%8B%E7%BB%8D)的方式规避此异常问题。
+
+Kit不支持导致的报错信息如：
+
+1. LastFatalMessage:[default] [LoadJSPandaFile:00] resolveBufferCallback get hsp buffer failed，hsp path:/data/storage/el1/bundle/com.huawei.hmos.{KitName}.kit
+
+### 应用框架
+
+以下Kit和场景暂不支持模拟器。
+
+- Ability Kit（程序框架服务）：不支持拉起垂类应用面板，不支持使用App Linking实现应用间跳转，不支持以免安装方式拉起元服务。
+- Accessibility Kit（无障碍服务）：不支持屏幕朗读以外的其他功能。
+- Background Tasks Kit（后台任务开发服务）：模拟器短时任务不会被挂起。
+- Data Augmentation Kit（数据增强服务）
+- UI Design Kit（UI设计套件）：不支持侧边栏样式设置，不支持侧边栏菜单样式，不支持底部页签设置图标出血样式，不支持即时操作设置，不支持核心操作栏设置，不支持列表设置，不支持应用加载自定义Symbol，不支持视效。
+
+### 安全
+
+以下Kit和场景暂不支持模拟器。
+
+- Data Protection Kit（数据保护服务）
+- Device Security Kit（设备安全服务）
+- Enterprise Data Guard Kit（企业数据保护服务）
+- Online Authentication Kit（在线认证服务）
+- 不支持安全GPS、人脸识别、设备证书等。
+
+### 网络
+
+以下Kit暂不支持模拟器。
+
+- Distributed Service Kit（分布式管理服务）
+- NearLink Kit（星闪服务）
+- Network Boost Kit（网络加速服务）
+- Service Collaboration Kit（协同服务）
+- Telephony Kit（蜂窝通信服务）
+
+### 基础功能
+
+- Input Kit（多模输入服务）：不支持对鼠标光标的样式修改等操作。
+- 不支持MDM Kit（企业设备管理服务）
+
+### 硬件
+
+以下Kit暂不支持模拟器。
+
+- Car Kit（车服务）
+- Driver Development Kit（驱动开发服务）
+- Mechanic Kit（机械体设备控制器）
+- Multimodal Awareness Kit（多模态融合感知服务）
+- Pen Kit（手写笔服务）
+- Sensor Service Kit（传感器服务）：支持部分传感器，参见[虚拟传感器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-more-features#section830415558395)。
+- Wear Engine Kit（穿戴服务）
+
+### 媒体
+
+以下Kit和场景暂不支持模拟器。
+
+- Camera Kit（相机服务）：不支持预览、拍照以外的其他功能。
+- DRM Kit（数字版权保护服务）
+- Scan Kit（统一扫码服务）：不支持码图生成，不支持识别图像数据。
+- 不支持heif格式的图片
+- 视频播放：仅支持h264文件格式、RGBA像素格式的视频文件。
+- 不支持视频录制/转码/处理、屏幕录像。
+
+### 图形
+
+以下Kit暂不支持模拟器。
+
+- AR Engine（AR引擎服务）
+- ArkGraphics 3D（方舟3D图形）
+- Graphics Accelerate Kit（图形加速服务）
+- Spatial Recon Kit（空间建模服务）
+- XEngine Kit（GPU加速引擎服务）
+
+### 应用服务
+
+以下Kit和场景暂不支持模拟器。
+
+- AppGallery Kit（应用市场服务）：不支持数字商品服务、应用市场推荐、生态查询服务、应用市场更新功能、应用评论服务、图标管理服务，不支持端云交互。
+- App Linking Kit（应用链接服务）
+- Call Service Kit（通话服务）
+- Cloud Foundation Kit（云开发服务）：不支持预加载。更多关于如何在模拟器上调试Cloud Foundation Kit，请参考[使用模拟器调试](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoundation-emulator)。
+- Enterprise Space Kit（企业数字空间服务）
+- Game Service Kit（游戏服务）
+- Health Service Kit（运动健康服务）
+- IAP Kit（应用内支付服务）
+- Location Kit（位置服务）：不支持地理围栏。
+- Map Kit（地图服务）：不支持3D地图、地图截图。
+- Payment Kit（华为支付服务）
+- PDF Kit（PDF服务）：X86版本不支持。
+- Preview Kit（文件预览服务）：不支持.pdf/.pptx/.xlsx/.docx文件格式预览。
+- Push Kit（推送服务）：不支持推送授权订阅消息、推送通知扩展消息、推送实况窗消息、推送应用内通话消息。
+- Reader Kit（阅读服务）
+- Scenario Fusion Kit（融合场景服务）：具体请参考[模拟器支持范围](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/scenario-fusion-introduction#section1901742183715)。
+- Share Kit（分享服务）：不支持跨端分享、基于意图框架的分享。
+- Wallet Kit（钱包服务）
+- Weather Service Kit（天气服务）
+
+### AI
+
+以下Kit和场景暂不支持模拟器。
+
+- CANN Kit（CANN 服务）
+- Core Vision Kit（基础视觉服务）
+- Agent Framework Kit（智能体框架服务）
+- Intents Kit（意图框架服务）
+- MindSpore Lite Kit（昇思推理框架服务）：不支持图像分类之外的其他功能。
+- Natural Language Kit（自然语言理解服务）
+- Neural Network Runtime Kit（Neural Network运行时服务）
+- Speech Kit（场景化语音服务）
+- Vision Kit（场景化视觉服务）
+
+## 其他差异
+
+**表1**
+|模拟器和真机的其他重要差异|影响场景|
+|:--|:--|
+|SIM卡|不支持拨打电话、发送短信|
+|USB|不支持连接、数据传输|
+|蓝牙|不支持蓝牙设备扫描、连接、数据传输|
+|星闪|不支持星闪设备扫描、连接、数据传输、分布式能力|
+|NFC|不支持NFC卡片读写、刷卡|
+|TEE（Trusted Execution Environment，可信执行环境）|部分安全相关Kit暂不支持，详情参考[Kit能力差异](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-specification#section147193483010)|
+|NPU|部分AI相关Kit暂不支持，详情参考[Kit能力差异](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-specification#section1155211435325)|
+|生物识别|不支持指纹、人脸认证|
+|摄像头/麦克风|依赖电脑设备，不支持多摄像头切换（广角/长焦）、闪光灯、降噪算法等|
+|电源|模拟电源，不支持亮灭屏、温控、快充等场景|
+
+## Kit支持情况变更说明
+
+### DevEco Studio 6.0.1 Release
+
+- 支持Ringtone Kit（铃声服务）
+
+### DevEco Studio 6.0.0 Beta5
+
+以下Kit支持在模拟器上使用：
+
+- Ads Kit（广告服务）
+- AppGallery Kit（应用市场服务）：支持产品特性按需分发、应用归因服务、隐私管理中不涉及端云交互的接口。
+- Cloud Foundation Kit（云开发服务）：支持云函数、云数据库、云存储。具体调试方式请参考[使用模拟器调试](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/cloudfoundation-emulator)。
+
+### DevEco Studio 6.0.0 Beta3
+
+- 支持Screen Time Guard Kit（屏幕时间守护服务）
+
+### DevEco Studio 6.0.0 Beta2
+
+- Accessibility Kit（无障碍服务）：支持屏幕朗读。
+
+### DevEco Studio 6.0.0 Beta1
+
+以下Kit支持在模拟器上使用：
+
+- Core Speech Kit（基础语音服务）
+- Scan Kit（统一扫码服务）：支持使用电脑摄像头扫码。
+
+### DevEco Studio 5.1.1 Beta1
+
+- NDK：X86版本支持JSVM。
+
+### DevEco Studio 5.1.0 Release
+
+以下Kit支持在模拟器上使用：
+
+- PDF Kit（PDF服务）：支持在ARM版本上使用。
+- Map Kit（地图服务）：支持除3D地图和地图截图以外的其他功能。
+- Camera Kit（相机服务）：支持预览、拍照。
+- Share Kit（分享服务）：支持除了跨端分享、基于意图框架的分享以外的其他功能。
+
+[设备支持类型](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-devicetype "设备支持类型")
+
+[管理模拟器](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-emulator-management "管理模拟器")
