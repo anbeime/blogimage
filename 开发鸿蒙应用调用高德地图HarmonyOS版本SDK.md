@@ -117,6 +117,203 @@ Plain Text
 }
 
 以上步骤涵盖了从环境搭建、权限配置到地图功能调用的完整流程。实际开发中，可根据需求进一步扩展地图功能，如添加标记点、路径规划、定位等。 根据您提供的文档内容，我将为您提供一份从零开始创建HarmonyOS项目的详细图文版本指南。
+# 显示地图最后更新时间: 2025年12月10日
+
+使用地图SDK之前，需要在 config.json 文件中进行相关权限设置，确保地图功能可以正常使用。
+
+## 第一步，配置module.json5
+
+#### 首先，声明权限
+
+```
+...
+"requestPermissions": [
+  {
+    "name": 'ohos.permission.INTERNET',
+  }
+]
+...
+```
+
+Json
+
+## 第二步，在工程的oh-package.json5文件中添加依赖
+
+#### 从ohpm仓库获取高德地图包
+
+```
+"dependencies": {
+    "@amap/amap_lbs_common": ">=1.2.3",
+    "@amap/amap_lbs_map3d": ">=2.2.7",
+    "@amap/amap_lbs_search": ">=1.0.2",
+}
+```
+
+Json
+
+## 第三步，初始化地图容器
+
+1
+
+#### 从高德地图包中导入所需模块
+
+```
+import { AMap, MapsInitializer, MapView, MapViewComponent, MapViewManager } from '@amap/amap_lbs_map3d';
+```
+
+2
+
+#### 设置Key
+
+[获取Key](https://lbs.amap.com/api/harmonyosnext-map3d-sdk/guide/get-key)
+
+```
+MapsInitializer.setApiKey("您的key");
+```
+
+3
+
+#### 获取MapView
+
+```
+MapViewManager.getInstance().registerMapViewCreatedCallback((mapview?: MapView, mapViewName?: string) => {
+  if (!mapview) {
+    return;
+  }
+  let mapView = mapview;
+  ...
+})
+```
+
+4
+
+#### 初始化地图并获取AMap对象
+
+```
+mapView.onCreate();
+mapView.getMapAsync((map) => {
+let aMap: AMap = map;
+// aMap.setTrafficEnabled(true) //打开交通路况图层
+// TODO
+})
+```
+
+5
+
+#### 地图组件配置
+
+```
+MapViewComponent()
+.width('100%')
+.height('100%')
+```
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1712732554708_a2031.png)
+
+至此就可以看到地图展示，并且拿到了AMap对象后，就可以往地图上添加点线面等覆盖物
+
+6
+
+#### 完整代码示例
+
+```
+import { AMap, MapsInitializer, MapView, MapViewComponent, MapViewManager, } from '@amap/amap_lbs_map3d';
+
+MapsInitializer.setApiKey("您的key");
+MapViewManager.getInstance().registerMapViewCreatedCallback((mapview?: MapView, mapViewName?: string) => {
+  if (!mapview) {
+    return;
+  }
+  let mapView = mapview;
+  mapView.onCreate();
+  mapView.getMapAsync((map) => {
+    let aMap: AMap = map;
+  })
+})
+
+@Entry
+@Component
+struct Index {
+  build() {
+    Row() {
+      MapViewComponent()
+        .width('100%')
+        .height('100%')
+    }
+  }
+}
+```
+
+# 切换地图图层最后更新时间: 2025年11月17日
+
+在使用地图图层前，请务必确保您已按照 [显示地图](https://lbs.amap.com/api/harmonyosnext-map3d-sdk/guide/create-map/show-map) 完成了所有必要的配置步骤。HarmonyOS 地图 SDK 提供了几种预置的地图图层，包括普通地图、卫星地图、夜景地图、导航地图、公交地图、导航夜景地图。
+
+AMap 类提供图层类型常量，详细如下：
+
+注意：路况图层是通过开关控制，不通过常量控制。
+
+|   |   |
+|---|---|
+|类型|说明|
+|MAP_TYPE_NORMAL：1|普通地图模式（默认模式）|
+|MAP_TYPE_SATELLITE：2|卫星图模式|
+|MAP_TYPE_NIGHT：3|夜景图模式|
+|MAP_TYPE_NAVI：4|导航模式|
+|MAP_TYPE_BUS: 5|公交模式|
+|MAP_TYPE_NAVI_NIGHT: 6|导航夜间模式|
+
+下文就卫星模式地图、夜景模式地图、导航模式地图为例做简单介绍。
+
+## 卫星地图
+
+在初始化地图时，除了可用选择默认的标准地图，还可以设置地图类型为「卫星图」，代码如下：
+
+```
+mapView.getMapAsync((map) => {
+  map.setMapType(MapType.MAP_TYPE_SATELLITE)  //设置地图类型为卫星图
+  let aMap: AMap = map;
+})
+```
+
+提示：需要引入地图枚举类型
+
+```
+import {MapType} from '@amap/amap_lbs_map3d';
+```
+
+显示效果如下：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763086826373_1c0b8.jpeg)
+
+## 夜景地图
+
+设置地图类型为「夜景图」，代码如下：
+
+```
+mapView.getMapAsync((map) => {
+  map.setMapType(MapType.MAP_TYPE_NIGHT)  //设置地图类型为夜景图
+  let aMap: AMap = map;
+})
+```
+
+显示效果如下：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763086850510_d9d85.jpeg)
+
+## 导航模式地图
+
+设置地图类型为「导航图」，代码如下：
+
+```
+mapView.getMapAsync((map) => {
+  map.setMapType(MapType.MAP_TYPE_NAVI)  //设置地图类型为导航图
+  let aMap: AMap = map;
+})
+```
+
+显示效果如下：
+
+![](https://a.amap.com/lbs/static/img/doc/doc_1763086875883_57355.jpeg)
 
 ## 📋 **从零开始创建HarmonyOS项目（ArkTS）**
 
