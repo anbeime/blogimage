@@ -907,7 +907,258 @@ APP构建产物如下，其中包名取决于个人项目中的模块名，与�
 - library-default.hsp：由字节码、资源、三方库、配置文件等打包生成的动态共享包，可实现代码和资源共享。
 - pack.info：应用App构建产物中的包内容描述文件，提供应用市场发布上架所需信息。
 - pac.json：应用App构建产物中的隐私清单文件，文件中可配置的字段请参考[pac.json5隐私清单文件](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/agc-pac)，用于提供应用市场发布上架所需信息。
-- 动态生成编译构建产物Hap和App的名称
+- # hvigor-config.json5文件
+
+更新时间: 2025-12-16 15:59
+
+## 配置文件结构
+
+hvigor-config.json5文件整体的结构如下。
+
+1. modelVersion
+2. dependencies
+3. execution
+4. └── analyze
+5. └── daemon
+6. └── incremental
+7. └── parallel
+8. └── typeCheck
+9. └── optimizationStrategy
+10. logging
+11. └── level
+12. debugging
+13. └── stacktrace
+14. nodeOptions
+15. └── maxOldSpaceSize
+16. └── maxSemiSpaceSize
+17. └── exposeGC
+18. javaOptions
+19. └── Xmx
+20. properties
+21. └── hvigor.cacheDir
+22. └── ohos.buildDir
+23. └── enableSignTask
+24. └── ohos.arkCompile.maxSize
+25. └── hvigor.pool.cache.capacity
+26. └── hvigor.pool.maxSize
+27. └── ohos.pack.compressLevel
+28. └── hvigor.analyzeHtml
+29. └── hvigor.dependency.useNpm
+30. └── ohos.compile.lib.entryfile
+31. └── ohos.align.target
+32. └── ohos.fallback.target
+33. └── ohos.arkCompile.sourceMapDir
+34. └── ohos.collect.debugSymbol
+35. └── hvigor.enableMemoryCache
+36. └── hvigor.memoryThreshold
+37. └── ohos.nativeResolver
+38. └── ohos.arkCompile.noEmitJs
+39. └── ohos.arkCompile.singleFileEmit
+40. └── ohos.sign.har
+41. └── hvigor.keepDependency
+42. └── ohos.arkCompile.emptyBundleName
+43. └── ohos.uiTransform.Optimization
+44. └── ohos.har.excludeHspDependencies
+45. └── ohos.processLib.optimization
+46. └── ohos.obfuscationRules.optimization
+47. └── hvigor.incremental.optimization
+48. └── hvigor.task.schedule.optimization
+49. └── ohos.byteCodeHar.integratedOptimization
+50. └── ohos.rollupCache.usePathPlaceholder
+51. └── ohos.rollupCache.useSourceHash
+52. └── ohos.arkCompile.writeRollupCache
+53. └── ohos.align.deviceTypes
+54. └── ohos.dependencies.types.enable
+55. └── ohos.defaults.release.cmakebuildtype
+
+## 配置文件字段说明
+
+hvigor-config.json5配置文件包含以下字段。
+
+**表1** hvigor-config.json5文件字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|modelVersion|必选|字符串|开发态版本号。|
+|dependencies|必选|对象|当前工程执行构建任务时，依赖的构建插件及版本，为npm源组件。<br><br>说明<br><br>修改dependencies后，请根据界面提示，点击编辑器右上角**Sync Now**安装依赖。|
+|[execution](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-set-options#section6901191119219)|可选|对象|执行构建的相关配置参数，仅在命令行场景下生效。|
+|[logging](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-set-options#section85176471028)|可选|对象|日志相关配置参数。|
+|[debugging](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-set-options#section76575554217)|可选|对象|调测相关配置参数。|
+|[nodeOptions](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-set-options#section74431812314)|可选|对象|Node相关配置参数。|
+|[javaOptions](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-set-options#section7929682318)|可选|对象|java相关配置参数。|
+|[properties](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-set-options#section260315160319)|可选|对象|额外配置参数。|
+
+## execution
+
+execution是执行构建的相关配置参数，除了optimizationStrategy字段外，其他字段仅在命令行构建场景下生效，如果通过DevEco Studio菜单栏构建，需要在**File >** **Settings**（macOS为**DevEco Studio > Preferences/Settings**） **> Build, Execution, Deployment > Build Tools > Hvigor**中设置。
+
+**表2** execution字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|analyze|可选|字符串/布尔值|构建分析模式。<br><br>- normal（默认值）：普通模式，通过简单打点数据进行分析。原default模式已废弃。<br>- advanced：进阶模式，通过更加详细的打点数据进行分析。如果需要更详细的任务耗时数据，请选择该模式。原verbose模式已废弃。<br>- ultrafine：超精细化模式，与advanced模式相比，在ArkTS编译阶段记录更详细的打点数据，但开启后可能导致编译构建时间更长。从DevEco Studio 6.0.0 Beta1版本开始支持。<br>- false：不启用构建分析。|
+|daemon|可选|布尔值|是否启用守护进程编译。<br><br>- true（缺省默认值）：启用。<br>- false：不启用。|
+|incremental|可选|布尔值|是否启用增量编译。<br><br>- true（缺省默认值）：启用。<br>- false：不启用。|
+|parallel|可选|布尔值|是否启用并行编译。<br><br>- true（缺省默认值）：启用。<br>- false：不启用。|
+|typeCheck|可选|布尔值|是否启用构建脚本hvigorfile.ts文件的类型检查，启用后构建效率可能会有所降低。<br><br>- true：启用。<br>- false（缺省默认值）：不启用。|
+|optimizationStrategy|可选|字符串|指定构建模式。从DevEco Studio 5.1.1 Release版本开始支持。<br><br>- performance：性能优先模式，可加快构建速度，但会占用更多内存。<br>- memory（缺省默认值）：内存优先模式，可以减少编译内存占用。<br><br>说明<br><br>更改模式后，首次编译会执行全量编译。|
+
+execution字段示例：
+
+1. {
+2.   "execution": {
+3.     "analyze": "normal",
+4.     "daemon": true,
+5.     "incremental": true,
+6.     "parallel": true,
+7.     "typeCheck": false,
+8.     "optimizationStrategy": "performance",
+9.   }
+10. }
+
+## logging
+
+logging是日志相关配置参数。
+
+**表3** logging字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|level|可选|字符串|构建时打印日志的级别。<br><br>- debug：调测日志。<br>- info（缺省默认值）：基本信息日志。<br>- warn：告警日志。<br>- error：错误日志。|
+
+logging字段示例：
+
+1. {
+2.   "logging": {
+3.     "level": "debug"
+4.   }
+5. }
+
+## debugging
+
+debugging是调测相关配置参数。
+
+**表4** debugging字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|stacktrace|可选|布尔值|是否启用堆栈跟踪。<br><br>- true：启用。<br>- false（缺省默认值）：不启用。|
+
+debugging字段示例：
+
+1. {
+2.   "debugging": {
+3.     "stacktrace": true
+4.   }
+5. }
+
+## nodeOptions
+
+nodeOptions是Node相关配置参数。
+
+**表5** nodeOptions字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|maxOldSpaceSize|可选|整型数值|启用守护进程编译时，为守护进程设置最大的老生代内存大小，单位为MB，默认为8192MB。当工程代码量较大出现JS内存溢出时，可以调整该参数。|
+|maxSemiSpaceSize|可选|整型数值|启用守护进程编译时，为守护进程设置新生代内存最大的半空间大小，单位为MB，默认为16MB。增加半空间大小可能会提高Node.js的吞吐量，但会消耗更多内存。<br><br>该字段从DevEco Studio 5.1.0 Release版本开始支持。|
+|exposeGC|可选|布尔值|是否启用GC（Garbage Collection，内存回收），启用后会优化编译过程的峰值内存。<br><br>- true（缺省默认值）：启用。<br>- false：不启用。|
+
+nodeOptions字段示例：
+
+1. {
+2.   "nodeOptions": {
+3.     "maxOldSpaceSize": 8192,
+4.     "maxSemiSpaceSize": 16,
+5.     "exposeGC": true,
+6.   }
+7. }
+
+## javaOptions
+
+javaOptions是java相关配置参数。
+
+**表6** javaOptions字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|Xmx|可选|整型数值|设置JVM最大堆内存，单位为MB，默认为512MB。|
+
+javaOptions字段示例：
+
+1. {
+2.   "javaOptions": {
+3.     "Xmx": 512
+4.   }
+5. }
+
+## properties
+
+properties是额外配置参数。
+
+**表7** properties字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|hvigor.cacheDir|可选|字符串|指定项目根目录下的.hvigor缓存文件夹的存放路径。<br><br>说明<br><br>同名的不同工程不可指定相同的存放位置。|
+|ohos.buildDir|可选|字符串|指定项目的构建产物目录（build目录）存放位置。<br><br>说明<br><br>同名的不同工程不可指定相同的存放位置。|
+|enableSignTask|可选|布尔值|是否启用HAP或HSP签名任务。<br><br>- true（缺省默认值）：启用。<br>- false：不启用。|
+|ohos.arkCompile.maxSize|可选|整型数值|指定编译ArkTS线程的数量，默认为5。|
+|hvigor.pool.cache.capacity|可选|整型数值|定义内存中缓存数据的容量，默认为4，数值越小，内存中缓存数据越少。配置为0，表示不启用内存缓存配置。|
+|hvigor.pool.maxSize|可选|整型数值|指定编译过程中的线程数量，相比ohos.arkCompile.maxSize增加签名、打包等任务的线程。默认值为“工程的模块数”和“电脑虚拟核数-1”两者的较小值。|
+|ohos.pack.compressLevel|可选|字符串|设置打包hap（压缩so）或app（压缩hap）时的压缩率等级。压缩率越高，压缩速度越慢。<br><br>- fast（缺省默认值）：最低等级的压缩率，压缩速度最快。<br>- standard：适中等级的压缩率，压缩速度适中。<br>- ultimate：最高等级的压缩率，压缩速度最慢。|
+|hvigor.analyzeHtml|可选|布尔值|是否生成构建可视化html文件。<br><br>- true：生成构建可视化html文件。生成的html文件存放在工程的.hvigor/report目录下，该文件可直接在浏览器中打开。<br>- false（缺省默认值）：不生成构建可视化html文件。|
+|hvigor.dependency.useNpm|可选|布尔值|指定是否使用npm下载hvigor依赖。<br><br>若未配置该字段，当Node.js版本 ≥ 16时，默认使用pnpm下载依赖。在某些特定场景，可以通过配置该字段指定使用npm下载依赖。<br><br>- true：对于任意Node版本，都使用npm下载依赖。<br>- false（缺省默认值）：Node.js版本 ≥ 16时，使用pnpm下载依赖；Node.js版本 ＜ 16时，使用npm下载依赖。|
+|ohos.compile.lib.entryfile|可选|布尔值|指定是否从入口文件开始编译：<br><br>- true：表示从模块的入口文件开始编译，将编译入口文件及被引用的文件，没被引用的文件不会参与编译流程。<br>- false（缺省默认值）：表示将src/main/ets下的ets和ts文件进行全量编译，涉及到以下场景：<br>    1. 构建HSP时，存在于src/main/ets下的ets和ts文件都会被编译到产物中。<br>    2. release模式对HAR混淆或构建字节码HAR时，存在于src/main/ets下的ets和ts文件都会被编译到产物中。<br>    3. 构建HAP/HSP时，存在于动态依赖的HAR模块src/main/ets下的ets和ts文件都会被编译到产物中。|
+|ohos.align.target|可选|字符串|指定本次构建任务所有涉及到的模块及其依赖的模块的target。详情请参考[多产物构建target](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-guides#section7121513141619)。|
+|ohos.fallback.target|可选|字符串数组|指定本次构建任务所有涉及到的模块及其依赖模块的fallback target，fallback target是一个特定优先级的target，各target的优先级顺序：align target > 命令行指定target > 被依赖的父模块target > fallback target > default target。详情请参考[多产物构建target](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-guides#section7121513141619)。|
+|ohos.arkCompile.sourceMapDir|可选|字符串|指定sourceMap文件的生成路径，方便开发者进行堆栈的回栈与错误信息的定位，当前仅支持Stage模型。若没有指定路径，默认生成在build/{productName}/outputs/{targetName}/mapping下。<br><br>说明<br><br>从API 12开始支持。|
+|ohos.collect.debugSymbol|可选|布尔值|是否将[sourceMap](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-exception-stack-parsing-principle#section666114451518)、[nameCache](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-exception-stack-parsing-principle#section19215122372720)和带调试信息的so文件归档到产物路径下，根据选择的构建模式，如果是构建HAP/HSP/HAR，会归档到模块的build/{productName}/outputs/{targetName}/symbol的release或debug目录下；如果是构建APP，会将HAP/HSP模块的文件归档到工程的build/outputs/{productName}/symbol的release或debug目录下。<br><br>- true：归档。<br>- false：不归档。<br><br>说明<br><br>- 如果不配置，release模式时默认值为true，debug模式时默认值为false。<br>- 仅支持Stage模型。<br>- nameCache文件仅在release模式下且开启混淆后才会生成，release模式下不开启混淆以及debug模式下均不生成这个文件。|
+|hvigor.enableMemoryCache|可选|布尔值|是否开启缓存，开启缓存会加快增量编译速度，关闭缓存能够节省内存占用，但是会增加增量编译时间。<br><br>- true（缺省默认值）：开启。<br>- false：不开启。|
+|hvigor.memoryThreshold|可选|整型数值|内存管理阈值，单位为MB，当编译构建占用内存超过此阈值时，新加入的编译任务会等待，直到正在进行的编译任务结束，新的编译任务才能开始，此配置将导致编译时间延长。<br><br>说明<br><br>- 配置该字段后，即使hvigor.enableMemoryCache配置为true，也不进行缓存。<br>- 该字段配置为很小的值时，构建任务会串行执行，等效于配置ohos.arkCompile.maxSize:1；配置为很大的值时，与不配置没有差异。|
+|ohos.nativeResolver|可选|布尔值|ArkTS编译过程中是否使用高性能插件进行依赖寻址，使用高性能插件可以降低编译过程的峰值内存，加快编译速度。<br><br>- true（缺省默认值）：使用。<br>- false：不使用。|
+|ohos.arkCompile.noEmitJs|可选|布尔值|ArkTS编译过程中是否生成js中间产物，具体方案及开启后的影响请参考[优化编译中间产物生成](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-experimental-properties#section11117155101617)。<br><br>- true：不生成。<br>- false（缺省默认值）：生成。|
+|ohos.arkCompile.singleFileEmit|可选|布尔值|是否开启单文件解析完成后写入磁盘的能力，具体方案及开启后的影响请参考[文件写入磁盘](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-experimental-properties#section1131619813214)。<br><br>- true：开启。<br>- false（缺省默认值）：不开启。|
+|ohos.sign.har|可选|布尔值|是否启用HAR签名任务。详情请参考[构建签名HAR](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-har#section116791730173713)。<br><br>- true：启用。<br>- false（缺省默认值）：不启用。|
+|hvigor.keepDependency|可选|布尔值|是否保持hsp中的所有依赖。如果保持则不对依赖进行处理，如果不保持，则只会保留hsp模块中的hsp相关依赖。<br><br>- true（缺省默认值）：保持。<br>- false：不保持。|
+|ohos.arkCompile.emptyBundleName|可选|布尔值|ArkTS编译转换后的产物，bundleName字段是否为空值。<br><br>- true：bundleName字段的值是空值。<br>- false（缺省默认值）：bundleName字段是应用实际的包名。<br><br>说明<br><br>- 仅支持在EntryAbility中使用loadContentByName加载首页，同时使用Navigation导航进行页面跳转时设置为true，否则会导致应用闪退。<br>- 预览时暂不支持配置该字段，字段默认取值为false。|
+|ohos.uiTransform.Optimization|可选|布尔值|是否对ArkTS编译转换后的产物中的bundleName字段开启优化。<br><br>- true：开启，bundleName字段的值是变量。<br>- false（缺省默认值）：不开启，bundleName字段是应用实际的包名。<br><br>该字段从DevEco Studio 5.0.5 Beta1版本开始支持。<br><br>说明<br><br>- 该字段对字节码HAR不生效，字节码HAR产物的bundleName字段的值默认是变量。<br>- 预览时暂不支持配置该字段，字段默认取值为false。|
+|ohos.har.excludeHspDependencies|可选|布尔值|构建har包时，产物module.json中是否排除依赖的hsp，排除后，module.json中不包含dependencies字段。<br><br>- true：排除。<br>- false（缺省默认值）：不排除。<br><br>该字段从DevEco Studio 5.1.0 Release版本开始支持。|
+|ohos.processLib.optimization|可选|布尔值|是否启用[ProcessLibs任务](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-task-process#li671313965913)性能优化，启用后可以减少ProcessLibs任务中so增量判定的耗时。<br><br>- true：启用。<br>- false（缺省默认值）：不启用。|
+|ohos.obfuscationRules.optimization|可选|布尔值|release模式开启混淆时，是否优化三方依赖中混淆配置文件的收集方式，优化后可以减少收集耗时，加快编译速度。<br><br>- true：优化。<br>- false（缺省默认值）：不优化。<br><br>该字段从DevEco Studio 5.1.0 Release版本开始支持。|
+|hvigor.incremental.optimization|可选|布尔值|是否开启任务增量判断优化，优化方案及开启后的影响请参考[任务增量判断优化](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-experimental-properties#section95571022144613)。<br><br>- true：开启。<br>- false（缺省默认值）：不开启。|
+|hvigor.task.schedule.optimization|可选|布尔值|是否开启任务调度优化，优化方案及开启后的影响请参考[任务调度优化](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-experimental-properties#section09371546164610)。<br><br>- true：开启。<br>- false（缺省默认值）：不开启。|
+|ohos.byteCodeHar.integratedOptimization|可选|布尔值|是否开启字节码HAR集成行为优化，开启后，字节码HAR使用的依赖支持配置在工程级oh-package.json5的dependencies或dynamicDependencies中，同时会优化部分依赖收集行为，具体请参考[编译行为差异说明](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-dependencies#section957371853712)。<br><br>- true：开启。<br>- false（缺省默认值）：不开启。<br><br>从DevEco Studio 5.1.1 Beta1版本开始支持。|
+|ohos.rollupCache.usePathPlaceholder|可选|布尔值|是否将build目录下rollup缓存中的绝对路径替换为占位符。该功能是实验特性，开启后会造成读写缓存性能降低。<br><br>- true：是，即缓存中是占位符。<br>- false（缺省默认值）：否，即缓存中是绝对路径。<br><br>从DevEco Studio 6.0.0 Beta1版本开始支持。|
+|ohos.rollupCache.useSourceHash|可选|布尔值|是否将build目录下rollup缓存中的源码替换为对应的hash内容，减少缓存大小。该功能是实验特性，可以提升缓存对比和读写性能。<br><br>- true：是，即缓存源码hash。<br>- false（缺省默认值）：否，即缓存源码内容。<br><br>从DevEco Studio 6.0.0 Beta1版本开始支持。|
+|ohos.arkCompile.writeRollupCache|可选|布尔值|build目录下是否写入rollup缓存。<br><br>- true（缺省默认值）：写缓存。<br>- false：不写缓存。<br><br>从DevEco Studio 6.0.0 Beta2版本开始支持。|
+|ohos.align.deviceTypes|可选|字符串数组|指定归一的设备类型，构建APP时，当HAP/HSP的module.json5中的设备类型是ohos.align.deviceTypes的超集时，模块才会被打包到APP中，同时打包后产物中的设备类型会被设置为ohos.align.deviceTypes的值。<br><br>从DevEco Studio 6.0.0 Beta2版本开始支持。<br><br>说明<br><br>仅支持Stage模型。|
+|ohos.dependencies.types.enable|可选|布尔值|编译时是否收集依赖的HAR模块/[源码HAR包](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-har#section197792874110)的[类型声明文件](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkoptions-guide#types)参与语法校验。如果HAR中配置了类型声明文件，建议开启。<br><br>- true：收集。<br>- false（缺省默认值）：不收集。<br><br>从DevEco Studio 6.0.0 Beta3版本开始支持。|
+|ohos.defaults.release.cmakebuildtype|可选|字符串|在release模式下构建时，指定cmake构建类型，对所有模块生效。<br><br>- Debug：不优化代码，附加调试信息。<br>- Release（缺省默认值）：最大化优化代码，但不包含调试信息。<br>- RelWithDebInfo：近似于Release模式，既进行了代码优化，同时保留部分调试信息。<br><br>从DevEco Studio 6.0.1 Beta1版本开始支持。<br><br>说明<br><br>- 模块级build-profile.json5文件中也可以通过[arguments字段](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-exception-stack-parsing-principle#section147714466283)指定cmake构建类型，例如"arguments": "-DCMAKE_BUILD_TYPE=RelWithDebInfo"。arguments字段的优先级比ohos.defaults.release.cmakebuildtype更高。<br>- 在debug模式下构建时，该字段配置无效，默认使用Debug构建类型。|
+
+properties字段示例：
+
+1. {
+2.   "properties": {
+3.     "hvigor.cacheDir": "D://tmp",
+4.     "ohos.buildDir": "D://tmp",
+5.     "enableSignTask": true,
+6.     "ohos.arkCompile.maxSize": 6,
+7.     "hvigor.pool.cache.capacity": 2,
+8.     "hvigor.pool.maxSize": 8,
+9.     "ohos.pack.compressLevel": "standard",
+10.     "hvigor.analyzeHtml": true,
+11.     "hvigor.dependency.useNpm": false,
+12.     "ohos.compile.lib.entryfile": true,
+13.     "ohos.align.target": "target1",
+14.     "ohos.fallback.target": ["target1", "target2"],
+15.     "ohos.arkCompile.sourceMapDir": "D://MyProject",
+16.     "ohos.collect.debugSymbol": false,
+17.     "hvigor.enableMemoryCache": true,
+18.     "hvigor.memoryThreshold": 1000,
+19.     "ohos.nativeResolver": true,
+20.     "ohos.arkCompile.noEmitJs": true,
+21.     "ohos.arkCompile.singleFileEmit": true,
+22.     "ohos.sign.har": true,
+23.     "hvigor.keepDependency": false,
+24.     "ohos.arkCompile.emptyBundleName": true,
+25.     "ohos.align.deviceTypes": ["phone", "tablet"],
+26.     "ohos.defaults.release.cmakebuildtype": "RelWithDebInfo",
+27.   }
+28. }动态生成编译构建产物Hap和App的名称
 
 更新时间: 2025-12-15 21:24
 
@@ -1085,3 +1336,1217 @@ A：在“hvigor/hvigor-config.json5”的dependencies中指定依赖，然后�
 Q：如何查看编译的详细过程？
 
 A：在hvigor->hvigor-config.json5中"logging": { //"level": "info" }的注释取消，改为debug，改完后的结果为"logging": { "level": "debug" }，在编译时就可以看到编译的详细过程。
+# hvigor-config.json5文件
+
+更新时间: 2025-12-16 15:59
+
+## 配置文件结构
+
+hvigor-config.json5文件整体的结构如下。
+
+1. modelVersion
+2. dependencies
+3. execution
+4. └── analyze
+5. └── daemon
+6. └── incremental
+7. └── parallel
+8. └── typeCheck
+9. └── optimizationStrategy
+10. logging
+11. └── level
+12. debugging
+13. └── stacktrace
+14. nodeOptions
+15. └── maxOldSpaceSize
+16. └── maxSemiSpaceSize
+17. └── exposeGC
+18. javaOptions
+19. └── Xmx
+20. properties
+21. └── hvigor.cacheDir
+22. └── ohos.buildDir
+23. └── enableSignTask
+24. └── ohos.arkCompile.maxSize
+25. └── hvigor.pool.cache.capacity
+26. └── hvigor.pool.maxSize
+27. └── ohos.pack.compressLevel
+28. └── hvigor.analyzeHtml
+29. └── hvigor.dependency.useNpm
+30. └── ohos.compile.lib.entryfile
+31. └── ohos.align.target
+32. └── ohos.fallback.target
+33. └── ohos.arkCompile.sourceMapDir
+34. └── ohos.collect.debugSymbol
+35. └── hvigor.enableMemoryCache
+36. └── hvigor.memoryThreshold
+37. └── ohos.nativeResolver
+38. └── ohos.arkCompile.noEmitJs
+39. └── ohos.arkCompile.singleFileEmit
+40. └── ohos.sign.har
+41. └── hvigor.keepDependency
+42. └── ohos.arkCompile.emptyBundleName
+43. └── ohos.uiTransform.Optimization
+44. └── ohos.har.excludeHspDependencies
+45. └── ohos.processLib.optimization
+46. └── ohos.obfuscationRules.optimization
+47. └── hvigor.incremental.optimization
+48. └── hvigor.task.schedule.optimization
+49. └── ohos.byteCodeHar.integratedOptimization
+50. └── ohos.rollupCache.usePathPlaceholder
+51. └── ohos.rollupCache.useSourceHash
+52. └── ohos.arkCompile.writeRollupCache
+53. └── ohos.align.deviceTypes
+54. └── ohos.dependencies.types.enable
+55. └── ohos.defaults.release.cmakebuildtype
+
+## 配置文件字段说明
+
+hvigor-config.json5配置文件包含以下字段。
+
+**表1** hvigor-config.json5文件字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|modelVersion|必选|字符串|开发态版本号。|
+|dependencies|必选|对象|当前工程执行构建任务时，依赖的构建插件及版本，为npm源组件。<br><br>说明<br><br>修改dependencies后，请根据界面提示，点击编辑器右上角**Sync Now**安装依赖。|
+|[execution](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-set-options#section6901191119219)|可选|对象|执行构建的相关配置参数，仅在命令行场景下生效。|
+|[logging](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-set-options#section85176471028)|可选|对象|日志相关配置参数。|
+|[debugging](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-set-options#section76575554217)|可选|对象|调测相关配置参数。|
+|[nodeOptions](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-set-options#section74431812314)|可选|对象|Node相关配置参数。|
+|[javaOptions](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-set-options#section7929682318)|可选|对象|java相关配置参数。|
+|[properties](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-set-options#section260315160319)|可选|对象|额外配置参数。|
+
+## execution
+
+execution是执行构建的相关配置参数，除了optimizationStrategy字段外，其他字段仅在命令行构建场景下生效，如果通过DevEco Studio菜单栏构建，需要在**File >** **Settings**（macOS为**DevEco Studio > Preferences/Settings**） **> Build, Execution, Deployment > Build Tools > Hvigor**中设置。
+
+**表2** execution字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|analyze|可选|字符串/布尔值|构建分析模式。<br><br>- normal（默认值）：普通模式，通过简单打点数据进行分析。原default模式已废弃。<br>- advanced：进阶模式，通过更加详细的打点数据进行分析。如果需要更详细的任务耗时数据，请选择该模式。原verbose模式已废弃。<br>- ultrafine：超精细化模式，与advanced模式相比，在ArkTS编译阶段记录更详细的打点数据，但开启后可能导致编译构建时间更长。从DevEco Studio 6.0.0 Beta1版本开始支持。<br>- false：不启用构建分析。|
+|daemon|可选|布尔值|是否启用守护进程编译。<br><br>- true（缺省默认值）：启用。<br>- false：不启用。|
+|incremental|可选|布尔值|是否启用增量编译。<br><br>- true（缺省默认值）：启用。<br>- false：不启用。|
+|parallel|可选|布尔值|是否启用并行编译。<br><br>- true（缺省默认值）：启用。<br>- false：不启用。|
+|typeCheck|可选|布尔值|是否启用构建脚本hvigorfile.ts文件的类型检查，启用后构建效率可能会有所降低。<br><br>- true：启用。<br>- false（缺省默认值）：不启用。|
+|optimizationStrategy|可选|字符串|指定构建模式。从DevEco Studio 5.1.1 Release版本开始支持。<br><br>- performance：性能优先模式，可加快构建速度，但会占用更多内存。<br>- memory（缺省默认值）：内存优先模式，可以减少编译内存占用。<br><br>说明<br><br>更改模式后，首次编译会执行全量编译。|
+
+execution字段示例：
+
+1. {
+2.   "execution": {
+3.     "analyze": "normal",
+4.     "daemon": true,
+5.     "incremental": true,
+6.     "parallel": true,
+7.     "typeCheck": false,
+8.     "optimizationStrategy": "performance",
+9.   }
+10. }
+
+## logging
+
+logging是日志相关配置参数。
+
+**表3** logging字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|level|可选|字符串|构建时打印日志的级别。<br><br>- debug：调测日志。<br>- info（缺省默认值）：基本信息日志。<br>- warn：告警日志。<br>- error：错误日志。|
+
+logging字段示例：
+
+1. {
+2.   "logging": {
+3.     "level": "debug"
+4.   }
+5. }
+
+## debugging
+
+debugging是调测相关配置参数。
+
+**表4** debugging字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|stacktrace|可选|布尔值|是否启用堆栈跟踪。<br><br>- true：启用。<br>- false（缺省默认值）：不启用。|
+
+debugging字段示例：
+
+1. {
+2.   "debugging": {
+3.     "stacktrace": true
+4.   }
+5. }
+
+## nodeOptions
+
+nodeOptions是Node相关配置参数。
+
+**表5** nodeOptions字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|maxOldSpaceSize|可选|整型数值|启用守护进程编译时，为守护进程设置最大的老生代内存大小，单位为MB，默认为8192MB。当工程代码量较大出现JS内存溢出时，可以调整该参数。|
+|maxSemiSpaceSize|可选|整型数值|启用守护进程编译时，为守护进程设置新生代内存最大的半空间大小，单位为MB，默认为16MB。增加半空间大小可能会提高Node.js的吞吐量，但会消耗更多内存。<br><br>该字段从DevEco Studio 5.1.0 Release版本开始支持。|
+|exposeGC|可选|布尔值|是否启用GC（Garbage Collection，内存回收），启用后会优化编译过程的峰值内存。<br><br>- true（缺省默认值）：启用。<br>- false：不启用。|
+
+nodeOptions字段示例：
+
+1. {
+2.   "nodeOptions": {
+3.     "maxOldSpaceSize": 8192,
+4.     "maxSemiSpaceSize": 16,
+5.     "exposeGC": true,
+6.   }
+7. }
+
+## javaOptions
+
+javaOptions是java相关配置参数。
+
+**表6** javaOptions字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|Xmx|可选|整型数值|设置JVM最大堆内存，单位为MB，默认为512MB。|
+
+javaOptions字段示例：
+
+1. {
+2.   "javaOptions": {
+3.     "Xmx": 512
+4.   }
+5. }
+
+## properties
+
+properties是额外配置参数。
+
+**表7** properties字段说明
+|字段名称|可选/必选|类型|含义|
+|:--|:--|:--|:--|
+|hvigor.cacheDir|可选|字符串|指定项目根目录下的.hvigor缓存文件夹的存放路径。<br><br>说明<br><br>同名的不同工程不可指定相同的存放位置。|
+|ohos.buildDir|可选|字符串|指定项目的构建产物目录（build目录）存放位置。<br><br>说明<br><br>同名的不同工程不可指定相同的存放位置。|
+|enableSignTask|可选|布尔值|是否启用HAP或HSP签名任务。<br><br>- true（缺省默认值）：启用。<br>- false：不启用。|
+|ohos.arkCompile.maxSize|可选|整型数值|指定编译ArkTS线程的数量，默认为5。|
+|hvigor.pool.cache.capacity|可选|整型数值|定义内存中缓存数据的容量，默认为4，数值越小，内存中缓存数据越少。配置为0，表示不启用内存缓存配置。|
+|hvigor.pool.maxSize|可选|整型数值|指定编译过程中的线程数量，相比ohos.arkCompile.maxSize增加签名、打包等任务的线程。默认值为“工程的模块数”和“电脑虚拟核数-1”两者的较小值。|
+|ohos.pack.compressLevel|可选|字符串|设置打包hap（压缩so）或app（压缩hap）时的压缩率等级。压缩率越高，压缩速度越慢。<br><br>- fast（缺省默认值）：最低等级的压缩率，压缩速度最快。<br>- standard：适中等级的压缩率，压缩速度适中。<br>- ultimate：最高等级的压缩率，压缩速度最慢。|
+|hvigor.analyzeHtml|可选|布尔值|是否生成构建可视化html文件。<br><br>- true：生成构建可视化html文件。生成的html文件存放在工程的.hvigor/report目录下，该文件可直接在浏览器中打开。<br>- false（缺省默认值）：不生成构建可视化html文件。|
+|hvigor.dependency.useNpm|可选|布尔值|指定是否使用npm下载hvigor依赖。<br><br>若未配置该字段，当Node.js版本 ≥ 16时，默认使用pnpm下载依赖。在某些特定场景，可以通过配置该字段指定使用npm下载依赖。<br><br>- true：对于任意Node版本，都使用npm下载依赖。<br>- false（缺省默认值）：Node.js版本 ≥ 16时，使用pnpm下载依赖；Node.js版本 ＜ 16时，使用npm下载依赖。|
+|ohos.compile.lib.entryfile|可选|布尔值|指定是否从入口文件开始编译：<br><br>- true：表示从模块的入口文件开始编译，将编译入口文件及被引用的文件，没被引用的文件不会参与编译流程。<br>- false（缺省默认值）：表示将src/main/ets下的ets和ts文件进行全量编译，涉及到以下场景：<br>    1. 构建HSP时，存在于src/main/ets下的ets和ts文件都会被编译到产物中。<br>    2. release模式对HAR混淆或构建字节码HAR时，存在于src/main/ets下的ets和ts文件都会被编译到产物中。<br>    3. 构建HAP/HSP时，存在于动态依赖的HAR模块src/main/ets下的ets和ts文件都会被编译到产物中。|
+|ohos.align.target|可选|字符串|指定本次构建任务所有涉及到的模块及其依赖的模块的target。详情请参考[多产物构建target](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-guides#section7121513141619)。|
+|ohos.fallback.target|可选|字符串数组|指定本次构建任务所有涉及到的模块及其依赖模块的fallback target，fallback target是一个特定优先级的target，各target的优先级顺序：align target > 命令行指定target > 被依赖的父模块target > fallback target > default target。详情请参考[多产物构建target](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-guides#section7121513141619)。|
+|ohos.arkCompile.sourceMapDir|可选|字符串|指定sourceMap文件的生成路径，方便开发者进行堆栈的回栈与错误信息的定位，当前仅支持Stage模型。若没有指定路径，默认生成在build/{productName}/outputs/{targetName}/mapping下。<br><br>说明<br><br>从API 12开始支持。|
+|ohos.collect.debugSymbol|可选|布尔值|是否将[sourceMap](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-exception-stack-parsing-principle#section666114451518)、[nameCache](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-exception-stack-parsing-principle#section19215122372720)和带调试信息的so文件归档到产物路径下，根据选择的构建模式，如果是构建HAP/HSP/HAR，会归档到模块的build/{productName}/outputs/{targetName}/symbol的release或debug目录下；如果是构建APP，会将HAP/HSP模块的文件归档到工程的build/outputs/{productName}/symbol的release或debug目录下。<br><br>- true：归档。<br>- false：不归档。<br><br>说明<br><br>- 如果不配置，release模式时默认值为true，debug模式时默认值为false。<br>- 仅支持Stage模型。<br>- nameCache文件仅在release模式下且开启混淆后才会生成，release模式下不开启混淆以及debug模式下均不生成这个文件。|
+|hvigor.enableMemoryCache|可选|布尔值|是否开启缓存，开启缓存会加快增量编译速度，关闭缓存能够节省内存占用，但是会增加增量编译时间。<br><br>- true（缺省默认值）：开启。<br>- false：不开启。|
+|hvigor.memoryThreshold|可选|整型数值|内存管理阈值，单位为MB，当编译构建占用内存超过此阈值时，新加入的编译任务会等待，直到正在进行的编译任务结束，新的编译任务才能开始，此配置将导致编译时间延长。<br><br>说明<br><br>- 配置该字段后，即使hvigor.enableMemoryCache配置为true，也不进行缓存。<br>- 该字段配置为很小的值时，构建任务会串行执行，等效于配置ohos.arkCompile.maxSize:1；配置为很大的值时，与不配置没有差异。|
+|ohos.nativeResolver|可选|布尔值|ArkTS编译过程中是否使用高性能插件进行依赖寻址，使用高性能插件可以降低编译过程的峰值内存，加快编译速度。<br><br>- true（缺省默认值）：使用。<br>- false：不使用。|
+|ohos.arkCompile.noEmitJs|可选|布尔值|ArkTS编译过程中是否生成js中间产物，具体方案及开启后的影响请参考[优化编译中间产物生成](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-experimental-properties#section11117155101617)。<br><br>- true：不生成。<br>- false（缺省默认值）：生成。|
+|ohos.arkCompile.singleFileEmit|可选|布尔值|是否开启单文件解析完成后写入磁盘的能力，具体方案及开启后的影响请参考[文件写入磁盘](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-experimental-properties#section1131619813214)。<br><br>- true：开启。<br>- false（缺省默认值）：不开启。|
+|ohos.sign.har|可选|布尔值|是否启用HAR签名任务。详情请参考[构建签名HAR](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-har#section116791730173713)。<br><br>- true：启用。<br>- false（缺省默认值）：不启用。|
+|hvigor.keepDependency|可选|布尔值|是否保持hsp中的所有依赖。如果保持则不对依赖进行处理，如果不保持，则只会保留hsp模块中的hsp相关依赖。<br><br>- true（缺省默认值）：保持。<br>- false：不保持。|
+|ohos.arkCompile.emptyBundleName|可选|布尔值|ArkTS编译转换后的产物，bundleName字段是否为空值。<br><br>- true：bundleName字段的值是空值。<br>- false（缺省默认值）：bundleName字段是应用实际的包名。<br><br>说明<br><br>- 仅支持在EntryAbility中使用loadContentByName加载首页，同时使用Navigation导航进行页面跳转时设置为true，否则会导致应用闪退。<br>- 预览时暂不支持配置该字段，字段默认取值为false。|
+|ohos.uiTransform.Optimization|可选|布尔值|是否对ArkTS编译转换后的产物中的bundleName字段开启优化。<br><br>- true：开启，bundleName字段的值是变量。<br>- false（缺省默认值）：不开启，bundleName字段是应用实际的包名。<br><br>该字段从DevEco Studio 5.0.5 Beta1版本开始支持。<br><br>说明<br><br>- 该字段对字节码HAR不生效，字节码HAR产物的bundleName字段的值默认是变量。<br>- 预览时暂不支持配置该字段，字段默认取值为false。|
+|ohos.har.excludeHspDependencies|可选|布尔值|构建har包时，产物module.json中是否排除依赖的hsp，排除后，module.json中不包含dependencies字段。<br><br>- true：排除。<br>- false（缺省默认值）：不排除。<br><br>该字段从DevEco Studio 5.1.0 Release版本开始支持。|
+|ohos.processLib.optimization|可选|布尔值|是否启用[ProcessLibs任务](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-task-process#li671313965913)性能优化，启用后可以减少ProcessLibs任务中so增量判定的耗时。<br><br>- true：启用。<br>- false（缺省默认值）：不启用。|
+|ohos.obfuscationRules.optimization|可选|布尔值|release模式开启混淆时，是否优化三方依赖中混淆配置文件的收集方式，优化后可以减少收集耗时，加快编译速度。<br><br>- true：优化。<br>- false（缺省默认值）：不优化。<br><br>该字段从DevEco Studio 5.1.0 Release版本开始支持。|
+|hvigor.incremental.optimization|可选|布尔值|是否开启任务增量判断优化，优化方案及开启后的影响请参考[任务增量判断优化](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-experimental-properties#section95571022144613)。<br><br>- true：开启。<br>- false（缺省默认值）：不开启。|
+|hvigor.task.schedule.optimization|可选|布尔值|是否开启任务调度优化，优化方案及开启后的影响请参考[任务调度优化](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-experimental-properties#section09371546164610)。<br><br>- true：开启。<br>- false（缺省默认值）：不开启。|
+|ohos.byteCodeHar.integratedOptimization|可选|布尔值|是否开启字节码HAR集成行为优化，开启后，字节码HAR使用的依赖支持配置在工程级oh-package.json5的dependencies或dynamicDependencies中，同时会优化部分依赖收集行为，具体请参考[编译行为差异说明](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-dependencies#section957371853712)。<br><br>- true：开启。<br>- false（缺省默认值）：不开启。<br><br>从DevEco Studio 5.1.1 Beta1版本开始支持。|
+|ohos.rollupCache.usePathPlaceholder|可选|布尔值|是否将build目录下rollup缓存中的绝对路径替换为占位符。该功能是实验特性，开启后会造成读写缓存性能降低。<br><br>- true：是，即缓存中是占位符。<br>- false（缺省默认值）：否，即缓存中是绝对路径。<br><br>从DevEco Studio 6.0.0 Beta1版本开始支持。|
+|ohos.rollupCache.useSourceHash|可选|布尔值|是否将build目录下rollup缓存中的源码替换为对应的hash内容，减少缓存大小。该功能是实验特性，可以提升缓存对比和读写性能。<br><br>- true：是，即缓存源码hash。<br>- false（缺省默认值）：否，即缓存源码内容。<br><br>从DevEco Studio 6.0.0 Beta1版本开始支持。|
+|ohos.arkCompile.writeRollupCache|可选|布尔值|build目录下是否写入rollup缓存。<br><br>- true（缺省默认值）：写缓存。<br>- false：不写缓存。<br><br>从DevEco Studio 6.0.0 Beta2版本开始支持。|
+|ohos.align.deviceTypes|可选|字符串数组|指定归一的设备类型，构建APP时，当HAP/HSP的module.json5中的设备类型是ohos.align.deviceTypes的超集时，模块才会被打包到APP中，同时打包后产物中的设备类型会被设置为ohos.align.deviceTypes的值。<br><br>从DevEco Studio 6.0.0 Beta2版本开始支持。<br><br>说明<br><br>仅支持Stage模型。|
+|ohos.dependencies.types.enable|可选|布尔值|编译时是否收集依赖的HAR模块/[源码HAR包](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-har#section197792874110)的[类型声明文件](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkoptions-guide#types)参与语法校验。如果HAR中配置了类型声明文件，建议开启。<br><br>- true：收集。<br>- false（缺省默认值）：不收集。<br><br>从DevEco Studio 6.0.0 Beta3版本开始支持。|
+|ohos.defaults.release.cmakebuildtype|可选|字符串|在release模式下构建时，指定cmake构建类型，对所有模块生效。<br><br>- Debug：不优化代码，附加调试信息。<br>- Release（缺省默认值）：最大化优化代码，但不包含调试信息。<br>- RelWithDebInfo：近似于Release模式，既进行了代码优化，同时保留部分调试信息。<br><br>从DevEco Studio 6.0.1 Beta1版本开始支持。<br><br>说明<br><br>- 模块级build-profile.json5文件中也可以通过[arguments字段](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-exception-stack-parsing-principle#section147714466283)指定cmake构建类型，例如"arguments": "-DCMAKE_BUILD_TYPE=RelWithDebInfo"。arguments字段的优先级比ohos.defaults.release.cmakebuildtype更高。<br>- 在debug模式下构建时，该字段配置无效，默认使用Debug构建类型。|
+
+properties字段示例：
+
+1. {
+2.   "properties": {
+3.     "hvigor.cacheDir": "D://tmp",
+4.     "ohos.buildDir": "D://tmp",
+5.     "enableSignTask": true,
+6.     "ohos.arkCompile.maxSize": 6,
+7.     "hvigor.pool.cache.capacity": 2,
+8.     "hvigor.pool.maxSize": 8,
+9.     "ohos.pack.compressLevel": "standard",
+10.     "hvigor.analyzeHtml": true,
+11.     "hvigor.dependency.useNpm": false,
+12.     "ohos.compile.lib.entryfile": true,
+13.     "ohos.align.target": "target1",
+14.     "ohos.fallback.target": ["target1", "target2"],
+15.     "ohos.arkCompile.sourceMapDir": "D://MyProject",
+16.     "ohos.collect.debugSymbol": false,
+17.     "hvigor.enableMemoryCache": true,
+18.     "hvigor.memoryThreshold": 1000,
+19.     "ohos.nativeResolver": true,
+20.     "ohos.arkCompile.noEmitJs": true,
+21.     "ohos.arkCompile.singleFileEmit": true,
+22.     "ohos.sign.har": true,
+23.     "hvigor.keepDependency": false,
+24.     "ohos.arkCompile.emptyBundleName": true,
+25.     "ohos.align.deviceTypes": ["phone", "tablet"],
+26.     "ohos.defaults.release.cmakebuildtype": "RelWithDebInfo",
+27.   }
+28. }
+# 模块级build-profile.json5文件
+
+更新时间: 2025-12-16 15:59
+
+## 配置文件结构
+
+模块级build-profile.json5文件整体的结构如下。
+
+1. apiType
+2. targets
+3. └── name
+4. └── runtimeOS
+5. └── config
+6.     └── distroFilter / distributionFilter
+7.         └── apiVersion
+8.             └── policy
+9.             └── value
+10.         └── screenShape
+11.             └── policy
+12.             └── value
+13.         └── screenWindow
+14.             └── policy
+15.             └── value
+16.         └── screenDensity
+17.             └── policy
+18.             └── value
+19.         └── countryCode
+20.             └── policy
+21.             └── value
+22.     └── deviceType
+23.     └── buildOption
+24.     └── atomicService
+25.         └── preloads
+26.             └── moduleName
+27. └── source
+28.     └── abilities
+29.         └── name
+30.         └── pages
+31.         └── res
+32.         └── icon
+33.         └── label
+34.         └── launchType
+35.     └── pages
+36.     └── sourceRoots
+37. └── resource
+38.     └── directories
+39. └── output
+40.     └── artifactName
+41. showInServiceCenter
+42. buildOption
+43. buildOptionSet
+44. └── name
+45. └── debuggable
+46. └── generateSharedTgz
+47. └── copyFrom
+48. └── resOptions
+49.     └── compression
+50.         └── media
+51.             └── enable
+52.         └── filters
+53.             └── method
+54.                 └── type
+55.                 └── blocks
+56.             └── files
+57.                 └── path
+58.                 └── size
+59.                 └── resolution
+60.             └── exclude
+61.                 └── path
+62.                 └── size
+63.                 └── resolution
+64.     └── resCompileThreads
+65.     └── copyCodeResource
+66.         └── enable
+67.         └── includes
+68.         └── excludes
+69.     └── ignoreResourcePattern
+70.     └── excludeHarRes
+71.     └── includeAppScopeRes
+72. └── externalNativeOptions
+73.     └── path
+74.     └── abiFilters
+75.     └── arguments
+76.     └── cppFlags
+77.     └── cFlags
+78.     └── targets
+79. └── sourceOption
+80.     └── workers
+81. └── nativeLib
+82.     └── filter
+83.         └── excludes
+84.         └── pickFirsts
+85.         └── pickLasts
+86.         └── enableOverride
+87.         └── select
+88.             └── package
+89.             └── version
+90.             └── includePattern
+91.             └── excludePattern
+92.             └── include
+93.             └── exclude
+94.     └── debugSymbol
+95.         └── strip
+96.         └── exclude
+97.     └── headerPath
+98.     └── collectAllLibs
+99.     └── excludeFromHar
+100.     └── excludeSoFromInterfaceHar
+101.     └── librariesInfo
+102.         └── name
+103.         └── linkLibraries
+104. └── napiLibFilterOption
+105.     └── excludes
+106.     └── pickFirsts
+107.     └── pickLasts
+108.     └── enableOverride
+109. └── arkOptions
+110.     └── runtimeOnly
+111.         └── sources
+112.         └── packages
+113.         └── excludePackages
+114.     └── types  
+115.     └── obfuscation
+116.         └── ruleOptions
+117.             └── enable
+118.             └── files
+119.         └── consumerFiles
+120.     └── buildProfileFields
+121.     └── integratedHsp
+122.     └── transformLib
+123.     └── branchElimination
+124.     └── byteCodeHar
+125.     └── bundledDependencies
+126.     └── packSourceMap
+127.     └── autoLazyImport
+128.     └── autoLazyFilter
+129.         └── include
+130.         └── exclude
+131.     └── reExportCheckMode
+132.     └── skipOhModulesLint
+133.     └── expandImportPath
+134.         └── enable
+135.         └── exclude
+136.     └── apPath
+137.     └── hostPGO
+138. └── packingOptions
+139.     └── asset
+140.         └── include
+141.         └── exclude
+142. └── removePermissions
+143.     └── name
+144. buildModeBinder
+145. └── buildModeName
+146. └── mappings
+147.     └── targetName
+148.     └── buildOptionName
+149. entryModules
+
+## 配置文件字段说明
+
+下表为"Ability"类型的Module（HAP）对应的模块级build-profile.json5中配置项包含的字段，"Library"类型的Module（HAR和HSP）对应的模块级build-profile.json5中配置项为下表罗列范围的子集。
+
+**表1** 模块级build-profile.json5文件字段说明
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|apiType|字符串|可选|API模型类型：<br><br>- stageMode：Stage模型，后续长期演进的模型，推荐使用该模型。<br>- faMode：FA模型。|
+|[targets](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section517483765814)|对象数组|可选|定义的target，可配置多个；若配置，数组长度至少为1。|
+|showInServiceCenter|布尔值|可选|是否显示在服务中心：<br><br>- true：显示。<br>- false（缺省默认值）：不显示。|
+|[buildOption](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section1010733210421)|对象|可选|模块在构建过程中的相关配置。<br><br>其中不支持配置name、debuggable和copyFrom字段。<br><br>在FA模型中，arkOptions配置中仅支持配置types字段。|
+|buildOptionSet|对象数组|可选|[表16](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#table370712453588)buildOption的集合，其中name字段必填，每个配置都是当前支持的编译过程中所有可用工具的通用配置选项集。|
+|[buildModeBinder](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section642017215409)|对象数组|可选|构建模式（debug、release 等）与构建配置（buildOption）的关联配置。通过该配置可以将不同的构建配置和target进行组合，并绑定到对应的构建模式上，其中构建模式需要在工程级别的构建模式列表中已定义。|
+|entryModules|字符串数组|可选|Feature类型模块所关联的入口模块，仅对FA模型工程生效。|
+
+## targets
+
+targets用于给模块配置[多目标产物](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products)，可配置多个；若配置，数组长度至少为1。
+
+**表2** targets
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|name|字符串|必选|target名称。|
+|runtimeOS|字符串|可选|target的目标运行环境：<br><br>- HarmonyOS<br>- OpenHarmony|
+|[config](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section1967714835919)|对象|可选|target相关配置。|
+|[source](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section1838814817017)|对象|可选|target的源码范围。|
+|[resource](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#table2065415762214)|对象|可选|target包含的资源目录。|
+|[output](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#table965613111225)|对象|可选|定制产品生成的应用包的配置。|
+
+**表3** resource
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|directories|字符串数组|可选|资源目录地址。|
+
+**表4** output
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|artifactName|字符串|必选|自定义产品生成的应用包名称，可由数字、英文字母、中划线、下划线和英文句号（.）组成，支持输入版本号。|
+
+targets字段示例：
+
+1. "targets": [
+2.   {
+3.     "name": "default",
+4.     "resource": {
+5.       "directories": ["./src/main/resources"]
+6.     },
+7.     "output": {
+8.       "artifactName": "customizedTargetOutputName-1.0.0"
+9.     }
+10.   }
+11. ]
+
+## config
+
+config是target相关配置。
+
+**表5** config
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|[distroFilter](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section113212281909)|对象|可选|应用市场分发规则。在FA模型中使用。|
+|[distributionFilter](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section113212281909)|对象|可选|应用市场分发规则。在Stage模型中使用。|
+|deviceType|字符串数组|可选|target支持的设备类型，必须在module.json5中已定义。<br><br>在FA模型中，对应的文件为config.json。|
+|[buildOption](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section1010733210421)|对象|可选|模块在构建过程中的相关配置。<br><br>其中不支持配置name、debuggable和copyFrom字段。|
+|[atomicService](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section106753237212)|对象|可选|元服务相关配置，仅支持在Stage模型中配置。|
+
+## source
+
+source用于指定target的源码范围。
+
+**表6** source
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|[abilities](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section1281869320)|对象数组|可选|自定义target的能力范围。<br><br>在FA模型工程中支持对Ability源码目录下的page页面进行定制。|
+|[pages](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-guides#section73018336472)|字符串数组|可选|Stage模型工程中支持对pages源码目录的page页面进行定制，数组长度至少为1。|
+|[sourceRoots](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-guides#section18668905913)|字符串数组|可选|Stage模型工程中支持对差异化代码空间进行定制，数组长度至少为1。数组中的值有以下限制：<br><br>1. 必须唯一；<br>2. 必须为相对路径；<br>3. 类型必须为文件夹；<br>4. 文件夹必须真实存在；<br>5. 文件夹必须与src/main同级；<br><br>当数组中存在多个值时，寻址的优先级为数组中值的顺序。|
+
+source字段示例：
+
+1. "targets": [
+2.   {
+3.     "name": "default",
+4.     "source": {
+5.        "pages": [         // Stage模型
+6.         "pages/Index"
+7.       ],
+8.       "abilities": [     // FA模型
+9.         {
+10.           "name": ".MainAbility",
+11.           "pages": [
+12.             "pages/index"
+13.           ]
+14.         }
+15.       ],
+16.       "sourceRoots": [
+17.         "./src/default"
+18.       ]
+19.     }
+20.   }
+21. ]
+
+## distroFilter/distributionFilter
+
+distroFilter/distributionFilter用于指定应用市场分发规则，distroFilter在FA模型中使用，distributionFilter在Stage模型中使用。
+
+**表7** distroFilter/distributionFilter
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|[apiVersion](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section10176358110)|对象|可选|支持的apiVersion范围。|
+|[screenShape](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section1927031812114)|对象|可选|屏幕形状的支持策略。|
+|[screenWindow](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section79432241314)|对象|可选|应用运行时窗口的分辨率支持策略。|
+|[screenDensity](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section99812302013)|对象|可选|屏幕的像素密度支持策略。|
+|[countryCode](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section04873351417)|对象|可选|应用需要分发的国家地区码。|
+
+### apiVersion
+
+**表8** apiVersion
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|policy|字符串|必选|取值规则：<br><br>- include：需要包含的value属性。<br>- exclude：需要排除的value属性。|
+|value|整型数组|必选|支持的取值为API Version存在的整数值，例如10。|
+
+### screenShape
+
+**表9** screenShape
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|policy|字符串|必选|取值规则：<br><br>- include：需要包含的value属性。<br>- exclude：需要排除的value属性。|
+|value|字符串数组|必选|支持的取值范围：<br><br>- circle：圆形<br>- rect：矩形|
+
+### screenWindow
+
+**表10** screenWindow
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|policy|字符串|必选|当前取值仅支持“include”。<br><br>- include：需要包含的value属性。|
+|value|字符串数组|必选|单个字符串的取值格式为“宽*高”，取值为整数像素值，例如"454*454"。|
+
+### screenDensity
+
+**表11** screenDensity
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|policy|字符串|必选|取值规则：<br><br>- include：需要包含的value属性。<br>- exclude：需要排除的value属性。|
+|value|字符串数组|必选|取值范围：<br><br>- sdpi：小规模的屏幕密度（Small-scale Dots per Inch），适用于dpi取值为(0,120]的设备。<br>- mdpi：中规模的屏幕密度（Medium-scale Dots Per Inch），适用于dpi取值为(120,160]的设备。<br>- ldpi：大规模的屏幕密度（Large-scale Dots Per Inch），适用于dpi取值为(160,240]的设备。<br>- xldpi：大规模的屏幕密度（Extra Large-scale Dots Per Inch），适用于dpi取值为(240,320]的设备。<br>- xxldpi：大规模的屏幕密度（Extra Extra Large-scale Dots Per Inch），适用于dpi取值为(320，480]的设备。<br>- xxxldpi：表示大规模的屏幕密度（Extra Extra Extra Large-scale Dots Per Inch），适用于dpi取值为(480, 640]的设备。|
+
+### countryCode
+
+**表12** countryCode
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|policy|字符串|必选|取值规则：<br><br>- include：需要包含的value属性。<br>- exclude：需要排除的value属性。|
+|value|字符串数组|必选|国家地区码取值，具体值以ISO-3166-1标准为准。支持多个国家和地区枚举定义。|
+
+distroFilter/distributionFilter字段示例：
+
+1. "targets": [
+2.   {
+3.     "name": "default",
+4.     "config": {
+5.       "distributionFilter": {
+6.         "apiVersion": {
+7.           "policy": "include",
+8.           "value": [12]
+9.         },
+10.         "screenShape": {
+11.           "policy": "include",
+12.           "value": [
+13.             "circle",
+14.             "rect"
+15.           ]
+16.         },
+17.         "screenWindow": {
+18.           "policy": "include",
+19.           "value": [
+20.             "454*454",
+21.             "466*466"
+22.           ]
+23.         },
+24.         "screenDensity": {
+25.           "policy": "exclude",
+26.           "value": [
+27.             "ldpi",
+28.             "xldpi"
+29.           ]
+30.         },
+31.         "countryCode": {
+32.           "policy": "include",
+33.           "value": [
+34.             "CN"
+35.           ]
+36.         }
+37.       }
+38.     },
+39.   }
+40. ]
+
+## atomicService
+
+**表13** atomicService
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|[preloads](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-guides#section206461457101917)|对象数组|可选|定义当前模块运行时预加载的模块。|
+
+**表14** preloads
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|moduleName|字符串|可选|预加载的模块名称。|
+
+atomicService字段示例：
+
+1. "targets": [
+2.   {
+3.     "name": "default",
+4.     "config": {
+5.       "atomicService": {
+6.         "preloads": [
+7.           {
+8.             "moduleName": "preloadSharedLibrary"
+9.           }
+10.         ]
+11.       }
+12.     }
+13.   }
+14. ]
+
+## abilities
+
+abilities用于自定义target的能力范围。
+
+**表15** abilities
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|name|字符串|必选|指定target选择的ability的名称。|
+|[pages](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products-guides#section73018336472)|字符串数组|可选|FA模型中，指定target选择的ability的page。|
+|res|字符串数组|可选|指定资源目录。|
+|icon|字符串|可选|指定ability图标文件的索引，格式为"$media:ability_icon"。|
+|label|字符串|可选|指定对用户可见的名称，要求采用该名称的资源索引，以支持多语言。|
+|launchType|字符串|可选|指定ability的启动模式：<br><br>- multiton：多实例模式，每次启动创建一个新实例。<br><br>- standard：同multiton，建议使用multiton替代。<br>- singleton（缺省默认值）：单实例模式，仅第一次启动创建新实例。<br>- specified：指定实例模式，运行时由开发者决定是否创建新实例。|
+
+abilities字段示例：
+
+1. "targets": [
+2.   {
+3.     "name": "default",
+4.     "source": {
+5.       "abilities": [
+6.         {
+7.           "name": "EntryAbility",
+8.           "icon": "$media:layered_image",
+9.           "label": "$string:EntryAbility_label",
+10.           "launchType": "singleton"
+11.         }
+12.       ]
+13.     }
+14.   }
+15. ]
+
+## buildOption
+
+buildOption是模块在构建过程中的相关配置，buildOptionSet和targets中也支持配置buildOption。此外，工程级build-profile.json5中也支持配置buildOption。工程级别buildOption配置会与模块级别的buildOption进行合并，具体合并规则和优先级请参考[合并编译选项规则](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-compilation-options-customizing-guide#section1727865610255)。
+
+**表16** buildOption
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|name|字符串|可选|构建配置方案buildOption的名称。|
+|debuggable|布尔值|可选|当前编译产物是否为可调试模式(debug)：<br><br>- true：可调试。<br>- false：不可调试。<br><br>如果未配置debuggable字段，使用release的编译模式时，默认值为false，使用其他编译模式时，默认值为true。|
+|generateSharedTgz|布尔值|可选|编译HSP模块时是否生成tgz包。<br><br>- true：生成。<br>- false：不生成。<br><br>如果未配置generateSharedTgz，根据debuggable字段决定是否生成tgz包。debuggable为true时，不生成tgz包，debuggable为false时，生成tgz包。<br><br>从DevEco Studio 5.1.1 Beta1版本开始支持。<br><br>说明<br><br>该字段配置后仅对HSP模块生效。|
+|copyFrom|字符串|可选|配置已定义的buildOption的name，表示从本模块已有的buildOption复制配置。|
+|[resOptions](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section754823013348)|对象|可选|资源编译配置项。|
+|[externalNativeOptions](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-cpp#section0721057575)|对象|可选|Native编译配置项。|
+|[sourceOption](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section2611239115413)|对象|可选|源码相关配置。使用不同的标签对源代码进行分类，以便在构建过程中对不同的源代码进行不同的处理。|
+|[nativeLib](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-cpp#section15889929155720)|对象|可选|Native 库（.so）相关配置。|
+|[napiLibFilterOption](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section08781111115517)|对象|可选|NAPI库（.so）文件的筛选选项。标记为废弃，不建议使用，推荐使用[nativeLib/filter](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-cpp#section15889929155720)。|
+|[arkOptions](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section8368152412552)|对象|可选|ArkTS编译配置。|
+|[packingOptions](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section1744183710558)|对象|可选|打包配置项，仅支持HAR模块。|
+|[removePermissions](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section155111918175715)|对象数组|可选|指定编译时需要删除的依赖包中的冗余权限，模块本身的权限不会被删除，仅HAP/HSP模块支持配置。|
+
+### resOptions
+
+resOptions是资源编译配置项。
+
+**表17** resOptions
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|[compression](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section2095319147103)|对象|可选|对工程预置图片资源进行纹理压缩的编译配置参数。|
+|resCompileThreads|整型数值|可选|资源编译的线程数量 ，最小为1，最大为主机的CPU核数。<br><br>该字段从DevEco Studio 5.1.0 Release版本开始支持。|
+|[copyCodeResource](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#table1476161719356)|对象|可选|对模块的src/main/ets目录下的资源文件（非源码文件）拷贝的编译配置参数。<br><br>说明<br><br>该字段对[不开启混淆的源码HAR](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-har#section197792874110)不生效。|
+|ignoreResourcePattern|字符串数组|可选|根据glob语法，对资源目录resources或开发者自定义的资源目录下的文件/文件夹名称进行过滤，匹配到的文件不会被打包到产物中。<br><br>从DevEco Studio 5.1.1 Beta1版本开始支持。<br><br>说明<br><br>- 如果规则中带有路径（例如./src/main/a.png），该规则不生效。<br>- 如果未配置该字段，打包HAP/HSP时存在默认的过滤规则：默认不打包.git、.svn、.scc、.ds_store、desktop.ini、picasa.ini、cvs、thumbs.db以及以.开头的隐藏文件/目录和以~结尾的文件。<br>- 配置该字段后，会覆盖默认的过滤规则；如果字段配置为空数组，则不应用任何过滤规则，即全部资源都打包。|
+|excludeHarRes|字符串数组|可选|编译HAP/HSP模块时，指定不参与资源编译的三方HAR包的包名，配置后，依赖HAR包中的资源不会被打包到产物中，支持直接依赖和间接依赖。<br><br>从DevEco Studio 6.0.0 Beta2版本开始支持。<br><br>说明<br><br>仅支持在HAP/HSP中配置。|
+|includeAppScopeRes|布尔值|可选|编译HSP时，是否将AppScope目录下的资源打包到产物中。<br><br>- true（缺省默认值）：打包。<br>- false：不打包。<br><br>从DevEco Studio 6.0.0 Beta2版本开始支持。<br><br>说明<br><br>- 该字段仅对HSP模块生效。<br>- 配置为false后，app.json5的icon和label字段不再对HSP模块生效。|
+
+**表18** copyCodeResource
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|enable|布尔值|可选|是否将src/main/ets目录下的资源文件（.ets/.ts/.js以外的其他文件）打包到产物中。<br><br>- true（缺省默认值）：打包。<br>- false：不打包。<br><br>说明<br><br>从DevEco Studio 6.0.0 Beta2版本开始，新建工程或模块时，默认配置enable字段并且值为false，即默认不打包ets目录下的资源文件。|
+|includes|字符串数组|可选|- 当enable为true时，用于指定打包的资源文件，其他资源文件均不会打包到产物中，支持glob语法，以"**/"开头。<br>- 当enable为false时，includes不生效。<br><br>从DevEco Studio 6.0.0 Beta2版本开始支持。<br><br>说明<br><br>excludes和includes互斥，只能配置一个。|
+|excludes|字符串数组|可选|- 当enable为true时，用于指定不打包的资源文件，其他资源文件均会打包到产物中，支持glob语法，以"**/"开头。<br>- 当enable为false时，excludes不生效。|
+
+注意
+
+- 模块的src/main/ets目录下，编译时仅处理.ets/.ts/.js文件，其他文件会被当作资源文件打包进产物中，不会进行混淆或加密，如需过滤请配置excludes字段。
+- 请勿将源码等文件放在以.开头的系统隐藏目录中，可能会导致过滤规则失效，会将src/main/ets目录下的所有文件作为资源文件打包进产物中，不会进行混淆或加密。
+
+resOptions字段示例：
+
+1. "buildOption": {
+2.   "resOptions": {
+3.     "resCompileThreads": 2,
+4.     "copyCodeResource": {
+5.       "enable": true,
+6.       "excludes": ['**/entry/src/main/ets/component/big_picture.png', '**/*.yml', '**/subDir/**'],   // includes字段配置方式相同
+7.     },
+8.     "ignoreResourcePattern": ['*.png' ,'abc.json'],
+9.     "excludeHarRes": ['har'],
+10.   }
+11. }
+
+### sourceOption
+
+sourceOption是源码相关配置，使用不同的标签对源代码进行分类，以便在构建过程中对不同的源代码进行不同的处理。
+
+**表19** sourceOption
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|workers|字符串数组|可选|指定使用node.js工作器的JS/TS源代码，源代码在构建过程中单独处理。|
+
+sourceOption字段示例：
+
+1. "buildOption": {
+2.   "sourceOption": {
+3.     "workers": [
+4.       "./src/main/ets/common/constants/CommonConstants.ets"
+5.     ]
+6.   }
+7. }
+
+### napiLibFilterOption
+
+napiLibFilterOption是NAPI库（.so）文件的筛选选项，字段已废弃，不建议使用，推荐使用[nativeLib/filter](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-cpp#section15889929155720)。
+
+**表20** napiLibFilterOption
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|excludes|字符串数组|可选|排除的.so文件。罗列的NAPI库将不会被打包。|
+|pickFirsts|字符串数组|可选|按照.so文件的优先级顺序，打包最高优先级的.so文件。|
+|pickLasts|字符串数组|可选|按照.so文件的优先级顺序，打包最低优先级的.so文件。|
+|enableOverride|布尔值|可选|是否允许当.so文件重名冲突时，使用高优先级的.so文件覆盖低优先级的.so文件：<br><br>- true：允许。<br>- false（缺省默认值）：不允许。|
+
+### arkOptions
+
+arkOptions是ArkTS编译配置。
+
+**表21** arkOptions
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|[runtimeOnly](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#table19892123422118)|对象|可选|配置变量动态import的文件和依赖的包名，仅支持在Stage模型中配置。<br><br>runtimeOnly为非必选配置，当工程需要以变量方式动态import文件、目录的相对路径或三方包时，需要通过配置runtimeOnly来确保其加入编译流程。详情请参考[动态import变量表达式](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-dynamic-import#%E5%8A%A8%E6%80%81import%E5%8F%98%E9%87%8F%E8%A1%A8%E8%BE%BE%E5%BC%8F)。|
+|[types](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkoptions-guide#types)|字符串数组|可选|自定义类型，可配置包名或d.ts/d.ets文件路径。|
+|[obfuscation](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-build-obfuscation)|对象|可选|代码混淆配置。|
+|[buildProfileFields](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-get-build-profile-para)|对象|可选|运行时可获取的自定义构建参数，支持键值对配置，key可由数字、英文、下划线、中划线组成，value类型仅支持string、number、boolean。|
+|integratedHsp|布尔值|可选|是否为[集成态HSP](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/integrated-hsp)。<br><br>- true：是。<br>- false（缺省默认值）：否。<br><br>说明<br><br>- 从API 12开始支持。<br>- 需在工程级build-profile.json5中配置useNormalizedOHMUrl为true后使用。<br>- 该字段仅在HSP模块中配置后生效。|
+|[transformLib](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/customize-bytecode-during-compilation)|字符串|可选|字节码插桩插件配置，允许开发者在编译时对字节码进行插桩修改，仅支持Stage模型，格式为相对路径，不同系统要求的文件类型如下，文件内容需要在对应平台生成，不能拷贝修改后缀名混用。<br><br>- Windows：.dll文件。<br>- Linux/Mac：.so文件。<br><br>说明<br><br>- Mac环境下添加配置后插桩未生效的问题请参考[FAQ](https://developer.huawei.com/consumer/cn/doc/harmonyos-faqs/faqs-compiling-and-building-133)。<br>- HAR模块仅字节码HAR配置生效，非字节码HAR配置不生效。|
+|branchElimination|布尔值|可选|是否启用代码分支裁剪，减少编译产物大小，开启后，在release编译模式下，不会被执行到的代码分支会被裁剪掉，示例请参考[branchElimination示例](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#li71611425123512)。<br><br>- true：启用（将导致使用"ApplyChanges"功能时，对const声明的常量的值进行的修改可能不生效）。<br>- false（缺省默认值）：不启用。<br><br>说明<br><br>- 仅支持API 11及以上的Stage模型。<br>- HAR模块仅字节码HAR配置生效，非字节码HAR配置不生效。<br>- 仅支持const声明的bool类型常量和const声明的string/number类型常量的判断表达式。<br>- 不支持间接导入，例如A文件中定义const变量A1，B文件导入A1，导出B1，ets导入B1进行判断，无法进行裁剪。|
+|byteCodeHar|布尔值|可选|是否构建字节码HAR，仅在HAR模块中配置后生效。详情请参考[构建字节码HAR](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-har#section16598338112415)。<br><br>- true：支持。<br>- false：不支持。<br><br>说明<br><br>- 从API 12开始支持。<br>- 从DevEco Studio NEXT Beta1（5.0.3.800）版本开始，当工程级build-profile.json5中useNormalizedOHMUrl配置为true时，byteCodeHar缺省默认值为true；当useNormalizedOHMUrl配置为false时，byteCodeHar缺省默认值为false。|
+|bundledDependencies|布尔值|可选|是否支持将多个源码HAR（本地+远程）打包成一个字节码HAR。字节码HAR、HSP、npm不会被打包进去，仅会合并源码HAR。<br><br>- true：支持。<br>- false（缺省默认值）：不支持。<br><br>说明<br><br>- 仅支持[字节码HAR](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-har#section16598338112415)配置该字段。<br>- 从API 12开始支持。<br>- 仅支持Stage模型。|
+|packSourceMap|布尔值|可选|编译[字节码HAR](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-har#section16598338112415)时，是否将sourceMap文件打包到产物中。仅HAR模块支持配置，并且只对字节码HAR生效。<br><br>- true：打包。<br>- false：不打包。<br><br>该字段从DevEco Studio 5.1.0 Release版本开始支持。<br><br>说明<br><br>- 如果不配置，debug模式默认值为true，release模式默认值为false。<br>- 将sourceMap打包到release的HAR包中，可能会导致HAR中的代码资产泄漏。|
+|autoLazyImport|布尔值|可选|编译时是否自动将符合lazy-import语法规范的import语句添加"lazy"关键字。仅支持在源码中添加"lazy"关键字，不包含依赖的字节码HAR包或HSP。关于lazy-import的介绍及相关影响请参考[延迟加载（lazy import）](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-lazy-import)。<br><br>- true：添加。<br>- false（缺省默认值）：不添加。<br><br>说明<br><br>- 如果配置为true，编译时不会做场景识别，即源码中任何符合语法规范的import语句都会被添加"lazy"。<br>- 仅支持Stage模型。|
+|[autoLazyFilter](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#table1551310818378)|对象|可选|自定义添加"lazy"关键字的模块，仅当autoLazyImport为true时生效。<br><br>从DevEco Studio 6.0.1 Beta1版本开始支持。|
+|reExportCheckMode|字符串|可选|针对以下场景，编译时是否进行拦截报错：使用lazy import导入的变量，在同文件中被再次导出。<br><br>- noCheck（缺省默认值）：不检查，不报错。<br>- compatible：兼容模式，报Warning。<br>- strict：严格模式，报Error。<br><br>该字段从DevEco Studio 5.0.5 Release版本开始支持。|
+|skipOhModulesLint|布尔值|可选|是否跳过工程中oh_modules目录的[ArkTS规则检查](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/typescript-to-arkts-migration-guide)。从DevEco Studio 6.0.0 Beta1版本开始支持。<br><br>- true：跳过。<br>- false（缺省默认值）：不跳过。|
+|[expandImportPath](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#table1921576135914)|对象|可选|import路径展开相关配置选项。<br><br>从DevEco Studio 6.0.0 Beta3版本开始支持。<br><br>说明<br><br>HAR模块不支持配置。|
+|apPath|字符串|可选|说明<br><br>API 11及以上版本不再支持，即该字段配置后不再生效。<br><br>应用热点信息文件路径。|
+|hostPGO|布尔值|可选|是否启用配置文件引导优化功能：<br><br>- true：启用。<br>- false（缺省默认值）：不启用。<br><br>从API 10开始废弃。|
+
+- branchElimination字段配置为true时，代码分支的裁剪情况示例如下：
+    
+    1. # 编译生成的BuildProfile文件
+    2. export const DEBUG = false;
+    3. export const VERSION_CODE = 100;
+    4. # 开发者自定义的ets文件
+    5. import { DEBUG } from 'BuildProfile';
+    6. import { VERSION_CODE } from 'BuildProfile';
+    7. if (DEBUG)
+    8.   {XXX} // 该分支会被裁剪掉
+    9. else
+    10.   {XXX}
+    11. if (VERSION_CODE){XXX} // 该语法发生了类型转换，不支持代码裁剪。
+    12. if (VERSION_CODE === 100){XXX} // 若需要裁剪代码，使用该方式，显式指定判断条件为boolean类型。
+    
+
+**表22** runtimeOnly
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|sources|字符串数组|可选|配置变量动态import的文件/文件夹的相对路径。<br><br>配置的文件/文件夹必须在工程中真实存在，且文件的后缀只能为ets或ts。|
+|packages|字符串数组|可选|配置变量动态import依赖的包名。<br><br>该包名需要和工程级/模块级oh-package.json5的dependencies或dynamicDependencies中的名字保持一致。<br><br>从DevEco Studio 5.1.1 Beta1版本开始，packages中的三方包支持配置在dynamicDependencies中。|
+|excludePackages|字符串数组|可选|编译HAP/HSP模块时，指定不参与变量动态import的源码HAR的包名，配置的源码HAR不会参与编译，支持直接/间接依赖。<br><br>仅支持在HAP/HSP模块中配置。<br><br>从DevEco Studio 6.0.0 Beta2版本开始支持。|
+
+**表23** expandImportPath
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|enable|布尔值|可选|是否启用import路径展开，启用后可以提升应用的运行时性能。关于import路径展开的原理及开启后的副作用请参考[通过import路径展开优化性能](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/arkts-module-side-effects#%E9%80%9A%E8%BF%87import%E8%B7%AF%E5%BE%84%E5%B1%95%E5%BC%80%E4%BC%98%E5%8C%96%E6%80%A7%E8%83%BD)。<br><br>- true：启用。<br>- false（缺省默认值）：不启用。<br><br>说明<br><br>import XXX from 'A'，A必须为本地HAR模块，并且仅当A为包名时支持进行展开，A为相对路径或包名+路径都不支持展开。|
+|exclude|字符串数组|可选|配置oh-package.json5中的依赖别名，用于指定不展开import语句的依赖，仅支持本地HAR模块。|
+
+**表24** autoLazyFilter
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|include|字符串数组|可选|- 当autoLazyImport为true时，指定自动添加"lazy"关键字的包名（即oh-package.json5中的name），其他包不会添加"lazy"关键字，支持正则语法。<br>- 当autoLazyImport为false时，include不生效。<br><br>说明<br><br>- include和exclude互斥，只能配置一个。<br>- include不支持配置空数组或空字符串，至少配置一个包名，并且包名不能重复。|
+|exclude|字符串数组|可选|- 当autoLazyImport为true时，指定不添加"lazy"关键字的包名，其他包都会添加"lazy"关键字，支持正则语法。<br>- 当autoLazyImport为false时，exclude不生效。<br><br>说明<br><br>- include和exclude互斥，只能配置一个。<br>- exclude不支持配置空数组或空字符串，至少配置一个包名，并且包名不能重复。|
+
+arkOptions字段示例：
+
+1. "buildOption": {
+2.   "arkOptions": {
+3.     "runtimeOnly": {
+4.       "sources": ["./src/main/ets/utils/Calc.ets"],
+5.       "packages": ["myHar"],
+6.       "excludePackages": ["har1","har2"],  // myHar依赖har1、har2
+7.     },
+8.     "buildProfileFields": {
+9.       "buildOptionSetData": "BuildOptionSetDataRelease",
+10.       "data": "DataRelease"
+11.     },
+12.     "transformLib": "./dll/example.dll",
+13.     "branchElimination": true,
+14.     "autoLazyImport": true,
+15.     "autoLazyFilter": {
+16.       "include": ['entry']
+17.     },
+18.     "reExportCheckMode": "compatible",
+19.     "expandImportPath": {
+20.       "enable": true,
+21.       "exclude": ['localhar']
+22.     },
+23.   }
+24. }
+
+### packingOptions
+
+packingOptions是打包配置项，仅支持HAR模块。该字段从DevEco Studio 5.1.0 Release版本开始支持。
+
+**表25** packingOptions
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|[asset](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#table14927147191119)|对象|可选|打包资产配置项。|
+
+**表26** asset
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|include|字符串数组|可选|配置打包到HAR产物中的文件，遵循glob语法。<br><br>说明<br><br>- 以下目录配置后不生效，即不会被打包到产物中：node_modules、oh_modules、.preview、build、.cxx、.test。<br><br>- 配置include字段后，构建源码HAR时，.gitignore和.ohpmignore文件不生效，详细请参考[以debug模式构建](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-har#section197792874110)。|
+|exclude|字符串数组|可选|配置不打包到HAR产物中的文件，遵循glob语法。<br><br>说明<br><br>- 以下文件配置后不生效，默认会打包：oh-package.json5。<br>- 配置exclude字段后，构建源码HAR时，.gitignore和.ohpmignore文件不生效，详细请参考[以debug模式构建](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-har#section197792874110)。|
+
+packingOptions字段示例：
+
+1. "buildOption": {
+2.   "packingOptions": {
+3.     "asset": {
+4.       "include": ["./src/router.json5", "router.json5"],
+5.       "exclude": ["./config/*"]
+6.     }
+7.   }
+8. }
+
+### removePermissions
+
+removePermissions是一个对象数组，用于编译HAP/HSP模块时，指定需要删除的依赖包中的冗余权限，模块本身的权限不会被删除。
+
+**表27** removePermissions
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|name|字符串|必选|待删除的权限名称，需要包含在依赖包的module.json的requestPermissions中。|
+
+removePermissions字段示例：
+
+1. "buildOption": {
+2.   "removePermissions": [
+3.     {
+4.       "name": "ohos.permission.ABILITY_BACKGROUND_COMMUNICATION"
+5.     },
+6.     {
+7.       "name": "ohos.permission.ACCELEROMETER"
+8.     }
+9.   ]
+10. }
+
+## compression
+
+compression是对工程预置图片资源进行纹理压缩的编译配置参数。
+
+**表28** compression
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|[media](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section1915545641714)|对象|可选|对资源目录下media目录的图片进行纹理压缩的配置参数。|
+|[filters](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#section185719543186)|对象数组|可选|文件过滤配置参数。<br><br>说明<br><br>编译过程中会依次遍历图片文件，并与filters条件进行匹配，一旦匹配成功，则完成该图片的处理。当工程级和模块级同时配置时，先按照模块级的过滤条件匹配，一旦匹配成功，则忽略工程级的过滤条件；如果模块级的没有匹配成功，继续按工程级的条件进行匹配。|
+
+### media
+
+media是对资源目录下media目录的图片进行纹理压缩的配置参数。
+
+**表29** media
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|enable|布尔值|可选|是否对media图片启用纹理压缩。<br><br>- true：启用。<br>- false（缺省默认值）：不启用。<br><br>说明<br><br>- 在linux系统的构建场景下，请确认系统环境已[安装libGL1库](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-command-line-building-app#section1478651816216)。<br>- 对图片进行纹理压缩会改变文件名称和内容，在[分层图标](https://developer.huawei.com/consumer/cn/doc/harmonyos-references/js-apis-arkui-drawabledescriptor#layereddrawabledescriptor)以及二次编辑的场景下会引起图片显示异常，请进一步使用filters排除掉这部分文件。|
+
+### filters
+
+filters是文件过滤配置参数。
+
+**表30** filters
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|[method](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#table1568916396220)|对象|必选|纹理压缩的方式。|
+|[files](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#table19762944112414)|对象|可选|指定用来参与压缩的文件，与exclude字段配合使用。|
+|[exclude](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#table6219104952519)|对象|可选|从files中剔除掉不需要压缩的文件。|
+
+**表31** method
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|type|字符串|必选|转换类型。<br><br>- astc（Adaptive Scalable Texture Compression）：自适应可变纹理压缩，一种对GPU友好的纹理格式，可在设备侧更快地显示，有更少的内存占用。<br>- sut（SUper compression for Texture） ：纹理超压缩，可在设备侧更快地显示，有更少的内存占用，相比astc具备更大压缩率和更少ROM占用。|
+|blocks|字符串|必选|astc/sut转换类型的扩展参数，决定画质和压缩率，当前仅支持"4x4"。|
+
+**表32** files
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|path|字符串数组|可选|指定“按路径匹配”的过滤条件，符合glob规范，格式为相对路径。|
+|size|二维数组|可选|指定“按大小匹配”的过滤条件，格式为[min,max]，闭区间，表示大小从min到max之间的文件。<br><br>- 每个数值可以填数字、字符串或字符串中带单位（大小写均可），如[0, '1k']。<br>- 单位K/k=1024，M/m=1024*1024，G/g=1024*1024*1024。<br>- 区间最大值可省略，表示无限大，如['3K']。|
+|resolution|二维数组|可选|指定“按分辨率匹配”的过滤条件，配置示例：<br><br>1. resolution:[<br>2.   [<br>3.     { width:32, height:32 },  // 最小宽高<br>4.     { width:64, height:64 },  // 最大宽高<br>5.   ],  // 分辨率在32*32到64*64之间的图片<br>6.   [<br>7.     { width:200, height:200 },  // 最小宽高<br>8.     // 此处第2个不填表示最大宽高是无限大<br>9.   ],  // 分辨率大于200*200的图片<br>10. ]<br><br>- width和height只能是数字。<br>- 最大宽高可以省略，表示无限大。|
+
+**表33** exclude
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|path|字符串数组|可选|同files/path。|
+|size|二维数组|可选|同files/size。|
+|resolution|二维数组|可选|同files/resolution。|
+
+compression字段示例：
+
+1. "buildOption": {
+2.   "resOptions": {
+3.     "compression": {
+4.       "media": {
+5.         "enable": true // 是否对media图片启用纹理压缩
+6.       },
+7.       // 纹理压缩文件过滤，非必填，不填会压缩资源目录中的所有图片
+8.       "filters": [
+9.         {
+10.           "method": {
+11.             "type": "sut", // 转换类型
+12.             "blocks": "4x4" // 转换类型的扩展参数
+13.           },
+14.           // 指定用来参与压缩的文件，需要满足所有条件且不被exclude过滤的文件才会参与压缩
+15.           "files": {
+16.             "path": ["./**/*"], // 指定资源目录中的所有文件
+17.             "size": [[0, '10k']], // 指定大小10k以下的文件
+18.             // 指定分辨率小于2048*2048的图片
+19.             "resolution": [
+20.               [
+21.                 { "width": 0, "height": 0 }, // 最小宽高
+22.                 { "width": 2048, "height": 2048 } // 最大宽高
+23.               ]
+24.             ]
+25.           },
+26.           // 从files中剔除掉不需要压缩的文件，需要满足所有过滤条件的文件才会被剔除
+27.           "exclude": {
+28.             "path": ["./**/*.jpg"], // 过滤所有jpg文件
+29.             "size": [[0, '1k']], // 过滤大小1k以下的文件
+30.             // 过滤分辨率小于1024*1024的图片
+31.             "resolution": [
+32.               [
+33.                 { "width": 0, "height": 0 }, // 最小宽高
+34.                 { "width": 1024, "height": 1024 } // 最大宽高
+35.               ]
+36.             ]
+37.           }
+38.         }
+39.       ]
+40.     }
+41.   }
+42. }
+
+## buildModeBinder
+
+buildModeBinder是构建模式（debug、release 等）与构建配置（buildOption）的关联配置。通过该配置可以将不同的构建配置和target进行组合，并绑定到对应的构建模式上。如果没有配置buildModeBinder，默认的绑定策略请参考[合并编译选项规则](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-compilation-options-customizing-guide#section1727865610255)。
+
+**表34** buildModeBinder
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|buildModeName|字符串|可选|构建模式名称，需要在工程级别的buildModeSet中定义。|
+|[mappings](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-build-profile#table4672142011561)|对象数组|可选|target和buildOption之间的一对一映射关系。|
+
+**表35** mappings
+|字段名称|类型|可选/必选|含义|
+|:--|:--|:--|:--|
+|targetName|字符串|可选|target名称。|
+|buildOptionName|字符串|可选|构建配置buildOption名称。|
+
+buildModeBinder字段示例：
+
+1. "buildModeBinder": [
+2.   {
+3.     "buildModeName": "debug",
+4.     "mappings": [
+5.       {
+6.         "targetName": "default",
+7.         "buildOptionName": "release"
+8.       }
+9.     ]
+10.   }
+11. ]
+# 多模块管理
+
+更新时间: 2025-12-16 15:59
+
+模块是应用/元服务的基本功能单元，包含了源代码、资源文件、第三方库及应用/元服务配置文件，Hvigor支持工程多模块管理。您可在工程下的build-profile.json5配置文件中增加对应模块信息，即可对模块进行工程绑定和管理，或在hvigorconfig.ts脚本中动态添加或排除某个模块。同时也支持分模块配置、编译和打包。
+
+## 多模块配置
+
+### 静态配置模块
+
+工程级build-profile.json5配置文件中"modules"字段，用于记录工程下的模块信息，主要包含模块名称、模块的源码路径以及模块的 target 信息。target信息主要用于定制多目标构建产物，更多详细信息可参考[配置多目标产物](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-customized-multi-targets-and-products)章节。
+
+例如以下目录中存在两个模块目录，您可在工程下的build-profile.json5配置文件，添加模块信息，使得模块与工程进行绑定：
+
+1. 工程结构
+2. └─ .hvigor目录    // 构建项目的缓存文件目录，不需要开发者改动，可以删除
+3. └─ module1
+4.    └─ 模块源码文件
+5.    └─ build-profile.json5    // 模块级别的构建静态配置文件，主要用于定义当前模块的构建信息、hap(hsp、har)的构建行为等
+6.    └─ hvigorfile.ts    // 模块级别的构建动态自定义脚本，主要用于定义和扩展hap(hsp、har)的构建流程
+7.    └─ 其他配置文件
+8. └─ module2
+9. └─ hvigor目录
+10.    └─ hvigor-config.json5    // 构建引擎的配置文件，主要用于定义开发态版本号、依赖插件的版本以及Hvigor相关能力的配置等
+11. └─ build-profile.json5    // 工程级别的构建静态配置文件，主要用于定义整个项目的模块信息、应用信息、app的构建行为等
+12. └─ hvigorfile.ts    // 工程级别的构建动态自定义脚本，主要用于定义和扩展app的构建流程
+13. └─ 其他配置文件
+
+其他配置文件：
+
+- oh-package.json5：应用的三方包依赖配置文件。
+- local.properties: 应用本地环境配置文件。
+- obfuscation-rules.txt: 应用模块的混淆规则配置文件。
+- consumer-rules.txt: HAR/HSP模块默认导出的混淆规则文件，会打包到HAR包中。
+
+工程下的build-profile.json5文件中模块配置示例：
+
+1. {
+2.   "modules": [
+3.     {
+4.       "name": "module1", // 模块的名称。该名称需与module.json5文件中的module.name保持一致。在FA模型中，对应的文件为config.json。
+5.       "srcPath": "./module1" // 模块的源码路径，为模块根目录相对工程根目录的相对路径
+6.     },
+7.     {
+8.       "name": "module2",
+9.       "srcPath": "./module2"
+10.     }
+11.   ]
+12. }
+
+### 动态配置模块
+
+Hvigor支持在[hvigorconfig.ts脚本](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-life-cycle#section810245135914)中动态添加或排除某个模块，具体API及示例可参考[HvigorConfig](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-api#section7253174081515)。
+
+## 分模块编译
+
+Hvigor支持分模块编译和打包。您可以通过以下两种方式进行分模块构建：
+
+- 在DevEco Studio中，选中需构建的模块目录后，点击Build菜单栏下的"Make module 'module1'"，其中"module1"根据具体工程模块名称显示；
+- 在DevEco Studio的Terminal中，指定模块进行编译。比如模块名称为entry，目标产物target为default，构建HAP模块，可执行以下命令：
+    
+    1. hvigorw --mode module -p product=default -p module=entry@default assembleHap
+    
+
+更多构建HAR/HSP包命令，可参考[命令行工具](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-commandline#section9580122622012)章节。
+# 添加依赖项
+
+更新时间: 2025-12-16 15:59
+
+应用/元服务支持通过包管理工具ohpm来安装、共享、分发代码，管理项目的依赖关系。本文介绍了在您的项目中如何配置依赖项，以及不同的配置方式在编译期间的处理逻辑和编译结果。
+
+您可在工程或模块下的oh-package.json5文件中的dependencies（生产依赖）/devDependencies（开发依赖）字段中指定依赖项，以上两种依赖字段均支持引用远程三方包、本地模块和本地HAR/HSP三种方式。oh-package.json5文件中的dynamicDependencies（动态依赖）仅限于动态依赖HSP的使用场景。以下配置以dependencies为例，更多关于依赖的设置方式请参考[oh-package.json5](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-oh-package-json5)。
+
+## 配置依赖项
+
+### 远程三方包
+
+在需要引入三方包的模块的oh-package.json5文件中设置三方包依赖，配置示例如下：
+
+1. "dependencies": {
+2.   "@ohos/lottie": "^2.0.0"
+3. }
+
+### 本地模块
+
+在模块的oh-package.json5文件中设置本地模块依赖，有两种方式：
+
+- 配置本地文件夹路径，示例如下：
+    
+    1. "dependencies": {
+    2.   "folder": "file:../folder"
+    3. }
+    
+- 配置本地模块名，例如依赖本地模块moduleA（从DevEco Studio 6.0.0 Beta1版本开始支持）：
+    
+    1. "dependencies": {
+    2.   "moduleA": "@module:moduleA"
+    3. }
+    
+
+### 本地HAR/HSP包
+
+- 引用HAR：
+    
+    1. "dependencies": {
+    2.   "package": "file:../package.har"
+    3. }
+    
+
+- 引用HSP（在release模式下，构建HSP会生成tgz包）：
+    
+    1. "dependencies": {
+    2.   "package": "file:../package.tgz"
+    3. }
+    
+
+依赖设置完成后，需要执行**ohpm install**命令安装依赖包，依赖包会存储在对应模块的oh_modules目录下。
+
+## 编译行为差异说明
+
+根据当前的依赖配置规格，您可以在以下字段中指定依赖项：
+
+- 工程级oh-package.json5文件中的dependencies、dynamicDependencies、devDependencies
+- 模块级oh-package.json5文件中的dependencies、dynamicDependencies、devDependencies
+
+虽然以上字段都可以指定依赖项，但使用不同的字段，在编译期间的处理逻辑和编译结果是不同的。举个例子：
+
+1. 新建工程，新建HAR模块。
+2. 在entry模块级oh-package.json5的dependencies设置HAR本地文件夹，编译entry：
+    
+    1. "dependencies": {
+    2.   "har": "file:../har"
+    3. }
+    
+3. 在entry模块级oh-package.json5的devDependencies设置HAR本地文件夹，编译entry：
+    
+    1. "devDependencies": {
+    2.   "har": "file:../har"
+    3. }
+    
+
+对比步骤2和3的构建日志，您会发现，步骤2会打印HAR相关的日志，如下图红框所示，步骤3并没有任何关于HAR的日志打印。
+
+![](https://alliance-communityfile-drcn.dbankcdn.com/FileServer/getFile/cmtyPub/011/111/111/0000000000011111111.20251216155915.49727813581682687398472461049691:50001231000000:2800:14CC23A07678F90EB22C71E141B7DC54E9C5360CEC03058F67C2B7FC2910817D.png)
+
+以上仅仅是日志的差异，为了确保编译正常，不建议将依赖项配置在工程级oh-package.json5中，下文将通过表格说明编译时具体的处理逻辑和可能造成的异常结果。
+
+为方便后续说明，需要了解以下名词，仅在本文内有效：
+
+- 三方包依赖：通过[远程三方包](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-dependencies#section0999112011818)和[本地HAR/HSP包](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-dependencies#section636814917176)的方式指定依赖项
+- 本地依赖：通过[本地模块](https://developer.huawei.com/consumer/cn/doc/harmonyos-guides/ide-hvigor-dependencies#section91117398178)的方式指定依赖项
+- 开启bundledDependencies的字节码HAR：字节码HAR的build-profile.json5的buildOption/arkOptions下的bundledDependencies字段配置为true
+- 依赖项的自身配置：依赖项自身的resources/workers/runtimeOnly/UIAbilities/ExtensionAbilities/C++编译产物/路由表等
+
+说明
+
+- 下表的devDependencies指工程级和模块级oh-package.json5中的devDependencies。
+- 下表仅对可能导致编译异常的场景进行说明，其他编译正常的场景不进行说明，例如在模块级oh-package.json5中配置dependencies。
+
+**表1** 编译行为差异说明
+|依赖项|   |   |编译HAP|编译HSP|编译未开启 bundledDependencies 的字节码HAR|编译开启 bundledDependencies 的字节码HAR|
+|:--|:--|:--|:--|:--|:--|:--|
+|源码HAR|三方包依赖|devDependencies|1|1|**2**|1|
+|工程级的dependencies|/|/|**3**|**3**|
+|本地依赖|devDependencies|1|1|**2**|1|
+|工程级的dependencies|/|1|**2**|1|
+|字节码HAR|三方包依赖|devDependencies|**2**|**2**|**2**|**2**|
+|工程级的dependencies|/|/|**3**|**3**|
+|HSP|三方包依赖|devDependencies|1|1|**2**|**1**|
+|工程级的dependencies、dynamicDependencies|/|/|/|/|
+|本地依赖|devDependencies|**1**|**1**|**2**|**1**|
+|工程级的dependencies、dynamicDependencies|/|1|**2**|**1**|
+
+表格中各符号的含义如下：
+
+- 1：依赖项仅代码文件（ets/ts/js等）参与编译，依赖项的自身配置不会参与收集，可能造成编译/运行时异常。
+- 2：依赖项没有被收集，会导致编译异常。
+- 3：编译正常，后续集成时可能会造成运行时异常。
+- /：编译和运行都正常。
+
+针对以上几类编译/运行时可能异常的场景，从DevEco Studio 5.1.1 Beta1版本开始，hvigor-config.json5文件提供一个字段ohos.byteCodeHar.integratedOptimization，开启后，可以优化表格中**加粗符号**对应的场景。
+
+但该开关只是优化了依赖收集的逻辑，并没有优化依赖项的自身配置收集的逻辑，因此，加粗符号对应的场景中，只有编译字节码HAR，并且依赖配置在工程级的dependencies或dynamicDependencies对应的场景才能完全优化，其他场景无法保证编译/运行时无异常。
+
+1. "properties": {
+2.   "ohos.byteCodeHar.integratedOptimization": true
+3. }
+
+说明
+
+依赖包提供方和集成方都需要配置该字段。
+
+综上所述，我们建议您：
+
+- 当前模块使用到的依赖配置在本模块的oh-package.json5中。
+- 除辅助语法检查TypeScript的类型声明包（如：@types/commonmark）外，其他类型的依赖项，都不要配置在devDependencies中。
