@@ -49,7 +49,7 @@
       "type": "openai-compatible",
       "id": "GLM",
       "apiKey": "d68afc047d2b47179fccca96e52ca57c.XDODZVHpC70KMfos",
-      "baseUrl": "https://open.bigmodel.cn/api/paas/v4/chat/completions"
+      "baseUrl": "https://open.bigmodel.cn/api/paas/v4/"
     }
   ],
   "chatModels": [
@@ -231,6 +231,14 @@
       "providerId": "morph",
       "id": "morph-v0",
       "model": "morph-v0"
+    },
+    {
+      "providerId": "GLM",
+      "providerType": "openai-compatible",
+      "id": "glm-4.6v",
+      "model": "glm-4.6v-flash",
+      "promptLevel": 1,
+      "enable": true
     }
   ],
   "embeddingModels": [
@@ -277,8 +285,8 @@
       "dimension": 1024
     }
   ],
-  "chatModelId": "claude-sonnet-4.5",
-  "applyModelId": "gpt-4.1-mini",
+  "chatModelId": "glm-4.6v",
+  "applyModelId": "glm-4.6v",
   "embeddingModelId": "openai/text-embedding-3-small",
   "systemPrompt": "",
   "ragOptions": {
@@ -290,7 +298,23 @@
     "includePatterns": []
   },
   "mcp": {
-    "servers": []
+    "servers": [
+      {
+        "id": "notion",
+        "parameters": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "@notionhq/notion-mcp-server"
+          ],
+          "env": {
+            "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer secret_Vc8ZDYMR9B3vJOzJleH8KYojosbJc9NR76Gq3j6FadE\", \"Notion-Version\": \"2022-06-28\"}"
+          }
+        },
+        "toolOptions": {},
+        "enabled": true
+      }
+    ]
   },
   "chatOptions": {
     "includeCurrentFileContent": true,
