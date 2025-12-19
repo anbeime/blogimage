@@ -313,6 +313,37 @@
         },
         "toolOptions": {},
         "enabled": true
+      },
+      {
+        "id": "chatppt",
+        "parameters": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "@chatppt/mcp-server-chatppt"
+          ],
+          "env": {
+            "API_KEY": "<Yoo-AI.2118.eVV9TF7NwmFv7Dcf2YMdC5TwENSU5aSe.mvGDTu7DvEuWgMex7Y8C4jHWXtNZf9r9/QUAEhRufyQqhSPCPQsE3hB8dg5QTkwry.1744820678.0>"
+          }
+        },
+        "toolOptions": {},
+        "enabled": true
+      },
+      {
+        "id": "n8n-mcp",
+        "parameters": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "supergateway",
+            "--streamableHttp",
+            "http://localhost:5678/mcp-server/http",
+            "--header",
+            "authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4Zjc3YjkyNS02NTYxLTQ1N2UtYmVhNi04MjY5ZmMwOTVkYTgiLCJpc3MiOiJuOG4iLCJhdWQiOiJtY3Atc2VydmVyLWFwaSIsImp0aSI6ImEyMGM4ODg4LTJlNGMtNDdmZS1hNGY1LTlhOGYwNjZmNWJjOSIsImlhdCI6MTc2NTY5NDE4MH0.GSyt5MCgs6U2WM4bB4CMcfsIA4UtPqK9iEKRvOKTscQ"
+          ]
+        },
+        "toolOptions": {},
+        "enabled": true
       }
     ]
   },
