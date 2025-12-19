@@ -344,6 +344,58 @@
         },
         "toolOptions": {},
         "enabled": true
+      },
+      {
+        "id": "Firecrawl",
+        "parameters": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "firecrawl-mcp"
+          ],
+          "env": {
+            "FIRECRAWL_API_KEY": "fc-856db5f3bea742a6a5bfe1bf7496211d"
+          }
+        },
+        "toolOptions": {},
+        "enabled": true
+      },
+      {
+        "id": "github",
+        "parameters": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "@modelcontextprotocol/server-github"
+          ],
+          "env": {
+            "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
+          }
+        },
+        "toolOptions": {},
+        "enabled": true
+      },
+      {
+        "id": "playwright",
+        "parameters": {
+          "command": "npx",
+          "args": [
+            "@playwright/mcp@latest"
+          ]
+        },
+        "toolOptions": {},
+        "enabled": true
+      },
+      {
+        "id": "fetch",
+        "parameters": {
+          "command": "uvx",
+          "args": [
+            "mcp-server-fetch"
+          ]
+        },
+        "toolOptions": {},
+        "enabled": true
       }
     ]
   },
