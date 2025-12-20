@@ -13,7 +13,7 @@ Obsidian 本身只是个编辑器，真正的自动化能力来自 **Templater**
 1. 打开 Obsidian → 进入「设置」→「社区插件」→ 关闭「安全模式」
     
 2. 搜索并安装 **Templater** 和 **QuickAdd**，启用后重启 Obsidian
-3. ![[Pasted image 20251220190636.png]]
+3. ![[Pasted image 20251220204135.png]]
     
 
 | 插件名称 | 重启后在哪里找？ | 主要功能表现 |
@@ -47,7 +47,7 @@ npm install @anthropic-ai/sdk axios md5 fs-extra openai
 
 这是整个流程的「钥匙」，没有 API 密钥一切免谈：
 
-1. 访问 [Anthropic 控制台](https://console.anthropic.com/)（需科学上网）
+1. 访问 [Anthropic 控制台](https://console.anthropic.com/)（需科学上网）不过这种方式比较贵，后面我会找机会分享免费使用CLAUDE的N种方法
     
 2. 注册登录后进入「API Keys」页面，点击「Create Key」
     
