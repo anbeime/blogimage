@@ -50,6 +50,13 @@
       "id": "GLM",
       "baseUrl": "https://open.bigmodel.cn/api/paas/v4/",
       "apiKey": "d68afc047d2b47179fccca96e52ca57c.XDODZVHpC70KMfos"
+    },
+    {
+      "type": "openai",
+      "id": "cloudstudio",
+      "baseUrl": "https://9cf77d2ae12444be995e6d67cc461e15--8000.ap-shanghai2.cloudstudio.club",
+      "apiKey": "aaa",
+      "additionalSettings": {}
     }
   ],
   "chatModels": [
@@ -239,6 +246,14 @@
       "model": "glm-4.6v-flash",
       "promptLevel": 1,
       "enable": true
+    },
+    {
+      "providerType": "openai",
+      "providerId": "cloudstudio",
+      "id": "claude-4.5-sonnet",
+      "model": "claude-4.5-sonnet",
+      "promptLevel": 1,
+      "enable": true
     }
   ],
   "embeddingModels": [
@@ -285,7 +300,7 @@
       "dimension": 1024
     }
   ],
-  "chatModelId": "glm-4.6v",
+  "chatModelId": "claude-4.5-sonnet",
   "applyModelId": "glm-4.6v",
   "embeddingModelId": "openai/text-embedding-3-small",
   "systemPrompt": "",
