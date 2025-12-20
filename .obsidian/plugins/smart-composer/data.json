@@ -48,8 +48,8 @@
     {
       "type": "openai-compatible",
       "id": "GLM",
-      "apiKey": "d68afc047d2b47179fccca96e52ca57c.XDODZVHpC70KMfos",
-      "baseUrl": "https://open.bigmodel.cn/api/paas/v4/"
+      "baseUrl": "https://open.bigmodel.cn/api/paas/v4/",
+      "apiKey": "d68afc047d2b47179fccca96e52ca57c.XDODZVHpC70KMfos"
     }
   ],
   "chatModels": [
@@ -233,8 +233,8 @@
       "model": "morph-v0"
     },
     {
-      "providerId": "GLM",
       "providerType": "openai-compatible",
+      "providerId": "GLM",
       "id": "glm-4.6v",
       "model": "glm-4.6v-flash",
       "promptLevel": 1,
@@ -311,8 +311,8 @@
             "OPENAPI_MCP_HEADERS": "{\"Authorization\": \"Bearer secret_Vc8ZDYMR9B3vJOzJleH8KYojosbJc9NR76Gq3j6FadE\", \"Notion-Version\": \"2022-06-28\"}"
           }
         },
-        "toolOptions": {},
-        "enabled": true
+        "enabled": true,
+        "toolOptions": {}
       },
       {
         "id": "chatppt",
@@ -326,8 +326,8 @@
             "API_KEY": "<Yoo-AI.2118.eVV9TF7NwmFv7Dcf2YMdC5TwENSU5aSe.mvGDTu7DvEuWgMex7Y8C4jHWXtNZf9r9/QUAEhRufyQqhSPCPQsE3hB8dg5QTkwry.1744820678.0>"
           }
         },
-        "toolOptions": {},
-        "enabled": true
+        "enabled": true,
+        "toolOptions": {}
       },
       {
         "id": "n8n-mcp",
@@ -342,8 +342,8 @@
             "authorization:Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiI4Zjc3YjkyNS02NTYxLTQ1N2UtYmVhNi04MjY5ZmMwOTVkYTgiLCJpc3MiOiJuOG4iLCJhdWQiOiJtY3Atc2VydmVyLWFwaSIsImp0aSI6ImEyMGM4ODg4LTJlNGMtNDdmZS1hNGY1LTlhOGYwNjZmNWJjOSIsImlhdCI6MTc2NTY5NDE4MH0.GSyt5MCgs6U2WM4bB4CMcfsIA4UtPqK9iEKRvOKTscQ"
           ]
         },
-        "toolOptions": {},
-        "enabled": true
+        "enabled": true,
+        "toolOptions": {}
       },
       {
         "id": "Firecrawl",
@@ -357,8 +357,8 @@
             "FIRECRAWL_API_KEY": "fc-856db5f3bea742a6a5bfe1bf7496211d"
           }
         },
-        "toolOptions": {},
-        "enabled": true
+        "enabled": true,
+        "toolOptions": {}
       },
       {
         "id": "github",
@@ -372,8 +372,8 @@
             "GITHUB_PERSONAL_ACCESS_TOKEN": "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"
           }
         },
-        "toolOptions": {},
-        "enabled": true
+        "enabled": true,
+        "toolOptions": {}
       },
       {
         "id": "playwright",
@@ -383,8 +383,8 @@
             "@playwright/mcp@latest"
           ]
         },
-        "toolOptions": {},
-        "enabled": true
+        "enabled": true,
+        "toolOptions": {}
       },
       {
         "id": "fetch",
@@ -394,8 +394,8 @@
             "mcp-server-fetch"
           ]
         },
-        "toolOptions": {},
-        "enabled": true
+        "enabled": true,
+        "toolOptions": {}
       }
     ]
   },
