@@ -47,7 +47,7 @@ npm install @anthropic-ai/sdk axios md5 fs-extra openai
 
 这是整个流程的「钥匙」，没有 API 密钥一切免谈：
 
-1. 访问 [Anthropic 控制台](https://console.anthropic.com/)（需科学上网）不过这种方式比较贵，后面我会找机会分享免费使用CLAUDE的N种方法
+1. 访问 [Anthropic 控制台](https://console.anthropic.com/)（需科学上网）不过这种方式比较贵，如果有人感兴趣可留言，后面我会找机会分享免费使用CLAUDE的N种方法。
     
 2. 注册登录后进入「API Keys」页面，点击「Create Key」
     

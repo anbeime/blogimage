@@ -4,5 +4,6 @@
   "obsidian-local-rest-api",
   "smart-composer",
   "quickadd",
-  "templater-obsidian"
+  "templater-obsidian",
+  "obsidian-custom-attachment-location"
 ]
