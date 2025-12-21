@@ -180,7 +180,8 @@
       "providerType": "deepseek",
       "providerId": "deepseek",
       "id": "deepseek-chat",
-      "model": "deepseek-chat"
+      "model": "deepseek-chat",
+      "enable": true
     },
     {
       "providerType": "deepseek",
