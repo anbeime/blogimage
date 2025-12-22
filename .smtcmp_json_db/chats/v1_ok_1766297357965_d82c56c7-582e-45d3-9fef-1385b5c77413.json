@@ -1,0 +1,56 @@
+{
+  "id": "d82c56c7-582e-45d3-9fef-1385b5c77413",
+  "title": "ok",
+  "messages": [
+    {
+      "role": "user",
+      "content": {
+        "root": {
+          "children": [
+            {
+              "children": [
+                {
+                  "detail": 0,
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "text": "ok",
+                  "type": "text",
+                  "version": 1
+                }
+              ],
+              "direction": "ltr",
+              "format": "",
+              "indent": 0,
+              "type": "paragraph",
+              "version": 1,
+              "textFormat": 0,
+              "textStyle": ""
+            }
+          ],
+          "direction": "ltr",
+          "format": "",
+          "indent": 0,
+          "type": "root",
+          "version": 1
+        }
+      },
+      "promptContent": [
+        {
+          "type": "text",
+          "text": "\n\nok\n\n"
+        }
+      ],
+      "id": "c2e5fd1d-232d-48a1-9754-a4dc416418cd",
+      "mentionables": [
+        {
+          "type": "current-file",
+          "file": "用 Python 打造你的专属语音控制电脑助手.md"
+        }
+      ]
+    }
+  ],
+  "createdAt": 1766297357965,
+  "updatedAt": 1766297357965,
+  "schemaVersion": 1
+}

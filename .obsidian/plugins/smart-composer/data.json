@@ -54,7 +54,7 @@
     {
       "type": "openai",
       "id": "cloudstudio",
-      "baseUrl": "https://9cf77d2ae12444be995e6d67cc461e15--8000.ap-shanghai2.cloudstudio.club",
+      "baseUrl": "https://9cf77d2ae12444be995e6d67cc461e15--8000.ap-shanghai2.cloudstudio.club/v1",
       "apiKey": "aaa",
       "additionalSettings": {}
     }
