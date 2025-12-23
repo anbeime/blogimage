@@ -1,0 +1,56 @@
+{
+  "id": "5c146eb8-8562-4bb4-956b-1db75ade5246",
+  "title": "ok?",
+  "messages": [
+    {
+      "role": "user",
+      "content": {
+        "root": {
+          "children": [
+            {
+              "children": [
+                {
+                  "detail": 0,
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "text": "ok?",
+                  "type": "text",
+                  "version": 1
+                }
+              ],
+              "direction": "ltr",
+              "format": "",
+              "indent": 0,
+              "type": "paragraph",
+              "version": 1,
+              "textFormat": 0,
+              "textStyle": ""
+            }
+          ],
+          "direction": "ltr",
+          "format": "",
+          "indent": 0,
+          "type": "root",
+          "version": 1
+        }
+      },
+      "promptContent": [
+        {
+          "type": "text",
+          "text": "\n\nok?\n\n"
+        }
+      ],
+      "id": "708a324c-86ac-40be-9fec-6673206283f2",
+      "mentionables": [
+        {
+          "type": "current-file",
+          "file": "高德智能体（Agent）的提示词模板.md"
+        }
+      ]
+    }
+  ],
+  "createdAt": 1766403565736,
+  "updatedAt": 1766403565736,
+  "schemaVersion": 1
+}

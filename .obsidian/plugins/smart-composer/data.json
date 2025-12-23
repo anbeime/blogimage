@@ -57,6 +57,12 @@
       "baseUrl": "https://9cf77d2ae12444be995e6d67cc461e15--8000.ap-shanghai2.cloudstudio.club/v1",
       "apiKey": "aaa",
       "additionalSettings": {}
+    },
+    {
+      "type": "openai-compatible",
+      "id": "local",
+      "baseUrl": "http://172.30.16.1:8001",
+      "apiKey": "aaa"
     }
   ],
   "chatModels": [
@@ -255,6 +261,14 @@
       "model": "claude-4.5-sonnet",
       "promptLevel": 1,
       "enable": true
+    },
+    {
+      "providerType": "openai-compatible",
+      "providerId": "local",
+      "id": "gpt-5l",
+      "model": "gpt-5",
+      "promptLevel": 1,
+      "enable": true
     }
   ],
   "embeddingModels": [
@@ -301,7 +315,7 @@
       "dimension": 1024
     }
   ],
-  "chatModelId": "claude-4.5-sonnet",
+  "chatModelId": "gpt-5l",
   "applyModelId": "glm-4.6v",
   "embeddingModelId": "openai/text-embedding-3-small",
   "systemPrompt": "",
