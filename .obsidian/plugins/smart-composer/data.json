@@ -174,7 +174,8 @@
       "providerType": "gemini",
       "providerId": "gemini",
       "id": "gemini-2.0-flash",
-      "model": "gemini-2.0-flash"
+      "model": "gemini-2.0-flash",
+      "enable": true
     },
     {
       "providerType": "gemini",
