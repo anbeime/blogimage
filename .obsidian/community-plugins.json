@@ -1,8 +1,8 @@
 [
   "obsidian-git",
-  "note-to-mp",
   "obsidian-local-rest-api",
   "obsidian-custom-attachment-location",
   "terminal",
-  "smart-composer"
+  "smart-composer",
+  "note-to-mp"
 ]
