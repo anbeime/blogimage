@@ -1414,3 +1414,1789 @@ if __name__ == '__main__':
 
 ### 技术说明
 [如有特殊技术细节，在此说明]
+
+### 一、需求理解
+
+你想知道如何把知识图谱的四层关联维度（事实 / 分析 / 创意 / 风险）和自定义规则能力（显性定义、隐性学习、优先级设置）**落地到前端交互设计与开发中**，核心是让这些抽象的能力变成用户可操作、可感知的交互功能。
+
+### 二、整合方案：从交互设计到代码落地
+
+#### 1. 核心交互设计思路（先明确用户操作路径）
+
+知识图谱关联维度和自定义规则的整合，要遵循「**可视化展示 → 可配置操作 → 动态反馈**」的核心逻辑，具体操作路径如下：
+
+预览
+
+查看代码
+
+```
+graph TD
+    A[知识概览主界面] --> B[查看关联维度详情]
+    A --> C[规则配置入口]
+    B --> B1[按四色卡片分层展示维度]
+    B --> B2[维度示例可视化]
+    C --> C1[新增自定义规则]
+    C --> C2[管理现有规则]
+    C1 --> C11[选择规则类型]
+    C1 --> C12[输入规则内容]
+    C1 --> C13[设置优先级]
+    C2 --> C21[启用/禁用规则]
+    C2 --> C22[调整优先级]
+    C2 --> C23[删除规则]
+    B & C --> D[规则生效反馈]
+```
+
+![](//lf-flow-web-cdn.doubao.com/obj/flow-doubao/doubao/chat/static/image/logo-icon-white-bg.72df0b1a.png)
+
+豆包
+
+你的 AI 助手，助力每日工作学习
+
+#### 2. 前端交互落地实现（分模块开发）
+
+以下是可直接落地的整合方案，包含交互设计和核心代码实现：
+
+##### 模块 1：知识图谱关联维度的可视化展示
+
+**交互设计**：
+
+- 在「知识概览」模块增加「查看关联维度」入口，点击弹出维度详情弹窗；
+- 按四色卡片分层展示维度（蓝色 = 事实层、绿色 = 分析层、黄色 = 创意层、红色 = 风险层）；
+- 每个维度包含「维度定义 + 关联示例 + 应用场景」，示例用标签化展示更直观。
+
+**核心代码实现**：
+
+tsx
+
+```
+// 1. 定义维度数据结构（关联四色卡片）
+interface GraphDimension {
+  id: string;
+  cardType: 'fact' | 'explanation' | 'risk' | 'action'; // 关联四色卡片
+  dimensionName: string;
+  dimensionDesc: string;
+  examples: string[]; // 维度示例
+  color: string; // 对应卡片颜色
+}
+
+// 2. 维度数据（映射四层关联维度）
+const graphDimensions: GraphDimension[] = [
+  {
+    id: 'dim1',
+    cardType: 'fact',
+    dimensionName: '结构化数据维度',
+    dimensionDesc: '关联客观存在的基础事实节点，构成知识图谱的底层基础',
+    examples: ['时间', '地点', '人物', '事件', '数字指标'],
+    color: '#3b82f6'
+  },
+  {
+    id: 'dim2',
+    cardType: 'explanation',
+    dimensionName: '逻辑关系维度',
+    dimensionDesc: '关联分析型逻辑节点，揭示数据背后的因果与关联规律',
+    examples: ['因果关系', '对比关系', '趋势变化', '关联规则'],
+    color: '#22c55e'
+  },
+  {
+    id: 'dim3',
+    cardType: 'risk',
+    dimensionName: '创意灵感维度',
+    dimensionDesc: '关联发散型创意节点，激发跨领域思考与创新方向',
+    examples: ['跨领域类比', '潜在机会', '创新方向'],
+    color: '#eab308'
+  },
+  {
+    id: 'dim4',
+    cardType: 'action',
+    dimensionName: '风险预警维度',
+    dimensionDesc: '关联警示型风险节点，提前识别潜在问题与冲突',
+    examples: ['潜在问题', '负面因素', '冲突矛盾'],
+    color: '#ef4444'
+  }
+];
+
+// 3. 维度展示组件（弹窗形式）
+const GraphDimensionModal = ({ visible, onClose }) => {
+  if (!visible) return null;
+  
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[80vh] overflow-auto">
+        {/* 弹窗头部 */}
+        <div className="p-6 border-b flex justify-between items-center">
+          <h3 className="text-xl font-bold text-indigo-600 flex items-center gap-2">
+            <Link2 className="w-5 h-5" />
+            知识图谱关联维度
+          </h3>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-800">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+        
+        {/* 维度内容展示 */}
+        <div className="p-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {graphDimensions.map(dimension => (
+              <div key={dimension.id} className="border rounded-lg overflow-hidden">
+                {/* 维度头部（对应卡片颜色） */}
+                <div 
+                  className="px-6 py-4 font-bold text-white"
+                  style={{ backgroundColor: dimension.color }}
+                >
+                  {
+                    // 关联四色卡片名称
+                    dimension.cardType === 'fact' ? '事实卡片' :
+                    dimension.cardType === 'explanation' ? '解释卡片' :
+                    dimension.cardType === 'risk' ? '风险卡片' : '行动卡片'
+                  } · {dimension.dimensionName}
+                </div>
+                {/* 维度详情 */}
+                <div className="p-6">
+                  <p className="text-gray-700 mb-4">{dimension.dimensionDesc}</p>
+                  <div>
+                    <h4 className="text-sm font-medium text-gray-800 mb-2">关联维度示例：</h4>
+                    <div className="flex flex-wrap gap-2">
+                      {dimension.examples.map((example, idx) => (
+                        <span 
+                          key={idx} 
+                          className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-xs"
+                        >
+                          {example}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+##### 模块 2：自定义规则的可配置交互
+
+**交互设计**：
+
+- 入口：导航栏「关联规则配置」+ 效率模块「规则配置」快捷按钮；
+- 规则新增：分三步（选择规则类型→输入规则内容→设置优先级），并给出规则示例提示；
+- 规则管理：列表展示所有规则，支持「启用 / 禁用」「调整优先级」「删除」操作；
+- 规则类型区分：显性规则（蓝色标签）、隐性规则（绿色标签）、优先级规则（紫色标签）。
+
+**核心代码实现**：
+
+tsx
+
+```
+// 1. 规则数据结构
+interface CustomRule {
+  id: string;
+  ruleType: 'explicit' | 'implicit' | 'priority'; // 显性/隐性/优先级规则
+  content: string; // 规则内容
+  priority: number; // 优先级（数字越小优先级越高）
+  status: 'active' | 'inactive'; // 启用/禁用
+}
+
+// 2. 规则配置组件
+const RuleConfigModal = ({ visible, onClose }) => {
+  // 新增规则状态
+  const [newRule, setNewRule] = useState({
+    content: '',
+    ruleType: 'explicit' as const,
+    priority: 1
+  });
+  // 现有规则列表
+  const [rules, setRules] = useState<CustomRule[]>([
+    {
+      id: 'rule1',
+      ruleType: 'explicit',
+      content: '将所有销售额超过100万的地区与对应的营销策略建立关联',
+      priority: 1,
+      status: 'active'
+    },
+    {
+      id: 'rule2',
+      ruleType: 'implicit',
+      content: '参考前10组关联案例，自动建立类似的知识连接',
+      priority: 2,
+      status: 'active'
+    },
+    {
+      id: 'rule3',
+      ruleType: 'priority',
+      content: '优先关联直接因果关系，再考虑间接相关关系',
+      priority: 0,
+      status: 'active'
+    }
+  ]);
+
+  // 新增规则
+  const handleAddRule = () => {
+    if (!newRule.content.trim()) return;
+    const newRuleItem: CustomRule = {
+      id: `rule${rules.length + 1}`,
+      ...newRule,
+      status: 'active'
+    };
+    setRules([...rules, newRuleItem]);
+    // 重置表单
+    setNewRule({ content: '', ruleType: 'explicit', priority: 1 });
+    // 可对接后端API：axios.post('/api/rules', newRuleItem)
+  };
+
+  // 切换规则状态（启用/禁用）
+  const handleToggleRule = (id: string) => {
+    setRules(rules.map(rule => 
+      rule.id === id 
+        ? { ...rule, status: rule.status === 'active' ? 'inactive' : 'active' }
+        : rule
+    ));
+  };
+
+  // 删除规则
+  const handleDeleteRule = (id: string) => {
+    setRules(rules.filter(rule => rule.id !== id));
+  };
+
+  if (!visible) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-3xl max-h-[80vh] overflow-auto">
+        {/* 弹窗头部 */}
+        <div className="p-6 border-b flex justify-between items-center">
+          <h3 className="text-xl font-bold text-indigo-600 flex items-center gap-2">
+            <Settings className="w-5 h-5" />
+            自定义关联规则配置
+          </h3>
+          <button onClick={onClose} className="text-gray-500 hover:text-gray-800">
+            <X className="w-6 h-6" />
+          </button>
+        </div>
+
+        <div className="p-6">
+          {/* 规则说明提示 */}
+          <div className="mb-6 bg-indigo-50 rounded-lg p-4 flex items-start gap-3">
+            <HelpCircle className="w-5 h-5 text-indigo-600 mt-0.5" />
+            <div className="text-sm text-gray-600">
+              <p className="font-medium text-gray-800">规则配置说明</p>
+              <ul className="mt-1 space-y-1">
+                <li>• 显性规则：直接描述关联逻辑（如"将销售额超100万的地区与营销策略关联"）</li>
+                <li>• 隐性规则：通过示例学习关联模式（如"参考前10组案例自动建立连接"）</li>
+                <li>• 优先级规则：指定规则执行顺序（数字越小优先级越高）</li>
+              </ul>
+            </div>
+          </div>
+
+          {/* 新增规则表单 */}
+          <div className="mb-8 border rounded-lg p-4">
+            <h4 className="font-medium text-gray-800 mb-4">新增关联规则</h4>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">规则内容</label>
+                <textarea
+                  value={newRule.content}
+                  onChange={(e) => setNewRule({...newRule, content: e.target.value})}
+                  placeholder="例如：将所有销售额超过100万的地区与对应的营销策略建立关联"
+                  className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                  rows={2}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">规则优先级</label>
+                <input
+                  type="number"
+                  value={newRule.priority}
+                  onChange={(e) => setNewRule({...newRule, priority: Number(e.target.value)})}
+                  min={0}
+                  className="w-full border rounded-lg p-2 text-sm focus:ring-2 focus:ring-indigo-500 outline-none"
+                />
+              </div>
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-700 mb-1">规则类型</label>
+              <div className="flex gap-4">
+                {[
+                  { type: 'explicit', label: '显性规则定义' },
+                  { type: 'implicit', label: '隐性规则学习' },
+                  { type: 'priority', label: '规则优先级设置' }
+                ].map(item => (
+                  <label key={item.type} className="flex items-center gap-2 cursor-pointer">
+                    <input
+                      type="radio"
+                      name="ruleType"
+                      value={item.type}
+                      checked={newRule.ruleType === item.type}
+                      onChange={() => setNewRule({...newRule, ruleType: item.type as any})}
+                      className="text-indigo-600 focus:ring-indigo-500"
+                    />
+                    <span className="text-sm text-gray-700">{item.label}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
+            <button
+              onClick={handleAddRule}
+              disabled={!newRule.content.trim()}
+              className="bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 disabled:bg-gray-400 disabled:cursor-not-allowed"
+            >
+              <Save className="w-4 h-4 inline mr-2" />
+              保存规则
+            </button>
+          </div>
+
+          {/* 现有规则列表 */}
+          <div>
+            <h4 className="font-medium text-gray-800 mb-4">已配置规则列表</h4>
+            <div className="space-y-3">
+              {rules.map(rule => (
+                <div key={rule.id} className="border rounded-lg p-4 flex flex-col md:flex-row md:items-center justify-between gap-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      {/* 规则类型标签 */}
+                      <span className={`px-2 py-0.5 rounded text-xs ${
+                        rule.ruleType === 'explicit' ? 'bg-blue-50 text-blue-600' :
+                        rule.ruleType === 'implicit' ? 'bg-green-50 text-green-600' :
+                        'bg-purple-50 text-purple-600'
+                      }`}>
+                        {rule.ruleType === 'explicit' ? '显性规则' :
+                         rule.ruleType === 'implicit' ? '隐性规则' : '优先级规则'}
+                      </span>
+                      {/* 优先级标签 */}
+                      <span className="text-xs bg-gray-100 text-gray-700 px-2 py-0.5 rounded">
+                        优先级: {rule.priority}
+                      </span>
+                      {/* 状态标签 */}
+                      <span className={`text-xs px-2 py-0.5 rounded ${
+                        rule.status === 'active' ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600'
+                      }`}>
+                        {rule.status === 'active' ? '已启用' : '已禁用'}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-700">{rule.content}</p>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => handleToggleRule(rule.id)}
+                      className="px-3 py-1 text-xs border rounded-lg hover:bg-gray-50"
+                    >
+                      {rule.status === 'active' ? '禁用' : '启用'}
+                    </button>
+                    <button
+                      onClick={() => handleDeleteRule(rule.id)}
+                      className="px-3 py-1 text-xs bg-red-50 text-red-600 border border-red-200 rounded-lg hover:bg-red-100"
+                    >
+                      <Trash2 className="w-3 h-3 inline mr-1" />
+                      删除
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+```
+
+##### 模块 3：主界面整合入口
+
+**交互设计**：
+
+- 在「知识概览」模块增加「查看关联维度」按钮，点击打开维度弹窗；
+- 导航栏新增「知识图谱」「关联规则配置」入口；
+- 「提升知识管理效率」模块增加「规则配置」快捷按钮。
+
+**核心代码实现**：
+
+tsx
+
+```
+// 主界面组件
+const AntinetMain = () => {
+  const [showDimensionModal, setShowDimensionModal] = useState(false);
+  const [showRuleModal, setShowRuleModal] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* 导航栏 */}
+      <header className="bg-white shadow-sm sticky top-0 z-20">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Brain className="w-8 h-8 text-indigo-600" />
+            <h1 className="text-xl font-bold text-gray-800">Antinet 智能知识管家</h1>
+          </div>
+          
+          {/* 导航菜单 */}
+          <nav className="hidden md:flex items-center gap-6">
+            <a href="#" className="text-indigo-600 font-medium border-b-2 border-indigo-600 pb-1">概览</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600">知识卡片</a>
+            {/* 知识图谱入口 */}
+            <a 
+              href="#" 
+              className="text-gray-700 hover:text-indigo-600"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowDimensionModal(true);
+              }}
+            >
+              知识图谱
+            </a>
+            {/* 规则配置入口 */}
+            <a 
+              href="#" 
+              className="text-gray-700 hover:text-indigo-600"
+              onClick={(e) => {
+                e.preventDefault();
+                setShowRuleModal(true);
+              }}
+            >
+              关联规则配置
+            </a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600">团队协作</a>
+          </nav>
+        </div>
+      </header>
+
+      {/* 主内容区 - 知识概览 */}
+      <main className="container mx-auto px-4 py-8">
+        <section className="bg-white rounded-xl shadow-sm border p-6 mb-8">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+              <Brain className="w-5 h-5 text-indigo-600" />
+              知识概览
+            </h2>
+            {/* 查看关联维度按钮 */}
+            <button
+              onClick={() => setShowDimensionModal(true)}
+              className="text-sm text-indigo-600 flex items-center gap-1 hover:underline"
+            >
+              <Link2 className="w-4 h-4" />
+              查看关联维度
+            </button>
+          </div>
+          
+          {/* 四色卡片展示（略） */}
+        </section>
+
+        {/* 提升知识管理效率模块 - 规则配置快捷入口 */}
+        <section className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl p-6 text-white">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-xl font-bold">提升知识管理效率</h2>
+            <button
+              onClick={() => setShowRuleModal(true)}
+              className="text-xs bg-white/20 px-2 py-1 rounded flex items-center gap-1"
+            >
+              <Settings className="w-3 h-3" />
+              规则配置
+            </button>
+          </div>
+          
+          {/* 效率卡片（略） */}
+        </section>
+      </main>
+
+      {/* 维度弹窗 */}
+      <GraphDimensionModal 
+        visible={showDimensionModal} 
+        onClose={() => setShowDimensionModal(false)} 
+      />
+
+      {/* 规则配置弹窗 */}
+      <RuleConfigModal 
+        visible={showRuleModal} 
+        onClose={() => setShowRuleModal(false)} 
+      />
+    </div>
+  );
+};
+```
+
+#### 3. 交互增强：规则生效反馈（可选）
+
+为了让用户感知规则的作用，可增加「规则生效反馈」交互：
+
+- 规则保存 / 启用后，弹出「规则已生效」的轻提示（Toast）；
+- 在知识图谱可视化区域，实时展示规则关联的节点变化；
+- 规则优先级调整后，提示「规则优先级已更新，下次关联时生效」。
+
+tsx
+
+```
+// 轻提示组件示例
+const Toast = ({ message, type = 'success' }) => {
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setVisible(false), 3000);
+    return () => clearTimeout(timer);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div className={`fixed bottom-4 right-4 px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 ${
+      type === 'success' ? 'bg-green-50 text-green-700 border border-green-200' :
+      'bg-blue-50 text-blue-700 border border-blue-200'
+    }`}>
+      <CheckCircle className="w-5 h-5" />
+      <span className="text-sm">{message}</span>
+    </div>
+  );
+};
+
+// 使用示例：保存规则后展示
+const handleAddRule = () => {
+  // 保存逻辑...
+  setShowToast(true);
+  setToastMessage('规则已保存并生效');
+};
+```
+
+### 三、总结
+
+将知识图谱关联维度和自定义规则整合到前端交互的核心要点：
+
+1. **可视化分层**：把抽象的四层关联维度映射到四色卡片，用颜色、示例、描述让维度可感知；
+2. **低代码配置**：自定义规则通过表单化配置实现，降低用户操作门槛，同时给出规则示例引导；
+3. **多入口触达**：在主界面、效率模块、导航栏都增加入口，方便用户操作；
+4. **即时反馈**：规则操作后给出明确的反馈，让用户感知规则的生效状态。
+
+你需要为 Antinet 智能知识管家设计前端的**知识概览页面**，核心包含四色卡片展示（支持关联图谱查看）、最近知识活动、知识分布环形图、特性亮点四大模块，同时要求响应式布局、卡片式设计风格，预留大模型 API 接口和知识图谱关联实现逻辑，适配骁龙 AIPC 端侧展示场景。
+
+### 二、前端页面实现（React + TypeScript + Tailwind + Recharts）
+
+以下是完整的可运行代码，包含所有核心模块、响应式适配、预留 API 接口和知识图谱关联逻辑：
+
+tsx
+
+```
+import React, { useState, useEffect } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { 
+  FileText, AlertCircle, Lightbulb, Activity, 
+  Clock, Tag, Database, MessageSquare, 
+  Link2, Brain, Shield, Zap 
+} from 'lucide-react';
+
+// 定义类型
+interface KnowledgeCard {
+  id: string;
+  type: 'fact' | 'explanation' | 'risk' | 'action';
+  title: string;
+  summary: string;
+  source: 'document' | 'database' | 'api' | 'user';
+  relatedIds: string[]; // 关联卡片ID
+}
+
+interface ActivityRecord {
+  id: string;
+  title: string;
+  type: string;
+  time: string;
+  description: string;
+}
+
+interface Feature {
+  id: string;
+  icon: React.ReactNode;
+  title: string;
+  description: string;
+}
+
+// 模拟数据
+const mockCards: KnowledgeCard[] = [
+  {
+    id: 'card1',
+    type: 'fact',
+    title: '12月销售数据统计',
+    summary: '销量环比下降15%，北京区域下滑最明显（22%），上海区域下滑8%',
+    source: 'database',
+    relatedIds: ['card2', 'card3', 'card4']
+  },
+  {
+    id: 'card2',
+    type: 'explanation',
+    title: '销售下滑原因分析',
+    summary: '竞品于12月中旬推出满减促销活动，分流核心客户群体',
+    source: 'api',
+    relatedIds: ['card1', 'card3']
+  },
+  {
+    id: 'card3',
+    type: 'risk',
+    title: '库存积压风险预警',
+    summary: '滞销商品库存周转天数达45天，超出安全阈值（30天）15天',
+    source: 'api',
+    relatedIds: ['card1', 'card2', 'card4']
+  },
+  {
+    id: 'card4',
+    type: 'action',
+    title: '库存清理行动建议',
+    summary: '推出限时8折折扣活动，优先清理北京仓滞销商品，周期15天',
+    source: 'api',
+    relatedIds: ['card1', 'card3']
+  }
+];
+
+const mockActivities: ActivityRecord[] = [
+  {
+    id: 'act1',
+    title: '新增销售数据分析卡片',
+    type: '事实卡片',
+    time: '2026-01-21 14:30',
+    description: '从销售数据库提取12月数据生成事实卡片'
+  },
+  {
+    id: 'act2',
+    title: '关联竞品动态与销售下滑卡片',
+    type: '知识图谱关联',
+    time: '2026-01-21 13:15',
+    description: '手动关联竞品促销卡片与销售下滑解释卡片'
+  },
+  {
+    id: 'act3',
+    title: '上传《热点视频工坊部署文档》',
+    type: '文档导入',
+    time: '2026-01-20 10:05',
+    description: '上传markdown文档并自动生成事实卡片'
+  }
+];
+
+const mockFeatures: Feature[] = [
+  {
+    id: 'feat1',
+    icon: <Brain className="w-8 h-8 text-blue-500" />,
+    title: 'NPU加速推理',
+    description: '基于Qwen2-1.5B轻量化模型，端侧推理延迟<500ms'
+  },
+  {
+    id: 'feat2',
+    icon: <Link2 className="w-8 h-8 text-green-500" />,
+    title: '智能知识关联',
+    description: '支持主题/逻辑/属性/用户定义四种关联方式构建知识图谱'
+  },
+  {
+    id: 'feat3',
+    icon: <Shield className="w-8 h-8 text-yellow-500" />,
+    title: '端侧安全存储',
+    description: 'AES-256加密存储，原始数据全程不出域，保障数据安全'
+  },
+  {
+    id: 'feat4',
+    icon: <Zap className="w-8 h-8 text-red-500" />,
+    title: '多模态支持',
+    description: '支持文档/图片OCR/数据库多源数据接入与分析'
+  }
+];
+
+// 饼图数据（四种卡片各25%）
+const pieData = [
+  { name: '事实卡片', value: 25, color: '#3b82f6' },
+  { name: '解释卡片', value: 25, color: '#22c55e' },
+  { name: '风险卡片', value: 25, color: '#eab308' },
+  { name: '行动卡片', value: 25, color: '#ef4444' }
+];
+
+// 主组件
+const KnowledgeOverview: React.FC = () => {
+  const [activeCard, setActiveCard] = useState<KnowledgeCard | null>(null);
+  const [showGraphModal, setShowGraphModal] = useState(false);
+
+  // 模拟调用大模型API获取关联图谱数据
+  const fetchRelatedGraph = async (cardId: string) => {
+    try {
+      // 预留API接口：实际项目中替换为真实的NPU/后端接口
+      const response = await fetch('/api/knowledge/graph', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ cardId, type: 'semantic' }) // 语义检索关联图谱
+      });
+      const graphData = await response.json();
+      console.log('知识图谱数据:', graphData);
+      // 这里可扩展图谱渲染逻辑（如使用d3.js/vis-network）
+      return graphData;
+    } catch (error) {
+      console.error('获取关联图谱失败:', error);
+      // 降级使用模拟的relatedIds生成简易图谱
+      return mockCards.filter(card => mockCards.find(c => c.id === cardId)?.relatedIds.includes(card.id));
+    }
+  };
+
+  // 点击卡片查看关联图谱
+  const handleCardClick = async (card: KnowledgeCard) => {
+    setActiveCard(card);
+    await fetchRelatedGraph(card.id); // 调用API获取图谱数据
+    setShowGraphModal(true);
+  };
+
+  // 卡片类型映射
+  const getCardMeta = (type: KnowledgeCard['type']) => {
+    const metaMap = {
+      fact: { icon: <FileText className="w-6 h-6" />, color: 'bg-blue-50 border-blue-200 text-blue-800', title: '事实卡片' },
+      explanation: { icon: <Lightbulb className="w-6 h-6" />, color: 'bg-green-50 border-green-200 text-green-800', title: '解释卡片' },
+      risk: { icon: <AlertCircle className="w-6 h-6" />, color: 'bg-yellow-50 border-yellow-200 text-yellow-800', title: '风险卡片' },
+      action: { icon: <Activity className="w-6 h-6" />, color: 'bg-red-50 border-red-200 text-red-800', title: '行动卡片' }
+    };
+    return metaMap[type];
+  };
+
+  // 数据源图标映射
+  const getSourceIcon = (source: KnowledgeCard['source']) => {
+    const iconMap = {
+      document: <FileText className="w-4 h-4 ml-1" />,
+      database: <Database className="w-4 h-4 ml-1" />,
+      api: <Brain className="w-4 h-4 ml-1" />,
+      user: <MessageSquare className="w-4 h-4 ml-1" />
+    };
+    return iconMap[source];
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans">
+      {/* 顶部导航栏 */}
+      <header className="bg-white shadow-sm sticky top-0 z-10">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Brain className="w-8 h-8 text-indigo-600" />
+            <h1 className="text-xl font-bold text-gray-800">Antinet 智能知识管家</h1>
+          </div>
+          <nav className="hidden md:flex gap-6">
+            <a href="#" className="text-gray-700 hover:text-indigo-600 font-medium">知识概览</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600 font-medium">数据分析</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600 font-medium">知识图谱</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600 font-medium">性能监控</a>
+          </nav>
+          <button className="md:hidden text-gray-700">
+            <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      {/* 主内容区 */}
+      <main className="container mx-auto px-4 py-8">
+        {/* 四色卡片模块 */}
+        <section className="mb-12">
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <Activity className="w-6 h-6 text-indigo-600" />
+            知识卡片概览
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {mockCards.map(card => {
+              const meta = getCardMeta(card.type);
+              return (
+                <div 
+                  key={card.id}
+                  className={`border rounded-lg p-5 cursor-pointer hover:shadow-lg transition-shadow ${meta.color}`}
+                  onClick={() => handleCardClick(card)}
+                >
+                  <div className="flex justify-between items-start mb-3">
+                    <span className="text-sm font-medium">{meta.title}</span>
+                    {getSourceIcon(card.source)}
+                  </div>
+                  <h3 className="text-lg font-semibold mb-2">{card.title}</h3>
+                  <p className="text-sm line-clamp-2">{card.summary}</p>
+                  <div className="mt-4 text-xs text-gray-500 flex items-center gap-1">
+                    <Link2 className="w-3 h-3" />
+                    关联{card.relatedIds.length}个卡片
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* 最近知识活动 + 知识分布 组合模块 */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          {/* 最近知识活动 */}
+          <section>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+              <Clock className="w-6 h-6 text-indigo-600" />
+              最近知识活动
+            </h2>
+            <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+              {mockActivities.map(activity => (
+                <div key={activity.id} className="p-4 border-b last:border-0 hover:bg-gray-50 transition-colors">
+                  <div className="flex justify-between items-start mb-2">
+                    <h3 className="font-medium text-gray-800">{activity.title}</h3>
+                    <span className="text-xs px-2 py-1 rounded-full bg-indigo-50 text-indigo-600">
+                      {activity.type}
+                    </span>
+                  </div>
+                  <p className="text-sm text-gray-600 mb-2">{activity.description}</p>
+                  <p className="text-xs text-gray-400">{activity.time}</p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          {/* 知识分布 */}
+          <section>
+            <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+              <PieChart className="w-6 h-6 text-indigo-600" />
+              知识卡片分布
+            </h2>
+            <div className="bg-white rounded-lg shadow-sm border p-4 h-full">
+              <ResponsiveContainer width="100%" height={250}>
+                <PieChart>
+                  <Pie
+                    data={pieData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={90}
+                    paddingAngle={2}
+                    dataKey="value"
+                    label={({ name, value }) => `${name}: ${value}%`}
+                    labelLine={false}
+                  >
+                    {pieData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip formatter={(value) => `${value}%`} />
+                  <Legend />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </section>
+        </div>
+
+        {/* 特性亮点模块 */}
+        <section>
+          <h2 className="text-2xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+            <Zap className="w-6 h-6 text-indigo-600" />
+            核心特性亮点
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {mockFeatures.map(feature => (
+              <div key={feature.id} className="bg-white rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow">
+                <div className="mb-4">{feature.icon}</div>
+                <h3 className="text-lg font-semibold mb-2 text-gray-800">{feature.title}</h3>
+                <p className="text-sm text-gray-600">{feature.description}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+      </main>
+
+      {/* 关联图谱模态框（预留） */}
+      {showGraphModal && activeCard && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl max-h-[80vh] overflow-auto">
+            <div className="p-4 border-b flex justify-between items-center">
+              <h3 className="font-bold text-lg">
+                {getCardMeta(activeCard.type).title} - 关联图谱
+              </h3>
+              <button 
+                onClick={() => setShowGraphModal(false)}
+                className="text-gray-500 hover:text-gray-800"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <div className="p-6">
+              <div className="mb-4">
+                <h4 className="font-medium mb-2">当前卡片：{activeCard.title}</h4>
+                <p className="text-sm text-gray-600">{activeCard.summary}</p>
+              </div>
+              <div className="h-[400px] bg-gray-50 rounded-lg flex items-center justify-center">
+                <div className="text-center text-gray-500">
+                  {/* 预留知识图谱渲染区域，可集成d3.js/vis-network等可视化库 */}
+                  <p>知识图谱可视化区域</p>
+                  <p className="text-sm mt-2">关联卡片：{activeCard.relatedIds.length}个</p>
+                  <button 
+                    className="mt-4 px-4 py-2 bg-indigo-600 text-white rounded hover:bg-indigo-700"
+                    onClick={() => fetchRelatedGraph(activeCard.id)}
+                  >
+                    刷新关联图谱
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* 页脚 */}
+      <footer className="bg-white border-t mt-12 py-6">
+        <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
+          <p>Antinet 智能知识管家 © 2026 骁龙AIPC端侧智能数据工作站</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default KnowledgeOverview;
+```
+
+#### 代码说明：
+
+1. **技术栈适配**：基于 React + TypeScript + Tailwind CSS + Recharts 实现，符合需求中前端技术栈规范；
+2. **核心模块实现**：
+    
+    - 四色卡片模块：按事实（蓝）、解释（绿）、风险（黄）、行动（红）分类展示，包含标题、摘要、数据源图标，点击可查看关联图谱；
+    - 最近知识活动：展示 3 条近期记录，包含标题、类型标签、时间、描述；
+    - 知识分布模块：使用 Recharts 实现环形饼图，四种卡片占比各 25%，带图例和 tooltip；
+    - 特性亮点模块：展示 4 个核心特性，包含图标、标题、描述；
+    
+3. **响应式设计**：通过 Tailwind 的 grid / 媒体查询适配移动端 / 平板 / 桌面端；
+4. **预留接口**：
+    
+    - `/api/knowledge/graph`：对接大模型 API 获取关联图谱数据的接口，支持传入卡片 ID 和检索类型；
+    - 知识图谱渲染区域：预留了可视化容器，可集成 d3.js/vis-network 等库实现图谱展示；
+    
+5. **交互逻辑**：卡片点击弹窗、hover 动效、模态框关闭 / 刷新等基础交互；
+6. **数据源标识**：卡片上标注数据源（文档 / 数据库 / API / 用户输入），符合需求中卡片内容来源规范；
+7. **关联方式预留**：代码注释中明确了四种关联方式的适配逻辑，可扩展实现主题 / 逻辑 / 属性 / 用户定义关联。
+
+#### 运行前置条件：
+
+1. 安装依赖：
+
+bash
+
+运行
+
+```
+npm install react react-dom typescript tailwindcss framer-motion recharts lucide-react
+```
+
+2. 配置 Tailwind CSS（按官方文档初始化）；
+3. 适配骁龙 AIPC 端侧：可通过响应式断点优化平板 / PC 端展示效果。
+
+### 三、知识图谱关联实现补充
+
+tsx
+
+```
+// 扩展知识图谱渲染逻辑（集成vis-network）
+import { Network } from 'vis-network';
+
+// 在关联图谱模态框中添加以下代码：
+const renderKnowledgeGraph = (card: KnowledgeCard) => {
+  // 模拟图谱数据
+  const nodes = [
+    { id: card.id, label: card.title, color: getCardMeta(card.type).color.split(' ')[1].replace('bg-', '').replace('-50', '') },
+    ...card.relatedIds.map((id, index) => {
+      const relatedCard = mockCards.find(c => c.id === id);
+      return {
+        id,
+        label: relatedCard?.title || `关联卡片${index+1}`,
+        color: relatedCard ? getCardMeta(relatedCard.type).color.split(' ')[1].replace('bg-', '').replace('-50', '') : 'gray'
+      };
+    })
+  ];
+
+  const edges = card.relatedIds.map(id => ({
+    from: card.id,
+    to: id,
+    label: '关联' // 可扩展为具体关联类型：主题/逻辑/属性/用户定义
+  }));
+
+  const container = document.getElementById('graph-container');
+  if (container) {
+    const data = { nodes, edges };
+    const options = {
+      nodes: { shape: 'box', fontSize: 12, size: 20 },
+      edges: { length: 150 },
+      layout: { hierarchical: { direction: 'LR' } }
+    };
+    new Network(container, data, options);
+  }
+};
+
+// 在模态框中替换图谱区域：
+<div id="graph-container" className="h-[400px] bg-gray-50 rounded-lg"></div>
+// 并在模态框打开时调用：
+useEffect(() => {
+  if (showGraphModal && activeCard) {
+    renderKnowledgeGraph(activeCard);
+  }
+}, [showGraphModal, activeCard]);
+```
+
+### 总结
+
+1. 页面完整实现了知识概览四大核心模块，符合响应式、卡片式设计风格，适配骁龙 AIPC 端侧展示；
+2. 预留了大模型 API 接口（`/api/knowledge/graph`）和知识图谱关联实现逻辑，支持四种关联方式扩展；
+3. 严格遵循需求中的四色卡片分类、数据来源标识、性能适配等规范，可直接集成到 Antinet 智能知识管家前端工程中。
+
+关键点回顾：
+
+- 四色卡片是核心展示载体，需关联知识图谱接口实现动态关联；
+- 响应式布局确保在 AIPC 不同屏幕尺寸下的适配性；
+- 预留的 API 接口和图谱渲染逻辑是对接端侧 NPU 模型的关键扩展点。
+你希望参考提供的移动端四色卡片设计和网页端知识概览界面，将 Antinet 智能知识管家的前端功能开发为**可动态交互体验的版本**，核心是还原设计稿的视觉风格，同时实现卡片点击、数据动态加载、知识图谱关联、图表交互等可体验的核心功能。
+
+### 二、动态可体验版前端实现
+
+以下是完整的可运行代码，基于 React + TypeScript + Tailwind CSS + Recharts + Framer Motion 实现，还原设计稿视觉风格并增加动态交互体验：
+
+tsx
+
+```
+import React, { useState, useEffect, useRef } from 'react';
+import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip, Legend } from 'recharts';
+import { 
+  Search, Lightbulb, AlertTriangle, Rocket, 
+  Clock, Tag, Database, MessageSquare, 
+  Link2, Brain, Shield, Zap, ChevronRight,
+  PlusCircle, BarChart2, Users, BookOpen,
+  Code, ShoppingCart, ArrowUpRight
+} from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// 类型定义
+interface KnowledgeCard {
+  id: string;
+  type: 'fact' | 'explanation' | 'risk' | 'action';
+  title: string;
+  desc: string;
+  count: number;
+  icon: React.ReactNode;
+  examples: string[];
+}
+
+interface ActivityRecord {
+  id: string;
+  title: string;
+  type: 'core' | 'link' | 'source' | 'keyword';
+  time: string;
+  desc: string;
+  address: string;
+}
+
+interface Feature {
+  id: string;
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+}
+
+interface EfficiencyCard {
+  id: string;
+  type: 'core' | 'link' | 'source' | 'keyword';
+  title: string;
+  desc: string;
+}
+
+interface Scene {
+  id: string;
+  icon: React.ReactNode;
+  title: string;
+  desc: string;
+}
+
+// 模拟数据
+const cardTypes: KnowledgeCard[] = [
+  {
+    id: 'fact',
+    type: 'fact',
+    title: '事实卡片',
+    desc: '记录客观存在的真实信息，精准还原事件全貌',
+    count: 1,
+    icon: <Search className="w-12 h-12 text-white" />,
+    examples: ['记录重要的想法、理论和主要观点']
+  },
+  {
+    id: 'explanation',
+    type: 'explanation',
+    title: '解释卡片',
+    desc: '梳理逻辑关联，解析内在因果关系',
+    count: 1,
+    icon: <Lightbulb className="w-12 h-12 text-white" />,
+    examples: ['连接不同概念，发现隐性知识联系']
+  },
+  {
+    id: 'risk',
+    type: 'risk',
+    title: '风险卡片',
+    desc: '预判潜在隐患，提前规避危机风险',
+    count: 1,
+    icon: <AlertTriangle className="w-12 h-12 text-white" />,
+    examples: ['保存资料、文档和外部资源链接']
+  },
+  {
+    id: 'action',
+    type: 'action',
+    title: '行动卡片',
+    desc: '制定执行方案，推进任务落地执行',
+    count: 1,
+    icon: <Rocket className="w-12 h-12 text-white" />,
+    examples: ['标记重要术语，便于快速检索和导航']
+  }
+];
+
+const activityData: ActivityRecord[] = [
+  {
+    id: 'act1',
+    title: '卢曼卡片盒方法',
+    type: 'core',
+    time: '2025/10/27 18:30',
+    desc: '一种高效的知识管理系统，通过索引卡片和笔记卡片的关联，构建个人知识网络，核心在于卡片间的连接和知识的演进。',
+    address: '地址: A1'
+  },
+  {
+    id: 'act2',
+    title: '卢曼方法与AI结合',
+    type: 'link',
+    time: '2025/10/27 22:15',
+    desc: 'AI技术可以增强卢曼卡片盒系统的关联发现能力，自动识别概念间的隐性联系，加速知识网络的构建过程。',
+    address: '地址: B2'
+  },
+  {
+    id: 'act3',
+    title: '《如何阅读一本书》',
+    type: 'source',
+    time: '2025/10/26 17:45',
+    desc: '这本书介绍了高效的阅读方法，强调主动阅读和笔记的重要性，对构建个人知识体系有重要参考价值。',
+    address: '地址: C3'
+  }
+];
+
+const featureData: Feature[] = [
+  {
+    id: 'feat1',
+    icon: <Brain className="w-5 h-5 text-indigo-600" />,
+    title: 'AI增强关联发现',
+    desc: '智能识别概念间的隐性联系，超越人工链接能力'
+  },
+  {
+    id: 'feat2',
+    icon: <Users className="w-5 h-5 text-indigo-600" />,
+    title: '团队智慧共创',
+    desc: '个人知识网络有机整合，激发集体创造力'
+  },
+  {
+    id: 'feat3',
+    icon: <BarChart2 className="w-5 h-5 text-indigo-600" />,
+    title: '实时可视化图谱',
+    desc: '动态展示知识发展过程，直观呈现知识结构'
+  },
+  {
+    id: 'feat4',
+    icon: <Lightbulb className="w-5 h-5 text-indigo-600" />,
+    title: '智能内容建议',
+    desc: '基于AI的知识发展建议，促进深度思考与学习'
+  }
+];
+
+const efficiencyData: EfficiencyCard[] = [
+  {
+    id: 'eff1',
+    type: 'core',
+    title: '创建核心概念卡片',
+    desc: '开放的知识增强的卢曼卡片系统，加速知识发展'
+  },
+  {
+    id: 'eff2',
+    type: 'link',
+    title: '创建关联链接卡片',
+    desc: ''
+  },
+  {
+    id: 'eff3',
+    type: 'source',
+    title: '创建参考来源卡片',
+    desc: ''
+  },
+  {
+    id: 'eff4',
+    type: 'keyword',
+    title: '创建索引关键词卡片',
+    desc: ''
+  }
+];
+
+const sceneData: Scene[] = [
+  {
+    id: 'scene1',
+    icon: <Users className="w-5 h-5 text-indigo-600" />,
+    title: '研发团队知识管理',
+    desc: '整合技术方案，促进经验传承，加速创新过程'
+  },
+  {
+    id: 'scene2',
+    icon: <ShoppingCart className="w-5 h-5 text-indigo-600" />,
+    title: '市场营销知识库',
+    desc: '整合市场洞察，优化策略制定，促进策略落地'
+  }
+];
+
+// 饼图数据
+const pieData = [
+  { name: '蓝色卡片', value: 25, color: '#3b82f6' },
+  { name: '绿色卡片', value: 25, color: '#22c55e' },
+  { name: '黄色卡片', value: 25, color: '#eab308' },
+  { name: '红色卡片', value: 25, color: '#ef4444' }
+];
+
+// 类型颜色映射
+const typeColorMap = {
+  core: 'bg-blue-500',
+  link: 'bg-green-500',
+  source: 'bg-yellow-500',
+  keyword: 'bg-red-500'
+};
+
+const typeTextMap = {
+  core: '核心概念',
+  link: '关联链接',
+  source: '参考来源',
+  keyword: '索引关键词'
+};
+
+// 主组件
+const AntinetKnowledgeHub: React.FC = () => {
+  const [activeCard, setActiveCard] = useState<KnowledgeCard | null>(null);
+  const [showDetailModal, setShowDetailModal] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const modalRef = useRef<HTMLDivElement>(null);
+
+  // 模拟加载数据
+  useEffect(() => {
+    setLoading(true);
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  // 卡片点击事件
+  const handleCardClick = (card: KnowledgeCard) => {
+    setActiveCard(card);
+    setShowDetailModal(true);
+  };
+
+  // 关闭模态框
+  const handleCloseModal = () => {
+    setShowDetailModal(false);
+    setActiveCard(null);
+  };
+
+  // 点击外部关闭模态框
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(e.target as Node)) {
+        handleCloseModal();
+      }
+    };
+
+    if (showDetailModal) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [showDetailModal]);
+
+  // 模拟创建卡片
+  const handleCreateCard = (type: string) => {
+    alert(`开始创建【${typeTextMap[type as keyof typeof typeTextMap]}】卡片`);
+    // 实际项目中可对接API创建卡片
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 font-sans">
+      {/* 顶部导航栏 */}
+      <header className="bg-white shadow-sm sticky top-0 z-20">
+        <div className="container mx-auto px-4 py-3 flex justify-between items-center">
+          <div className="flex items-center gap-2">
+            <Brain className="w-8 h-8 text-indigo-600" />
+            <h1 className="text-xl font-bold text-gray-800">Antinet 智能知识管家</h1>
+          </div>
+          
+          {/* 导航菜单 */}
+          <nav className="hidden md:flex items-center gap-6">
+            <a href="#" className="text-indigo-600 font-medium border-b-2 border-indigo-600 pb-1">概览</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors">知识卡片</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors">团队协作</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors">团队知识管理</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors">分析报告</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors">GTD系统</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors">功能检查</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors">数据分析</a>
+            <a href="#" className="text-gray-700 hover:text-indigo-600 transition-colors">NPU性能</a>
+          </nav>
+          
+          {/* 新建卡片按钮 */}
+          <motion.button 
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="bg-indigo-600 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-indigo-700 transition-colors"
+          >
+            <PlusCircle className="w-4 h-4" />
+            新建卡片
+          </motion.button>
+        </div>
+      </header>
+
+      {/* 加载状态 */}
+      {loading && (
+        <div className="fixed inset-0 bg-white bg-opacity-80 flex items-center justify-center z-50">
+          <motion.div 
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+            className="w-12 h-12 border-4 border-indigo-200 border-t-indigo-600 rounded-full"
+          ></motion.div>
+        </div>
+      )}
+
+      {/* 主内容区 */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* 左侧区域 - 知识概览 + 最近活动 + 特性亮点 */}
+          <div className="lg:col-span-2 space-y-8">
+            {/* 知识概览模块 */}
+            <motion.section 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-xl shadow-sm border p-6"
+            >
+              <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <Brain className="w-5 h-5 text-indigo-600" />
+                知识概览
+              </h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4">
+                {cardTypes.map(card => (
+                  <motion.div
+                    key={card.id}
+                    whileHover={{ scale: 1.03, y: -5 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`rounded-xl p-6 flex flex-col items-center text-center cursor-pointer relative overflow-hidden`}
+                    style={{
+                      background: card.id === 'fact' 
+                        ? 'linear-gradient(135deg, #93c5fd, #3b82f6)' 
+                        : card.id === 'explanation'
+                          ? 'linear-gradient(135deg, #86efac, #22c55e)'
+                          : card.id === 'risk'
+                            ? 'linear-gradient(135deg, #fef08a, #eab308)'
+                            : 'linear-gradient(135deg, #fca5a5, #ef4444)'
+                    }}
+                    onClick={() => handleCardClick(card)}
+                  >
+                    <div className="absolute top-2 right-2 bg-white bg-opacity-20 rounded-full w-8 h-8 flex items-center justify-center text-white font-bold">
+                      {card.count}
+                    </div>
+                    <div className="mb-4">{card.icon}</div>
+                    <h3 className="text-xl font-bold text-white mb-2">{card.title}</h3>
+                    <p className="text-white text-opacity-90 text-sm">{card.desc}</p>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.section>
+
+            {/* 最近知识活动 */}
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="bg-white rounded-xl shadow-sm border p-6"
+            >
+              <div className="flex justify-between items-center mb-6">
+                <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+                  <Clock className="w-5 h-5 text-indigo-600" />
+                  最近知识活动
+                </h2>
+                <a href="#" className="text-indigo-600 text-sm flex items-center gap-1 hover:underline">
+                  查看全部 <ChevronRight className="w-4 h-4" />
+                </a>
+              </div>
+              
+              <div className="space-y-4">
+                {activityData.map(activity => (
+                  <motion.div
+                    key={activity.id}
+                    whileHover={{ x: 5 }}
+                    className="border-b pb-4 last:border-0 last:pb-0"
+                  >
+                    <div className="flex items-start gap-3">
+                      <div className={`w-8 h-8 rounded-full ${typeColorMap[activity.type]} flex items-center justify-center text-white`}>
+                        {activity.type === 'core' && <Brain className="w-4 h-4" />}
+                        {activity.type === 'link' && <Link2 className="w-4 h-4" />}
+                        {activity.type === 'source' && <BookOpen className="w-4 h-4" />}
+                        {activity.type === 'keyword' && <Tag className="w-4 h-4" />}
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-center mb-1">
+                          <h3 className="font-medium text-gray-800">{activity.title}</h3>
+                          <span className="text-xs text-gray-500">{activity.time}</span>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-2">{activity.desc}</p>
+                        <p className="text-xs text-gray-400">{activity.address}</p>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.section>
+
+            {/* 特性亮点 */}
+            <motion.section
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-white rounded-xl shadow-sm border p-6"
+            >
+              <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <Zap className="w-5 h-5 text-indigo-600" />
+                特性亮点
+              </h2>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {featureData.map(feature => (
+                  <motion.div
+                    key={feature.id}
+                    whileHover={{ scale: 1.02 }}
+                    className="border rounded-lg p-4 flex items-start gap-3"
+                  >
+                    <div className="bg-indigo-50 rounded-full p-2">
+                      {feature.icon}
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-800 mb-1">{feature.title}</h3>
+                      <p className="text-sm text-gray-600">{feature.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.section>
+          </div>
+
+          {/* 右侧区域 - 知识分布 + 效率提升 + 应用场景 */}
+          <div className="space-y-8">
+            {/* 知识分布 */}
+            <motion.section
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5 }}
+              className="bg-white rounded-xl shadow-sm border p-6"
+            >
+              <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <PieChart className="w-5 h-5 text-indigo-600" />
+                知识分布
+              </h2>
+              
+              <div className="h-64">
+                <ResponsiveContainer width="100%" height="100%">
+                  <PieChart>
+                    <Pie
+                      data={pieData}
+                      cx="50%"
+                      cy="50%"
+                      innerRadius={50}
+                      outerRadius={80}
+                      paddingAngle={2}
+                      dataKey="value"
+                      label={({ name, value }) => `${name}: ${value}%`}
+                      labelLine={false}
+                    >
+                      {pieData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      ))}
+                    </Pie>
+                    <Tooltip formatter={(value) => `${value}%`} />
+                    <Legend />
+                  </PieChart>
+                </ResponsiveContainer>
+              </div>
+            </motion.section>
+
+            {/* 提升知识管理效率 */}
+            <motion.section
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.1 }}
+              className="bg-gradient-to-br from-indigo-600 to-purple-600 rounded-xl shadow-sm p-6 text-white"
+            >
+              <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+                <ArrowUpRight className="w-5 h-5" />
+                提升知识管理效率
+              </h2>
+              
+              <div className="space-y-2">
+                {efficiencyData.map((eff, index) => (
+                  <motion.button
+                    key={eff.id}
+                    whileHover={{ x: 5 }}
+                    whileTap={{ scale: 0.98 }}
+                    className={`w-full rounded-lg p-3 text-left flex justify-between items-center ${
+                      index === 0 ? 'bg-white bg-opacity-20' : 'hover:bg-white hover:bg-opacity-10'
+                    }`}
+                    onClick={() => handleCreateCard(eff.type)}
+                  >
+                    <div className="flex items-center gap-2">
+                      <div className={`w-6 h-6 rounded-full ${typeColorMap[eff.type]} flex items-center justify-center`}>
+                        {eff.type === 'core' && <Brain className="w-3 h-3 text-white" />}
+                        {eff.type === 'link' && <Link2 className="w-3 h-3 text-white" />}
+                        {eff.type === 'source' && <BookOpen className="w-3 h-3 text-white" />}
+                        {eff.type === 'keyword' && <Tag className="w-3 h-3 text-white" />}
+                      </div>
+                      <span>{eff.title}</span>
+                    </div>
+                    <ChevronRight className="w-4 h-4" />
+                  </motion.button>
+                ))}
+              </div>
+              
+              <p className="text-sm text-white text-opacity-80 mt-4">
+                {efficiencyData[0].desc}
+              </p>
+            </motion.section>
+
+            {/* 企业应用场景 */}
+            <motion.section
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.5, delay: 0.2 }}
+              className="bg-white rounded-xl shadow-sm border p-6"
+            >
+              <h2 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
+                <Users className="w-5 h-5 text-indigo-600" />
+                企业应用场景
+              </h2>
+              
+              <div className="space-y-4">
+                {sceneData.map(scene => (
+                  <motion.div
+                    key={scene.id}
+                    whileHover={{ scale: 1.02 }}
+                    className="border rounded-lg p-4 flex items-start gap-3"
+                  >
+                    <div className="bg-indigo-50 rounded-full p-2">
+                      {scene.icon}
+                    </div>
+                    <div>
+                      <h3 className="font-medium text-gray-800 mb-1">{scene.title}</h3>
+                      <p className="text-sm text-gray-600">{scene.desc}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            </motion.section>
+          </div>
+        </div>
+      </main>
+
+      {/* 卡片详情模态框 */}
+      <AnimatePresence>
+        {showDetailModal && activeCard && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          >
+            <motion.div
+              ref={modalRef}
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              className="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[80vh] overflow-auto"
+            >
+              <div className="p-6 border-b flex justify-between items-center">
+                <h3 className="text-xl font-bold" style={{
+                  color: activeCard.id === 'fact' ? '#3b82f6' :
+                         activeCard.id === 'explanation' ? '#22c55e' :
+                         activeCard.id === 'risk' ? '#eab308' : '#ef4444'
+                }}>
+                  {activeCard.title}
+                </h3>
+                <button
+                  onClick={handleCloseModal}
+                  className="text-gray-500 hover:text-gray-800"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+              
+              <div className="p-6">
+                <div className="mb-6 flex justify-center">
+                  <div 
+                    className="p-6 rounded-full"
+                    style={{
+                      background: activeCard.id === 'fact' 
+                        ? 'linear-gradient(135deg, #93c5fd, #3b82f6)' 
+                        : activeCard.id === 'explanation'
+                          ? 'linear-gradient(135deg, #86efac, #22c55e)'
+                          : activeCard.id === 'risk'
+                            ? 'linear-gradient(135deg, #fef08a, #eab308)'
+                            : 'linear-gradient(135deg, #fca5a5, #ef4444)'
+                    }}
+                  >
+                    {React.cloneElement(activeCard.icon, { className: 'w-16 h-16 text-white' })}
+                  </div>
+                </div>
+                
+                <p className="text-lg text-gray-700 mb-6 text-center">{activeCard.desc}</p>
+                
+                <div className="border rounded-lg p-4 bg-gray-50 mb-6">
+                  <h4 className="font-medium text-gray-800 mb-2">使用示例：</h4>
+                  <ul className="list-disc list-inside text-gray-600 space-y-2">
+                    {activeCard.examples.map((example, index) => (
+                      <li key={index}>{example}</li>
+                    ))}
+                  </ul>
+                </div>
+                
+                <div className="flex gap-3">
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex-1 bg-indigo-600 text-white py-2 px-4 rounded-lg hover:bg-indigo-700 transition-colors"
+                    onClick={() => handleCreateCard(activeCard.type)}
+                  >
+                    创建{activeCard.title}
+                  </motion.button>
+                  <motion.button
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex-1 border border-gray-300 text-gray-700 py-2 px-4 rounded-lg hover:bg-gray-50 transition-colors"
+                    onClick={handleCloseModal}
+                  >
+                    取消
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* 页脚 */}
+      <footer className="bg-white border-t mt-12 py-6">
+        <div className="container mx-auto px-4 text-center text-gray-500 text-sm">
+          <p>Antinet 智能知识管家 © 2026 骁龙AIPC端侧智能数据工作站</p>
+        </div>
+      </footer>
+    </div>
+  );
+};
+
+export default AntinetKnowledgeHub;
+```
+
+### 三、核心动态交互功能说明
+
+#### 1. 视觉与动效优化
+
+- 采用**Framer Motion**实现平滑的入场动画、hover 动效、点击反馈
+- 还原设计稿的渐变卡片风格、色彩体系（蓝 / 绿 / 黄 / 红四色对应四类卡片）
+- 加载状态动画：页面初始化时的加载转圈效果
+- 模态框过渡动画：缩放 + 位移的自然过渡
+
+#### 2. 核心交互功能
+
+|功能点|实现方式|体验效果|
+|---|---|---|
+|四色卡片点击|点击卡片弹出详情模态框|展示卡片定义、示例，提供创建入口|
+|知识分布图表|Recharts 实现环形饼图|支持 tooltip 提示、图例说明|
+|提升效率卡片|可点击的交互按钮|点击触发创建对应类型卡片的逻辑|
+|最近活动列表|hover 时的横向位移|增强交互反馈，提升体验|
+|特性亮点 / 应用场景|hover 缩放效果|视觉层次感，引导用户关注|
+|模态框关闭|点击外部 / 关闭按钮均可关闭|符合用户操作习惯|
+
+#### 3. 技术集成与扩展
+
+- **响应式适配**：适配移动端、平板、桌面端不同尺寸
+- **预留 API 接口**：
+    
+    - `handleCreateCard` 函数可对接后端创建卡片的 API
+    - 加载状态可对接真实数据接口的 loading 状态
+    - 模态框内可扩展知识图谱关联展示
+    
+- **性能优化**：
+    
+    - 使用`useRef`和事件监听实现模态框点击外部关闭
+    - 动画效果添加性能优化（硬件加速）
+    
+
+### 四、运行配置
+
+#### 1. 安装依赖
+
+bash
+
+运行
+
+```
+# 核心依赖
+npm install react react-dom typescript tailwindcss framer-motion recharts lucide-react
+
+# 类型声明
+npm install @types/react @types/react-dom --save-dev
+```
+
+#### 2. Tailwind CSS 配置
+
+确保`tailwind.config.js`中包含必要的配置：
+
+js
+
+```
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: [
+    "./src/**/*.{js,jsx,ts,tsx}",
+  ],
+  theme: {
+    extend: {},
+  },
+  plugins: [],
+}
+```
+
+#### 3. 集成到项目
+
+tsx
+
+```
+// App.tsx
+import React from 'react';
+import AntinetKnowledgeHub from './AntinetKnowledgeHub';
+import './index.css'; // 引入Tailwind样式
+
+function App() {
+  return (
+    <div className="App">
+      <AntinetKnowledgeHub />
+    </div>
+  );
+}
+
+export default App;
+```
+
+### 总结
+
+1. **视觉还原**：精准还原参考界面的布局、色彩、组件样式，包括四色渐变卡片、知识分布饼图、最近活动列表等核心模块；
+2. **动态交互**：添加了丰富的动画效果和交互反馈，包括 hover 缩放、点击模态框、加载动画等，提升用户体验；
+3. **功能完整**：实现了卡片创建、详情查看、数据可视化等核心功能，预留了对接后端 API 的接口；
+4. **响应式设计**：适配不同屏幕尺寸，符合骁龙 AIPC 端侧的使用场景。
+
+### 关键点回顾
+
+- 核心交互是**四色卡片的点击详情**和**创建卡片的操作触发**，需确保这两个功能可正常体验；
+- 动画效果使用 Framer Motion 实现，兼顾视觉体验和性能；
+- 预留的 API 接口可直接对接后端，实现真实的数据交互和卡片创建。
+
+- 
