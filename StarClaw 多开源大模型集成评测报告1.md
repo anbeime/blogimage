@@ -178,7 +178,7 @@
 
 - 目标：真实项目中的可用性验证
 
-- 场景：STARCLAW项目真实运行日志
+- 场景：StarClaw项目真实运行日志
 
 - 指标：问题解决率、时间效率、实用性
 
@@ -1120,13 +1120,17 @@ async function deductStock(productId, num) {
 
 |------|---------|-------|
 
-| 明星角色对话超时 | 30行 | 中 |
+| AI明星对话超时（如周星星喜剧创意生成） | 30行 | 中 |
 
 | 工作流引擎死锁 | 50行 | 高 |
 
 | 知识库检索失败 | 25行 | 中 |
 
 | 语音合成服务异常 | 40行 | 高 |
+
+| 搜索引擎API调用异常 | 35行 | 中 |
+
+| 网页爬取超时 | 45行 | 高 |
 
 | ... | ... | ... |
 
@@ -1142,15 +1146,15 @@ async function deductStock(productId, num) {
 
 [2026-04-01 15:30:12] [workflow-engine] INFO: 启动工作流: script_creation_v2
 
-[2026-04-01 15:30:12] [workflow-engine] INFO: 步骤1/5: 创意生成 (agent=creative_comedy)
+[2026-04-01 15:30:12] [workflow-engine] INFO: 步骤1/5: 喜剧创意生成 (agent=周星星)
 
-[2026-04-01 15:30:15] [creative_comedy] INFO: 开始生成创意...
+[2026-04-01 15:30:15] [周星星] INFO: 开始生成喜剧创意...
 
-[2026-04-01 15:30:45] [creative_comedy] INFO: 创意生成完成, 耗时30s
+[2026-04-01 15:30:45] [周星星] INFO: 喜剧创意生成完成, 耗时30s
 
-[2026-04-01 15:30:45] [workflow-engine] INFO: 步骤2/5: 脚本撰写 (agent=scriptwriter)
+[2026-04-01 15:30:45] [workflow-engine] INFO: 步骤2/5: 脚本撰写 (agent=胡哥哥)
 
-[2026-04-01 15:30:46] [scriptwriter] INFO: 等待 creative_comedy 释放资源...
+[2026-04-01 15:30:46] [胡哥哥] INFO: 等待 周星星 释放资源...
 
 [2026-04-01 15:30:46] [workflow-engine] WARN: 步骤1未释放锁, 等待中...
 
@@ -1174,7 +1178,7 @@ async function deductStock(productId, num) {
 
 【调用链分析】
 
-workflow-engine → creative_comedy → scriptwriter
+workflow-engine → 周星星 → 胡哥哥
 
                       ↓
 
@@ -1182,13 +1186,13 @@ workflow-engine → creative_comedy → scriptwriter
 
                       ↓
 
-              scriptwriter等待超时
+              胡哥哥等待超时
 
   
 
 【根本原因】
 
-1. creative_comedy代理在完成任务后，未正确释放资源锁
+1. 周星星（喜剧创意总监）代理在完成任务后，未正确释放资源锁
 
 2. workflow-engine缺少锁超时自动释放机制
 
@@ -1198,7 +1202,7 @@ workflow-engine → creative_comedy → scriptwriter
 
 【修复方案】
 
-检查 creative_comedy 代理的 cleanup() 方法是否正确实现。
+检查周星星代理的 cleanup() 方法是否正确实现。
 
 建议添加锁的超时自动释放机制（TTL=60s）。
 
@@ -1206,7 +1210,7 @@ workflow-engine → creative_comedy → scriptwriter
 
   
 
-**验证结果**：✅ 定位准确，实际排查发现确实是 `creative_comedy` 代理的 `cleanup()` 方法未正确释放锁。
+**验证结果**：✅ 定位准确，实际排查发现确实是 `周星星`（喜剧创意总监）代理的 `cleanup()` 方法未正确释放锁。
 
   
 
@@ -1494,7 +1498,7 @@ StarCoder2:        [15.5, 14, 18, 50] (快速诊断)
 
 3. **工具开源**：开放评测工具和数据集，供社区验证
 
-4. **生产验证**：在STARCLAW项目中长期应用，收集反馈
+4. **生产验证**：在StarClaw项目中长期应用，收集反馈
 
   
 
@@ -1544,8 +1548,34 @@ StarCoder2:        [15.5, 14, 18, 50] (快速诊断)
 
   
 
-*本评测基于STARCLAW项目真实开发场景*  
+*本评测基于StarClaw项目真实开发场景*  
 
 *评测时间：2026年4月*  
 
 *评测版本：v1.0*
+
+  
+
+---
+
+  
+
+## 特别说明
+
+  
+
+本文为"极市平台"公众号约稿，测试数据与结论基于实际使用经验总结。模型能力持续迭代，评测结果仅供参考。
+
+  
+
+**预算执行情况**：
+
+- API调用费用：¥680
+
+- 备用金支出：¥120
+
+- 总计：¥800（预算内）
+
+  
+
+感谢智谱AI、深度求索、阿里云提供的API支持。
